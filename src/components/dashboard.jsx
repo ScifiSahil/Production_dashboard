@@ -17,10 +17,26 @@ import {
   ComposedChart,
   Legend,
 } from "recharts";
+import {
+  Factory,
+  Zap,
+  IndianRupee,
+  Package,
+  ThumbsUp,
+  ShieldAlert,
+  CheckCircle,
+  Activity,
+  Box,
+  Wrench,
+  Users,
+  Leaf,
+  FileText,
+  TrendingUp,
+  TrendingDown,
+} from "lucide-react";
 import HRDashboard from "./hrdashboard";
 import PurchaseDashboard from "./purchase-dashboard";
 import { useNavigate } from "react-router-dom";
-
 
 const StaticBUDashboard = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -31,9 +47,9 @@ const StaticBUDashboard = () => {
   const [selectedBU, setSelectedBU] = useState("overview");
   const [selectedPlant, setSelectedPlant] = useState(null);
   const [selectedLine, setSelectedLine] = useState(null);
-  const [globalView, setGlobalView] = useState("overview");
-  const navigate = useNavigate();
+  const [globalView, setGlobalView] = useState("daily");
 
+  const navigate = useNavigate();
 
   const [selectedCard, setSelectedCard] = useState(null);
   const [selectedNonCore, setSelectedNonCore] = useState(null);
@@ -89,7 +105,7 @@ const StaticBUDashboard = () => {
 
   // BU Configuration
   const buConfig = {
-    overview: { name: "All Plants", plants: [] },
+    overview: { name: "KTFL GROUP", plants: [] },
     bu1: {
       name: "BU Head 1",
       plants: {
@@ -100,7 +116,7 @@ const StaticBUDashboard = () => {
           "4003 TP",
           "4004 TP",
         ],
-        "R1-16": ["R1 - mahesh gade", "1602", "1001", "1003", "630", "2502"],
+        "R1-16": ["R1", "1602", "1001", "1003", "630", "2502"],
         "MDW-7": [
           "Line A",
           "Line B",
@@ -656,13 +672,13 @@ const StaticBUDashboard = () => {
                       <p
                         className={`text-3xl font-bold text-emerald-600 sans-font`}
                       >
-                        ₹{staticData.sales.daily.actual}Cr
+                        ₹{staticData.sales.daily.actual}
                       </p>
                     </div>
                     <div className="text-right">
                       <p className="text-xs text-gray-600 font-bold">Plan</p>
                       <p className="text-2xl font-bold text-blue-600 sans-font">
-                        ₹{staticData.sales.daily.plan}Cr
+                        ₹{staticData.sales.daily.plan}
                       </p>
                     </div>
                   </div>
@@ -686,13 +702,13 @@ const StaticBUDashboard = () => {
                       <p
                         className={`text-3xl font-bold text-emerald-600 sans-font`}
                       >
-                        ₹{staticData.sales.mtd.actual}Cr
+                        ₹{staticData.sales.mtd.actual}
                       </p>
                     </div>
                     <div className="text-right">
                       <p className="text-xs text-gray-600 font-bold">Plan</p>
                       <p className="text-2xl font-bold text-blue-600 sans-font">
-                        ₹{staticData.sales.mtd.plan}Cr
+                        ₹{staticData.sales.mtd.plan}
                       </p>
                     </div>
                   </div>
@@ -716,13 +732,13 @@ const StaticBUDashboard = () => {
                       <p
                         className={`text-3xl font-bold text-emerald-600 sans-font`}
                       >
-                        ₹{staticData.sales.ytd.actual}Cr
+                        ₹{staticData.sales.ytd.actual}
                       </p>
                     </div>
                     <div className="text-right">
                       <p className="text-xs text-gray-600 font-bold">Plan</p>
                       <p className="text-2xl font-bold text-blue-600 sans-font">
-                        ₹{staticData.sales.ytd.plan}Cr
+                        ₹{staticData.sales.ytd.plan}
                       </p>
                     </div>
                   </div>
@@ -774,14 +790,14 @@ const StaticBUDashboard = () => {
                       <Bar
                         dataKey="actual"
                         fill="#10b981"
-                        name="Actual (₹Cr)"
+                        name="Actual"
                         radius={[6, 6, 0, 0]}
                         isAnimationActive={false}
                       />
                       <Bar
                         dataKey="plan"
                         fill="#3b82f6"
-                        name="Plan (₹Cr)"
+                        name="Plan "
                         radius={[6, 6, 0, 0]}
                         isAnimationActive={false}
                       />
@@ -812,10 +828,10 @@ const StaticBUDashboard = () => {
                             Week
                           </th>
                           <th className="px-3 py-2 text-right font-black text-gray-700">
-                            Plan (₹Cr)
+                            Plan
                           </th>
                           <th className="px-3 py-2 text-right font-black text-gray-700">
-                            Actual (₹Cr)
+                            Actual
                           </th>
                           <th className="px-3 py-2 text-right font-black text-gray-700">
                             Variance
@@ -982,16 +998,16 @@ const StaticBUDashboard = () => {
                             {plant}
                           </td>
                           <td className="px-4 py-3 text-right font-bold text-blue-600 sans-font">
-                            ₹{dailyPlan}Cr
+                            ₹{dailyPlan}
                           </td>
                           <td className="px-4 py-3 text-right font-bold text-emerald-600 sans-font">
-                            ₹{dailyActual}Cr
+                            ₹{dailyActual}
                           </td>
                           <td className="px-4 py-3 text-right font-bold text-blue-600 sans-font">
-                            ₹{mtdPlan}Cr
+                            ₹{mtdPlan}
                           </td>
                           <td className="px-4 py-3 text-right font-bold text-emerald-600 sans-font">
-                            ₹{mtdActual}Cr
+                            ₹{mtdActual}
                           </td>
                           <td className="px-4 py-3 text-center">
                             <span
@@ -1014,6 +1030,741 @@ const StaticBUDashboard = () => {
               </div>
             </div>
           );
+        case "ht":
+          return (
+            <div className="space-y-4">
+              <h2
+                className={`text-2xl font-black ${currentTheme.textPrimary} mb-4`}
+              >
+                🔥 Heat Treatment Deep Dive - Plan vs Actual
+              </h2>
+
+              {/* Summary Cards */}
+              <div className="grid grid-cols-3 gap-4 mb-4">
+                {["daily", "mtd", "ytd"].map((period, idx) => {
+                  const data = staticData.ht[period];
+                  const borderColor =
+                    idx === 0
+                      ? "border-blue-500"
+                      : idx === 1
+                      ? "border-green-500"
+                      : "border-purple-500";
+                  const achievement = ((data.actual / data.plan) * 100).toFixed(
+                    1
+                  );
+                  return (
+                    <div
+                      key={period}
+                      className={`${currentTheme.bgSecondary} rounded-lg p-4 border-l-4 ${borderColor}`}
+                    >
+                      <h4
+                        className={`text-sm font-semibold ${currentTheme.textSecondary} mb-2 uppercase`}
+                      >
+                        {period} HT
+                      </h4>
+                      <div className="flex justify-between items-baseline">
+                        <div>
+                          <p className="text-xs text-gray-600 font-bold">
+                            Actual
+                          </p>
+                          <p
+                            className={`text-4xl font-bold text-cyan-600 mono-font`}
+                          >
+                            {data.actual}
+                          </p>
+                          <p className="text-xs text-cyan-600 font-bold">MT</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xs text-gray-600 font-bold">
+                            Plan
+                          </p>
+                          <p className="text-3xl font-bold text-blue-600 mono-font">
+                            {data.plan}
+                          </p>
+                          <p className="text-xs text-blue-600 font-bold">MT</p>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 mt-2">
+                        <div className="bg-amber-100 rounded p-1.5 text-center">
+                          <p className="text-sm font-black text-amber-700 mono-font">
+                            {achievement}%
+                          </p>
+                          <p className="text-[10px] text-gray-600">Ach</p>
+                        </div>
+                        <div className="bg-green-100 rounded p-1.5 text-center">
+                          <p className="text-sm font-black text-green-700 mono-font">
+                            {data.scm}
+                          </p>
+                          <p className="text-[10px] text-gray-600">SCM/T</p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Chart and Table */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className={`${currentTheme.bgSecondary} rounded-lg p-4`}>
+                  <h4
+                    className={`text-base font-bold ${currentTheme.textPrimary} mb-3`}
+                  >
+                    📊 Daily HT Performance & SCM/T
+                  </h4>
+                  <ResponsiveContainer width="100%" height={260}>
+                    <ComposedChart
+                      data={htTrendData}
+                      margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                      <XAxis
+                        dataKey="day"
+                        stroke="#334155"
+                        style={{ fontSize: "14px", fontWeight: "600" }}
+                      />
+                      <YAxis
+                        yAxisId="left"
+                        stroke="#334155"
+                        style={{ fontSize: "14px", fontWeight: "600" }}
+                      />
+                      <YAxis
+                        yAxisId="right"
+                        orientation="right"
+                        stroke="#334155"
+                        style={{ fontSize: "14px", fontWeight: "600" }}
+                      />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: "#ffffff",
+                          border: "2px solid #06b6d4",
+                          borderRadius: "8px",
+                          fontSize: "14px",
+                          fontWeight: "bold",
+                          boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+                        }}
+                      />
+                      <Legend
+                        wrapperStyle={{ fontSize: "14px", fontWeight: "600" }}
+                      />
+                      <Bar
+                        yAxisId="left"
+                        dataKey="ht"
+                        fill="#06b6d4"
+                        name="HT (MT)"
+                        radius={[6, 6, 0, 0]}
+                        isAnimationActive={false}
+                      />
+                      <Line
+                        yAxisId="right"
+                        type="monotone"
+                        dataKey="scm"
+                        stroke="#10b981"
+                        strokeWidth={3}
+                        name="SCM/T"
+                        isAnimationActive={false}
+                      />
+                    </ComposedChart>
+                  </ResponsiveContainer>
+                </div>
+
+                {/* Daily Performance Table */}
+                <div className={`${currentTheme.bgSecondary} rounded-lg p-4`}>
+                  <h4
+                    className={`text-base font-bold ${currentTheme.textPrimary} mb-3`}
+                  >
+                    📋 Daily HT Performance
+                  </h4>
+                  <div className="overflow-auto max-h-[260px]">
+                    <table className="w-full text-sm">
+                      <thead className="bg-cyan-100 sticky top-0">
+                        <tr>
+                          <th className="px-3 py-2 text-left font-black text-gray-700">
+                            Day
+                          </th>
+                          <th className="px-3 py-2 text-right font-black text-gray-700">
+                            HT (MT)
+                          </th>
+                          <th className="px-3 py-2 text-right font-black text-gray-700">
+                            SCM/T
+                          </th>
+                          <th className="px-3 py-2 text-center font-black text-gray-700">
+                            Status
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {htTrendData.map((row, idx) => {
+                          const target = 90;
+                          const achievement = ((row.ht / target) * 100).toFixed(
+                            0
+                          );
+                          return (
+                            <tr
+                              key={idx}
+                              className={
+                                idx % 2 === 0 ? "bg-white" : "bg-gray-50"
+                              }
+                            >
+                              <td className="px-3 py-2 font-bold text-gray-800">
+                                {row.day}
+                              </td>
+                              <td className="px-3 py-2 text-right font-bold text-cyan-600 mono-font">
+                                {row.ht}
+                              </td>
+                              <td className="px-3 py-2 text-right font-bold text-green-600 mono-font">
+                                {row.scm}
+                              </td>
+                              <td className="px-3 py-2 text-center">
+                                <span
+                                  className={`px-2 py-1 rounded font-black text-xs ${
+                                    parseFloat(achievement) >= 100
+                                      ? "bg-green-200 text-green-800"
+                                      : parseFloat(achievement) >= 90
+                                      ? "bg-yellow-200 text-yellow-800"
+                                      : "bg-red-200 text-red-800"
+                                  }`}
+                                >
+                                  {achievement}%
+                                </span>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              {/* Plant-wise HT Performance */}
+              <div className={`${currentTheme.bgSecondary} rounded-lg p-4`}>
+                <h4
+                  className={`text-base font-bold ${currentTheme.textPrimary} mb-3`}
+                >
+                  🏭 Plant-wise HT Performance & Fuel Cost
+                </h4>
+                <table className="w-full text-sm">
+                  <thead className="bg-gradient-to-r from-cyan-100 to-blue-100">
+                    <tr>
+                      <th className="px-4 py-3 text-left font-black text-gray-700">
+                        Plant
+                      </th>
+                      <th className="px-4 py-3 text-right font-black text-gray-700">
+                        Daily Plan
+                      </th>
+                      <th className="px-4 py-3 text-right font-black text-gray-700">
+                        Daily Actual
+                      </th>
+                      <th className="px-4 py-3 text-right font-black text-gray-700">
+                        MTD Plan
+                      </th>
+                      <th className="px-4 py-3 text-right font-black text-gray-700">
+                        MTD Actual
+                      </th>
+                      <th className="px-4 py-3 text-right font-black text-gray-700">
+                        SCM/T
+                      </th>
+                      <th className="px-4 py-3 text-right font-black text-gray-700">
+                        Fuel Cost
+                      </th>
+                      <th className="px-4 py-3 text-center font-black text-gray-700">
+                        Achievement
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {["R2-5", "R1-16", "MDW-7"].map((plant, idx) => {
+                      const dailyPlan = Math.round(
+                        staticData.ht.daily.plan / 3
+                      );
+                      const dailyActual = Math.round(
+                        (staticData.ht.daily.actual / 3) *
+                          (0.85 + Math.random() * 0.3)
+                      );
+                      const mtdPlan = Math.round(staticData.ht.mtd.plan / 3);
+                      const mtdActual = Math.round(
+                        (staticData.ht.mtd.actual / 3) *
+                          (0.85 + Math.random() * 0.3)
+                      );
+                      const scm = (4.0 + Math.random() * 0.6).toFixed(1);
+                      const fuelCost = (
+                        (mtdActual * parseFloat(scm) * 15) /
+                        1000
+                      ).toFixed(2);
+                      const achievement = ((mtdActual / mtdPlan) * 100).toFixed(
+                        1
+                      );
+
+                      return (
+                        <tr
+                          key={idx}
+                          className={idx % 2 === 0 ? "bg-white" : "bg-gray-50"}
+                        >
+                          <td className="px-4 py-3 font-bold text-gray-800">
+                            {plant}
+                          </td>
+                          <td className="px-4 py-3 text-right font-bold text-blue-600 mono-font">
+                            {dailyPlan} MT
+                          </td>
+                          <td className="px-4 py-3 text-right font-bold text-cyan-600 mono-font">
+                            {dailyActual} MT
+                          </td>
+                          <td className="px-4 py-3 text-right font-bold text-blue-600 mono-font">
+                            {mtdPlan} MT
+                          </td>
+                          <td className="px-4 py-3 text-right font-bold text-cyan-600 mono-font">
+                            {mtdActual} MT
+                          </td>
+                          <td className="px-4 py-3 text-right font-bold text-green-600 mono-font">
+                            {scm}
+                          </td>
+                          <td className="px-4 py-3 text-right font-bold text-amber-600 mono-font">
+                            ₹{fuelCost}L
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            <span
+                              className={`px-3 py-1 rounded-full font-black ${
+                                parseFloat(achievement) >= 100
+                                  ? "bg-green-200 text-green-800"
+                                  : parseFloat(achievement) >= 90
+                                  ? "bg-yellow-200 text-yellow-800"
+                                  : "bg-red-200 text-red-800"
+                              }`}
+                            >
+                              {achievement}%
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Furnace-wise Performance */}
+              <div className={`${currentTheme.bgSecondary} rounded-lg p-4`}>
+                <h4
+                  className={`text-base font-bold ${currentTheme.textPrimary} mb-3`}
+                >
+                  🔥 Furnace-wise Utilization & Efficiency
+                </h4>
+                <table className="w-full text-sm">
+                  <thead className="bg-orange-100">
+                    <tr>
+                      <th className="px-4 py-3 text-left font-black text-gray-700">
+                        Furnace
+                      </th>
+                      <th className="px-4 py-3 text-right font-black text-gray-700">
+                        Capacity (MT/Day)
+                      </th>
+                      <th className="px-4 py-3 text-right font-black text-gray-700">
+                        Actual (MT)
+                      </th>
+                      <th className="px-4 py-3 text-right font-black text-gray-700">
+                        Utilization%
+                      </th>
+                      <th className="px-4 py-3 text-right font-black text-gray-700">
+                        Temperature (°C)
+                      </th>
+                      <th className="px-4 py-3 text-right font-black text-gray-700">
+                        Runtime (hrs)
+                      </th>
+                      <th className="px-4 py-3 text-center font-black text-gray-700">
+                        Status
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {["Furnace-1", "Furnace-2", "Furnace-3", "Furnace-4"].map(
+                      (furnace, idx) => {
+                        const capacity = 25;
+                        const actual = Math.round(18 + Math.random() * 10);
+                        const utilization = ((actual / capacity) * 100).toFixed(
+                          0
+                        );
+                        const temp = Math.round(820 + Math.random() * 30);
+                        const runtime = (20 + Math.random() * 4).toFixed(1);
+
+                        return (
+                          <tr
+                            key={idx}
+                            className={
+                              idx % 2 === 0 ? "bg-white" : "bg-gray-50"
+                            }
+                          >
+                            <td className="px-4 py-3 font-bold text-gray-800">
+                              {furnace}
+                            </td>
+                            <td className="px-4 py-3 text-right font-bold text-gray-600 mono-font">
+                              {capacity}
+                            </td>
+                            <td className="px-4 py-3 text-right font-bold text-cyan-600 mono-font">
+                              {actual}
+                            </td>
+                            <td className="px-4 py-3 text-right font-bold text-purple-600 mono-font">
+                              {utilization}%
+                            </td>
+                            <td className="px-4 py-3 text-right font-bold text-orange-600 mono-font">
+                              {temp}°C
+                            </td>
+                            <td className="px-4 py-3 text-right font-bold text-blue-600 mono-font">
+                              {runtime}
+                            </td>
+                            <td className="px-4 py-3 text-center">
+                              <span
+                                className={`px-3 py-1 rounded-full font-black ${
+                                  parseFloat(utilization) >= 80
+                                    ? "bg-green-200 text-green-800"
+                                    : parseFloat(utilization) >= 70
+                                    ? "bg-yellow-200 text-yellow-800"
+                                    : "bg-red-200 text-red-800"
+                                }`}
+                              >
+                                {parseFloat(utilization) >= 80
+                                  ? "✓ OK"
+                                  : parseFloat(utilization) >= 70
+                                  ? "⚠ Low"
+                                  : "✗ Critical"}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      }
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          );
+        case "npd":
+          return (
+            <div className="space-y-4">
+              <h2
+                className={`text-2xl font-black ${currentTheme.textPrimary} mb-4`}
+              >
+                🚀 NPD Projects - Customer & Status Analysis
+              </h2>
+
+              {/* Summary Cards */}
+              <div className="grid grid-cols-4 gap-4 mb-4">
+                <div
+                  className={`${currentTheme.bgSecondary} rounded-lg p-4 border-l-4 border-blue-500`}
+                >
+                  <h4
+                    className={`text-sm font-semibold ${currentTheme.textSecondary} mb-2`}
+                  >
+                    Total Projects
+                  </h4>
+                  <p className={`text-5xl font-bold text-blue-600 mono-font`}>
+                    {staticData.npd.total}
+                  </p>
+                </div>
+                <div
+                  className={`${currentTheme.bgSecondary} rounded-lg p-4 border-l-4 border-green-500`}
+                >
+                  <h4
+                    className={`text-sm font-semibold ${currentTheme.textSecondary} mb-2`}
+                  >
+                    Active
+                  </h4>
+                  <p className={`text-5xl font-bold text-green-600 mono-font`}>
+                    {staticData.npd.active}
+                  </p>
+                </div>
+                <div
+                  className={`${currentTheme.bgSecondary} rounded-lg p-4 border-l-4 border-amber-500`}
+                >
+                  <h4
+                    className={`text-sm font-semibold ${currentTheme.textSecondary} mb-2`}
+                  >
+                    In Trial
+                  </h4>
+                  <p className={`text-5xl font-bold text-amber-600 mono-font`}>
+                    {
+                      staticData.npd.projects.filter(
+                        (p) => p.status === "Trial"
+                      ).length
+                    }
+                  </p>
+                </div>
+                <div
+                  className={`${currentTheme.bgSecondary} rounded-lg p-4 border-l-4 border-emerald-500`}
+                >
+                  <h4
+                    className={`text-sm font-semibold ${currentTheme.textSecondary} mb-2`}
+                  >
+                    SOP Done
+                  </h4>
+                  <p
+                    className={`text-5xl font-bold text-emerald-600 mono-font`}
+                  >
+                    {
+                      staticData.npd.projects.filter((p) => p.status === "SOP")
+                        .length
+                    }
+                  </p>
+                </div>
+              </div>
+
+              {/* Chart and Table */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className={`${currentTheme.bgSecondary} rounded-lg p-4`}>
+                  <h4
+                    className={`text-base font-bold ${currentTheme.textPrimary} mb-3`}
+                  >
+                    📊 Project Status Distribution
+                  </h4>
+                  <ResponsiveContainer width="100%" height={280}>
+                    <PieChart>
+                      <Pie
+                        data={[
+                          {
+                            name: "Initiated",
+                            value: staticData.npd.projects.filter(
+                              (p) => p.status === "Initiated"
+                            ).length,
+                            color: "#3b82f6",
+                          },
+                          {
+                            name: "In Progress",
+                            value: staticData.npd.projects.filter(
+                              (p) => p.status === "In Progress"
+                            ).length,
+                            color: "#06b6d4",
+                          },
+                          {
+                            name: "Trial",
+                            value: staticData.npd.projects.filter(
+                              (p) => p.status === "Trial"
+                            ).length,
+                            color: "#f59e0b",
+                          },
+                          {
+                            name: "SOP",
+                            value: staticData.npd.projects.filter(
+                              (p) => p.status === "SOP"
+                            ).length,
+                            color: "#10b981",
+                          },
+                        ]}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={true}
+                        label={({ name, value }) => `${name}: ${value}`}
+                        outerRadius={90}
+                        dataKey="value"
+                        style={{ fontSize: "12px", fontWeight: "600" }}
+                        isAnimationActive={false}
+                      >
+                        {[
+                          {
+                            name: "Initiated",
+                            value: staticData.npd.projects.filter(
+                              (p) => p.status === "Initiated"
+                            ).length,
+                            color: "#3b82f6",
+                          },
+                          {
+                            name: "In Progress",
+                            value: staticData.npd.projects.filter(
+                              (p) => p.status === "In Progress"
+                            ).length,
+                            color: "#06b6d4",
+                          },
+                          {
+                            name: "Trial",
+                            value: staticData.npd.projects.filter(
+                              (p) => p.status === "Trial"
+                            ).length,
+                            color: "#f59e0b",
+                          },
+                          {
+                            name: "SOP",
+                            value: staticData.npd.projects.filter(
+                              (p) => p.status === "SOP"
+                            ).length,
+                            color: "#10b981",
+                          },
+                        ].map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: "#ffffff",
+                          border: "2px solid #3b82f6",
+                          borderRadius: "8px",
+                          fontSize: "14px",
+                          fontWeight: "bold",
+                        }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+
+                {/* Projects Table */}
+                <div className={`${currentTheme.bgSecondary} rounded-lg p-4`}>
+                  <h4
+                    className={`text-base font-bold ${currentTheme.textPrimary} mb-3`}
+                  >
+                    📋 Active Projects Summary
+                  </h4>
+                  <div className="overflow-auto max-h-[280px]">
+                    <table className="w-full text-xs">
+                      <thead className="bg-gradient-to-r from-blue-100 to-indigo-100 sticky top-0">
+                        <tr>
+                          <th className="px-2 py-2 text-left font-black text-gray-700">
+                            Customer
+                          </th>
+                          <th className="px-2 py-2 text-left font-black text-gray-700">
+                            Project
+                          </th>
+                          <th className="px-2 py-2 text-center font-black text-gray-700">
+                            Status
+                          </th>
+                          <th className="px-2 py-2 text-right font-black text-gray-700">
+                            %
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {staticData.npd.projects.map((project, idx) => (
+                          <tr
+                            key={idx}
+                            className={
+                              idx % 2 === 0 ? "bg-white" : "bg-gray-50"
+                            }
+                          >
+                            <td className="px-2 py-2 font-bold text-gray-700">
+                              {project.customer}
+                            </td>
+                            <td className="px-2 py-2 font-semibold text-gray-600">
+                              {project.project}
+                            </td>
+                            <td className="px-2 py-2 text-center">
+                              <span
+                                className={`px-2 py-1 rounded-full text-xs font-black ${
+                                  project.status === "SOP"
+                                    ? "bg-green-200 text-green-800"
+                                    : project.status === "Trial"
+                                    ? "bg-amber-200 text-amber-800"
+                                    : project.status === "In Progress"
+                                    ? "bg-cyan-200 text-cyan-800"
+                                    : "bg-blue-200 text-blue-800"
+                                }`}
+                              >
+                                {project.status}
+                              </span>
+                            </td>
+                            <td className="px-2 py-2 text-right">
+                              <span
+                                className={`font-black mono-font ${
+                                  project.completion === 100
+                                    ? "text-green-600"
+                                    : project.completion >= 75
+                                    ? "text-amber-600"
+                                    : project.completion >= 50
+                                    ? "text-cyan-600"
+                                    : "text-blue-600"
+                                }`}
+                              >
+                                {project.completion}%
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              {/* Detailed Project Table */}
+              <div className={`${currentTheme.bgSecondary} rounded-lg p-4`}>
+                <h4
+                  className={`text-base font-bold ${currentTheme.textPrimary} mb-3`}
+                >
+                  📑 Complete Project Details
+                </h4>
+                <table className="w-full text-sm">
+                  <thead className="bg-gradient-to-r from-indigo-100 to-purple-100">
+                    <tr>
+                      <th className="px-4 py-3 text-left font-black text-gray-700">
+                        #
+                      </th>
+                      <th className="px-4 py-3 text-left font-black text-gray-700">
+                        Customer Name
+                      </th>
+                      <th className="px-4 py-3 text-left font-black text-gray-700">
+                        Project Name
+                      </th>
+                      <th className="px-4 py-3 text-center font-black text-gray-700">
+                        Status
+                      </th>
+                      <th className="px-4 py-3 text-right font-black text-gray-700">
+                        Completion
+                      </th>
+                      <th className="px-4 py-3 text-center font-black text-gray-700">
+                        Progress
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {staticData.npd.projects.map((project, idx) => (
+                      <tr
+                        key={idx}
+                        className={idx % 2 === 0 ? "bg-white" : "bg-gray-50"}
+                      >
+                        <td className="px-4 py-3 font-bold text-gray-600 mono-font">
+                          {idx + 1}
+                        </td>
+                        <td className="px-4 py-3 font-bold text-gray-800">
+                          {project.customer}
+                        </td>
+                        <td className="px-4 py-3 font-semibold text-gray-700">
+                          {project.project}
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-black ${
+                              project.status === "SOP"
+                                ? "bg-green-200 text-green-800"
+                                : project.status === "Trial"
+                                ? "bg-amber-200 text-amber-800"
+                                : project.status === "In Progress"
+                                ? "bg-cyan-200 text-cyan-800"
+                                : "bg-blue-200 text-blue-800"
+                            }`}
+                          >
+                            {project.status}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-right font-black text-indigo-600 mono-font">
+                          {project.completion}%
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="w-full bg-gray-200 rounded-full h-3">
+                            <div
+                              className={`h-3 rounded-full ${
+                                project.completion === 100
+                                  ? "bg-gradient-to-r from-green-500 to-emerald-600"
+                                  : project.completion >= 75
+                                  ? "bg-gradient-to-r from-amber-500 to-orange-600"
+                                  : project.completion >= 50
+                                  ? "bg-gradient-to-r from-cyan-500 to-blue-600"
+                                  : "bg-gradient-to-r from-blue-500 to-indigo-600"
+                              }`}
+                              style={{ width: `${project.completion}%` }}
+                            ></div>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          );
 
         case "production":
           return (
@@ -1022,7 +1773,7 @@ const StaticBUDashboard = () => {
                 className={`text-2xl font-black ${currentTheme.textPrimary} mb-4`}
               >
                 🏭 Cell Wise PQCDSM (Productivity, Quality, Cost, Delivery,
-                Morale, Safty)
+                Safety & Morale)
               </h2>
 
               {/* Line Selection Tabs */}
@@ -1064,8 +1815,8 @@ const StaticBUDashboard = () => {
                       : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                   }`}
                 >
-                  <span>📋</span>
-                  Table View
+                  <FileText className="w-5 h-5" />
+                  📋 Table View
                 </button>
                 <button
                   onClick={() => setViewMode("graphical")}
@@ -1075,18 +1826,17 @@ const StaticBUDashboard = () => {
                       : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                   }`}
                 >
-                  <span>📊</span>
-                  Graphical View
+                  <Activity className="w-5 h-5" />
+                  📊 Graphical View
                 </button>
                 <button
-                  onClick={() => {
-                    window.location.href =
-                      "https://ktfrancesrv.kalyanicorp.com/cs-prx-my-shopfloor?asset_oid=ef29049c-5f6a-11ee-a87f-00620b24a031&asset_id=AS-000006-7027";
-                  }}
-                  className="px-6 py-3 rounded-lg font-black text-base transition-all flex items-center gap-2 bg-gray-200 text-gray-700 hover:bg-gradient-to-r hover:from-green-600 hover:to-teal-600 hover:text-white hover:shadow-lg"
+                  onClick={() =>
+                    (window.location.href =
+                      "https://ktfrancesrv.kalyanicorp.com/cs-prx-my-shopfloor?asset_oid=ef29049c-5f6a-11ee-a87f-00620b24a031&asset_id=AS-000006-7027")
+                  }
+                  className="px-6 py-3 rounded-lg font-black text-base transition-all flex items-center gap-2 bg-gray-200 text-gray-700 hover:bg-gray-300"
                 >
-                  <span>🔍</span>
-                  Detail
+                  📌 Detail Tab
                 </button>
               </div>
 
@@ -1161,37 +1911,37 @@ const StaticBUDashboard = () => {
                           <td className="border border-gray-300 px-3 py-2 text-center font-bold">
                             %
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             72.75
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             76.0
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             70.2
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             73.7
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             81.31
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             78.29
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             73.69
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             67.23
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             65.3
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             73.0
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font bg-yellow-100">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font bg-yellow-100">
                             80
                           </td>
                         </tr>
@@ -1202,37 +1952,37 @@ const StaticBUDashboard = () => {
                           <td className="border border-gray-300 px-3 py-2 text-center font-bold">
                             Nos.
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             292
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             304
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             281
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             295
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             325
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             313
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             295
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             269
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             261
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             292
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font bg-yellow-100">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font bg-yellow-100">
                             320
                           </td>
                         </tr>
@@ -1243,37 +1993,37 @@ const StaticBUDashboard = () => {
                           <td className="border border-gray-300 px-3 py-2 text-center font-bold">
                             Nos.
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             656
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             684
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             632
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             663
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             732
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             705
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             663
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             605
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             588
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             657
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font bg-yellow-100">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font bg-yellow-100">
                             720
                           </td>
                         </tr>
@@ -1281,7 +2031,7 @@ const StaticBUDashboard = () => {
                         {/* Quality Section */}
                         <tr className="bg-green-100">
                           <td
-                            rowSpan="5"
+                            rowSpan="2"
                             className="border border-gray-300 px-4 py-2 text-center font-black text-green-700 text-lg"
                           >
                             Q<br />
@@ -1295,37 +2045,37 @@ const StaticBUDashboard = () => {
                           <td className="border border-gray-300 px-3 py-2 text-center font-bold">
                             PPM
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             6722
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             7578
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             8353
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             8592
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             7908
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             5965
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             6874
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             7852
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             7998
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             8210
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font bg-yellow-100">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font bg-yellow-100">
                             6000
                           </td>
                         </tr>
@@ -1336,37 +2086,37 @@ const StaticBUDashboard = () => {
                           <td className="border border-gray-300 px-3 py-2 text-center font-bold">
                             Nos.
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             0
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             0
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             0
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             0
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             0
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             0
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             0
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             0
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             0
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             0
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font bg-yellow-100">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font bg-yellow-100">
                             0
                           </td>
                         </tr>
@@ -1386,37 +2136,37 @@ const StaticBUDashboard = () => {
                           <td className="border border-gray-300 px-3 py-2 text-center font-bold">
                             Lacs
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             1.34
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             1.47
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             1.64
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             1.84
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             1.43
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             1.46
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             1.65
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             1.27
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             1.39
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             2.05
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font bg-yellow-100">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font bg-yellow-100">
                             0.76
                           </td>
                         </tr>
@@ -1427,37 +2177,37 @@ const StaticBUDashboard = () => {
                           <td className="border border-gray-300 px-3 py-2 text-center font-bold">
                             %
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             -
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             -
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             -
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             -
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             -
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             -
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             7.5
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             7.9
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             7.74
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             8.52
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font bg-yellow-100">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font bg-yellow-100">
                             5
                           </td>
                         </tr>
@@ -1479,39 +2229,39 @@ const StaticBUDashboard = () => {
                           <td className="border border-gray-300 px-3 py-2 text-center font-bold">
                             Nos.
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             160000
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             160000
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             160000
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             160000
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             160000
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             140800
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             154000
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             140000
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             140000
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             170000
                           </td>
                           <td
                             rowSpan="2"
-                            className="border border-gray-300 px-3 py-2 text-center font-bold sans-font bg-yellow-100"
+                            className="border border-gray-300 px-3 py-2 text-center font-bold mono-font bg-yellow-100"
                           >
                             Capacity
                             <br />
@@ -1525,34 +2275,34 @@ const StaticBUDashboard = () => {
                           <td className="border border-gray-300 px-3 py-2 text-center font-bold">
                             Nos.
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             154661
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             171573
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             145352
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             156220
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             190257
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             140924
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             151926
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             118000
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             113674
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             170864
                           </td>
                         </tr>
@@ -1569,37 +2319,37 @@ const StaticBUDashboard = () => {
                           <td className="border border-gray-300 px-3 py-2 text-center font-bold">
                             Nos.
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             40/40
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             1
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             2/2
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             3/3
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             0
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             1
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             0
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             0
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             2/2
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             3/3
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold sans-font bg-yellow-100">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font bg-yellow-100">
                             0
                           </td>
                         </tr>
@@ -1609,7 +2359,7 @@ const StaticBUDashboard = () => {
                 </div>
               )}
 
-              {/* Graphical View - Continuing with remaining modal content... */}
+              {/* Graphical View */}
               {viewMode === "graphical" && (
                 <div className="space-y-4">
                   {/* POCDSM Metric Tabs */}
@@ -1668,9 +2418,9 @@ const StaticBUDashboard = () => {
 
                   {/* Productivity Charts */}
                   {selectedMetric === "productivity" && (
-                    <div className="space-y-4">
+                    <div className="space-y-4 font-sans">
                       <h3 className="text-xl font-black text-blue-700 flex items-center gap-2">
-                        <span>📊</span>
+                        <Activity className="w-6 h-6" />
                         📊 Productivity Analytics
                       </h3>
                       <div className="grid grid-cols-2 gap-4">
@@ -1681,7 +2431,7 @@ const StaticBUDashboard = () => {
                           <h4
                             className={`text-lg font-black ${currentTheme.textPrimary} mb-3 flex items-center gap-2`}
                           >
-                            <span className="text-blue-600">📊</span>
+                            <Activity className="w-5 h-5 text-blue-600" />
                             📈 OEE Trend (%)
                           </h4>
                           <ResponsiveContainer width="100%" height={250}>
@@ -1762,7 +2512,7 @@ const StaticBUDashboard = () => {
                           <h4
                             className={`text-lg font-black ${currentTheme.textPrimary} mb-3 flex items-center gap-2`}
                           >
-                            <span className="text-cyan-600">🏭</span>
+                            <Factory className="w-5 h-5 text-cyan-600" />
                             🏭 Production/Hr (Nos.)
                           </h4>
                           <ResponsiveContainer width="100%" height={250}>
@@ -1840,7 +2590,7 @@ const StaticBUDashboard = () => {
                         <h4
                           className={`text-lg font-black ${currentTheme.textPrimary} mb-3 flex items-center gap-2`}
                         >
-                          <span className="text-indigo-600">👥</span>
+                          <Users className="w-5 h-5 text-indigo-600" />
                           👥 Output/Man/Day (Nos.)
                         </h4>
                         <ResponsiveContainer width="100%" height={280}>
@@ -1911,7 +2661,7 @@ const StaticBUDashboard = () => {
                           <p className="text-sm font-bold text-blue-700 mb-1">
                             Average OEE
                           </p>
-                          <p className="text-4xl font-black text-blue-600 sans-font">
+                          <p className="text-4xl font-black text-blue-600 mono-font">
                             73.2%
                           </p>
                           <p className="text-xs text-blue-600 mt-1">
@@ -1922,7 +2672,7 @@ const StaticBUDashboard = () => {
                           <p className="text-sm font-bold text-cyan-700 mb-1">
                             Avg Production/Hr
                           </p>
-                          <p className="text-4xl font-black text-cyan-600 sans-font">
+                          <p className="text-4xl font-black text-cyan-600 mono-font">
                             294
                           </p>
                           <p className="text-xs text-cyan-600 mt-1">
@@ -1933,7 +2683,7 @@ const StaticBUDashboard = () => {
                           <p className="text-sm font-bold text-indigo-700 mb-1">
                             Avg Output/Man
                           </p>
-                          <p className="text-4xl font-black text-indigo-600 sans-font">
+                          <p className="text-4xl font-black text-indigo-600 mono-font">
                             659
                           </p>
                           <p className="text-xs text-indigo-600 mt-1">
@@ -1944,15 +2694,879 @@ const StaticBUDashboard = () => {
                     </div>
                   )}
 
-                  {/* Remaining metric views would continue similarly... */}
-                  {/* For brevity, I'm showing the pattern is established */}
+                  {/* Quality Charts */}
+                  {selectedMetric === "quality" && (
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-black text-green-700 flex items-center gap-2">
+                        <CheckCircle className="w-6 h-6" />✨ Quality Analytics
+                      </h3>
+                      <div className="grid grid-cols-2 gap-4">
+                        {/* Rejection PPM */}
+                        <div
+                          className={`${currentTheme.bgSecondary} rounded-lg p-4 shadow-lg border-l-4 border-red-500`}
+                        >
+                          <h4
+                            className={`text-lg font-black ${currentTheme.textPrimary} mb-3 flex items-center gap-2`}
+                          >
+                            <ShieldAlert className="w-5 h-5 text-red-600" />
+                            🚨 In-house Rejection (PPM)
+                          </h4>
+                          <ResponsiveContainer width="100%" height={250}>
+                            <AreaChart
+                              data={[
+                                { month: "Apr", rejection: 7578, target: 6000 },
+                                { month: "May", rejection: 8353, target: 6000 },
+                                { month: "Jun", rejection: 8592, target: 6000 },
+                                { month: "Jul", rejection: 7908, target: 6000 },
+                                { month: "Aug", rejection: 5965, target: 6000 },
+                                { month: "Sep", rejection: 6874, target: 6000 },
+                                { month: "Oct", rejection: 7852, target: 6000 },
+                                { month: "Nov", rejection: 7998, target: 6000 },
+                                { month: "Dec", rejection: 8210, target: 6000 },
+                              ]}
+                              margin={{
+                                top: 10,
+                                right: 10,
+                                left: 0,
+                                bottom: 0,
+                              }}
+                            >
+                              <defs>
+                                <linearGradient
+                                  id="rejectionGrad"
+                                  x1="0"
+                                  y1="0"
+                                  x2="0"
+                                  y2="1"
+                                >
+                                  <stop
+                                    offset="5%"
+                                    stopColor="#ef4444"
+                                    stopOpacity={0.6}
+                                  />
+                                  <stop
+                                    offset="95%"
+                                    stopColor="#ef4444"
+                                    stopOpacity={0.1}
+                                  />
+                                </linearGradient>
+                              </defs>
+                              <CartesianGrid
+                                strokeDasharray="3 3"
+                                stroke="#e2e8f0"
+                              />
+                              <XAxis
+                                dataKey="month"
+                                stroke="#334155"
+                                style={{ fontSize: "12px", fontWeight: "600" }}
+                              />
+                              <YAxis
+                                stroke="#334155"
+                                style={{ fontSize: "12px", fontWeight: "600" }}
+                              />
+                              <Tooltip
+                                contentStyle={{
+                                  backgroundColor: "#ffffff",
+                                  border: "2px solid #ef4444",
+                                  borderRadius: "8px",
+                                  fontSize: "14px",
+                                  fontWeight: "bold",
+                                }}
+                              />
+                              <Legend
+                                wrapperStyle={{
+                                  fontSize: "12px",
+                                  fontWeight: "600",
+                                }}
+                              />
+                              <Area
+                                type="monotone"
+                                dataKey="rejection"
+                                fill="url(#rejectionGrad)"
+                                stroke="#ef4444"
+                                strokeWidth={3}
+                                name="Rejection PPM"
+                                isAnimationActive={false}
+                              />
+                              <Line
+                                type="monotone"
+                                dataKey="target"
+                                stroke="#10b981"
+                                strokeWidth={2}
+                                strokeDasharray="5 5"
+                                name="Target"
+                                isAnimationActive={false}
+                              />
+                            </AreaChart>
+                          </ResponsiveContainer>
+                        </div>
+
+                        {/* Customer Complaints */}
+                        <div
+                          className={`${currentTheme.bgSecondary} rounded-lg p-4 shadow-lg border-l-4 border-green-500`}
+                        >
+                          <h4
+                            className={`text-lg font-black ${currentTheme.textPrimary} mb-3 flex items-center gap-2`}
+                          >
+                            <ThumbsUp className="w-5 h-5 text-green-600" />
+                            😊 Customer Complaints (Nos.)
+                          </h4>
+                          <ResponsiveContainer width="100%" height={250}>
+                            <BarChart
+                              data={[
+                                { month: "Apr", complaints: 0, target: 0 },
+                                { month: "May", complaints: 0, target: 0 },
+                                { month: "Jun", complaints: 0, target: 0 },
+                                { month: "Jul", complaints: 0, target: 0 },
+                                { month: "Aug", complaints: 0, target: 0 },
+                                { month: "Sep", complaints: 0, target: 0 },
+                                { month: "Oct", complaints: 0, target: 0 },
+                                { month: "Nov", complaints: 0, target: 0 },
+                                { month: "Dec", complaints: 0, target: 0 },
+                              ]}
+                              margin={{
+                                top: 10,
+                                right: 10,
+                                left: 0,
+                                bottom: 0,
+                              }}
+                            >
+                              <CartesianGrid
+                                strokeDasharray="3 3"
+                                stroke="#e2e8f0"
+                              />
+                              <XAxis
+                                dataKey="month"
+                                stroke="#334155"
+                                style={{ fontSize: "12px", fontWeight: "600" }}
+                              />
+                              <YAxis
+                                stroke="#334155"
+                                style={{ fontSize: "12px", fontWeight: "600" }}
+                              />
+                              <Tooltip
+                                contentStyle={{
+                                  backgroundColor: "#ffffff",
+                                  border: "2px solid #10b981",
+                                  borderRadius: "8px",
+                                  fontSize: "14px",
+                                  fontWeight: "bold",
+                                }}
+                              />
+                              <Legend
+                                wrapperStyle={{
+                                  fontSize: "12px",
+                                  fontWeight: "600",
+                                }}
+                              />
+                              <Bar
+                                dataKey="complaints"
+                                fill="#10b981"
+                                name="Complaints"
+                                radius={[6, 6, 0, 0]}
+                                isAnimationActive={false}
+                              />
+                            </BarChart>
+                          </ResponsiveContainer>
+                          <div className="mt-4 text-center bg-green-100 rounded-lg p-3">
+                            <p className="text-2xl font-black text-green-700">
+                              ✓ EXCELLENT
+                            </p>
+                            <p className="text-sm text-green-600 font-bold">
+                              Zero Complaints Maintained
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Summary Cards */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-lg p-4 text-center border-2 border-red-300">
+                          <p className="text-sm font-bold text-red-700 mb-1">
+                            Avg Rejection PPM
+                          </p>
+                          <p className="text-4xl font-black text-red-600 mono-font">
+                            7703
+                          </p>
+                          <p className="text-xs text-red-600 mt-1">
+                            Target: 6000 PPM
+                          </p>
+                        </div>
+                        <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 text-center border-2 border-green-300">
+                          <p className="text-sm font-bold text-green-700 mb-1">
+                            Customer Complaints
+                          </p>
+                          <p className="text-4xl font-black text-green-600 mono-font">
+                            0
+                          </p>
+                          <p className="text-xs text-green-600 mt-1">
+                            Target: 0 Complaints
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Cost Charts */}
+                  {selectedMetric === "cost" && (
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-black text-amber-700 flex items-center gap-2">
+                        <IndianRupee className="w-6 h-6" />
+                        💰 Cost Analytics
+                      </h3>
+                      <div className="grid grid-cols-2 gap-4">
+                        {/* Rejection Cost */}
+                        <div
+                          className={`${currentTheme.bgSecondary} rounded-lg p-4 shadow-lg border-l-4 border-amber-500`}
+                        >
+                          <h4
+                            className={`text-lg font-black ${currentTheme.textPrimary} mb-3 flex items-center gap-2`}
+                          >
+                            <IndianRupee className="w-5 h-5 text-amber-600" />
+                            💰 Rejection Cost (Lacs)
+                          </h4>
+                          <ResponsiveContainer width="100%" height={250}>
+                            <ComposedChart
+                              data={[
+                                { month: "Apr", cost: 1.47, target: 0.76 },
+                                { month: "May", cost: 1.64, target: 0.76 },
+                                { month: "Jun", cost: 1.84, target: 0.76 },
+                                { month: "Jul", cost: 1.43, target: 0.76 },
+                                { month: "Aug", cost: 1.46, target: 0.76 },
+                                { month: "Sep", cost: 1.65, target: 0.76 },
+                                { month: "Oct", cost: 1.27, target: 0.76 },
+                                { month: "Nov", cost: 1.39, target: 0.76 },
+                                { month: "Dec", cost: 2.05, target: 0.76 },
+                              ]}
+                              margin={{
+                                top: 10,
+                                right: 10,
+                                left: 0,
+                                bottom: 0,
+                              }}
+                            >
+                              <CartesianGrid
+                                strokeDasharray="3 3"
+                                stroke="#e2e8f0"
+                              />
+                              <XAxis
+                                dataKey="month"
+                                stroke="#334155"
+                                style={{ fontSize: "12px", fontWeight: "600" }}
+                              />
+                              <YAxis
+                                stroke="#334155"
+                                style={{ fontSize: "12px", fontWeight: "600" }}
+                              />
+                              <Tooltip
+                                contentStyle={{
+                                  backgroundColor: "#ffffff",
+                                  border: "2px solid #f59e0b",
+                                  borderRadius: "8px",
+                                  fontSize: "14px",
+                                  fontWeight: "bold",
+                                }}
+                              />
+                              <Legend
+                                wrapperStyle={{
+                                  fontSize: "12px",
+                                  fontWeight: "600",
+                                }}
+                              />
+                              <Bar
+                                dataKey="cost"
+                                fill="#f59e0b"
+                                name="Cost (Lacs)"
+                                radius={[6, 6, 0, 0]}
+                                isAnimationActive={false}
+                              />
+                              <Line
+                                type="monotone"
+                                dataKey="target"
+                                stroke="#10b981"
+                                strokeWidth={2}
+                                strokeDasharray="5 5"
+                                name="Target"
+                                isAnimationActive={false}
+                              />
+                            </ComposedChart>
+                          </ResponsiveContainer>
+                        </div>
+
+                        {/* Drop Out % */}
+                        <div
+                          className={`${currentTheme.bgSecondary} rounded-lg p-4 shadow-lg border-l-4 border-orange-500`}
+                        >
+                          <h4
+                            className={`text-lg font-black ${currentTheme.textPrimary} mb-3 flex items-center gap-2`}
+                          >
+                            <TrendingDown className="w-5 h-5 text-orange-600" />
+                            📉 Drop Out % Trend
+                          </h4>
+                          <ResponsiveContainer width="100%" height={250}>
+                            <LineChart
+                              data={[
+                                { month: "Sep", dropout: 7.5, target: 5 },
+                                { month: "Oct", dropout: 7.9, target: 5 },
+                                { month: "Nov", dropout: 7.74, target: 5 },
+                                { month: "Dec", dropout: 8.52, target: 5 },
+                              ]}
+                              margin={{
+                                top: 10,
+                                right: 10,
+                                left: 0,
+                                bottom: 0,
+                              }}
+                            >
+                              <CartesianGrid
+                                strokeDasharray="3 3"
+                                stroke="#e2e8f0"
+                              />
+                              <XAxis
+                                dataKey="month"
+                                stroke="#334155"
+                                style={{ fontSize: "12px", fontWeight: "600" }}
+                              />
+                              <YAxis
+                                stroke="#334155"
+                                style={{ fontSize: "12px", fontWeight: "600" }}
+                              />
+                              <Tooltip
+                                contentStyle={{
+                                  backgroundColor: "#ffffff",
+                                  border: "2px solid #f97316",
+                                  borderRadius: "8px",
+                                  fontSize: "14px",
+                                  fontWeight: "bold",
+                                }}
+                              />
+                              <Legend
+                                wrapperStyle={{
+                                  fontSize: "12px",
+                                  fontWeight: "600",
+                                }}
+                              />
+                              <Line
+                                type="monotone"
+                                dataKey="dropout"
+                                stroke="#f97316"
+                                strokeWidth={3}
+                                name="Drop Out %"
+                                isAnimationActive={false}
+                              />
+                              <Line
+                                type="monotone"
+                                dataKey="target"
+                                stroke="#10b981"
+                                strokeWidth={2}
+                                strokeDasharray="5 5"
+                                name="Target"
+                                isAnimationActive={false}
+                              />
+                            </LineChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </div>
+
+                      {/* Summary Cards */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-lg p-4 text-center border-2 border-amber-300">
+                          <p className="text-sm font-bold text-amber-700 mb-1">
+                            Avg Rejection Cost
+                          </p>
+                          <p className="text-4xl font-black text-amber-600 mono-font">
+                            ₹1.52L
+                          </p>
+                          <p className="text-xs text-amber-600 mt-1">
+                            Target: ₹0.76L
+                          </p>
+                        </div>
+                        <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-4 text-center border-2 border-orange-300">
+                          <p className="text-sm font-bold text-orange-700 mb-1">
+                            Avg Drop Out %
+                          </p>
+                          <p className="text-4xl font-black text-orange-600 mono-font">
+                            7.9%
+                          </p>
+                          <p className="text-xs text-orange-600 mt-1">
+                            Target: 5%
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Delivery Charts */}
+                  {selectedMetric === "delivery" && (
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-black text-cyan-700 flex items-center gap-2">
+                        <Package className="w-6 h-6" />
+                        📦 Delivery Performance Analytics
+                      </h3>
+
+                      {/* Production Plan vs Actual */}
+                      <div
+                        className={`${currentTheme.bgSecondary} rounded-lg p-4 shadow-lg border-l-4 border-cyan-500`}
+                      >
+                        <h4
+                          className={`text-lg font-black ${currentTheme.textPrimary} mb-3 flex items-center gap-2`}
+                        >
+                          <Package className="w-5 h-5 text-cyan-600" />
+                          📦 Production Plan vs Actual (000's)
+                        </h4>
+                        <ResponsiveContainer width="100%" height={320}>
+                          <ComposedChart
+                            data={[
+                              { month: "Apr", plan: 160, actual: 171.573 },
+                              { month: "May", plan: 160, actual: 145.352 },
+                              { month: "Jun", plan: 160, actual: 156.22 },
+                              { month: "Jul", plan: 160, actual: 190.257 },
+                              { month: "Aug", plan: 140.8, actual: 140.924 },
+                              { month: "Sep", plan: 154, actual: 151.926 },
+                              { month: "Oct", plan: 140, actual: 118.0 },
+                              { month: "Nov", plan: 140, actual: 113.674 },
+                              { month: "Dec", plan: 170, actual: 170.864 },
+                            ]}
+                            margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+                          >
+                            <CartesianGrid
+                              strokeDasharray="3 3"
+                              stroke="#e2e8f0"
+                            />
+                            <XAxis
+                              dataKey="month"
+                              stroke="#334155"
+                              style={{ fontSize: "12px", fontWeight: "600" }}
+                            />
+                            <YAxis
+                              stroke="#334155"
+                              style={{ fontSize: "12px", fontWeight: "600" }}
+                            />
+                            <Tooltip
+                              contentStyle={{
+                                backgroundColor: "#ffffff",
+                                border: "2px solid #06b6d4",
+                                borderRadius: "8px",
+                                fontSize: "14px",
+                                fontWeight: "bold",
+                              }}
+                            />
+                            <Legend
+                              wrapperStyle={{
+                                fontSize: "12px",
+                                fontWeight: "600",
+                              }}
+                            />
+                            <Bar
+                              dataKey="plan"
+                              fill="#3b82f6"
+                              name="Plan (000's)"
+                              radius={[4, 4, 0, 0]}
+                              isAnimationActive={false}
+                            />
+                            <Bar
+                              dataKey="actual"
+                              fill="#06b6d4"
+                              name="Actual (000's)"
+                              radius={[4, 4, 0, 0]}
+                              isAnimationActive={false}
+                            />
+                            <Line
+                              type="monotone"
+                              dataKey="actual"
+                              stroke="#059669"
+                              strokeWidth={3}
+                              name="Actual Trend"
+                              isAnimationActive={false}
+                            />
+                          </ComposedChart>
+                        </ResponsiveContainer>
+                      </div>
+
+                      {/* Achievement % */}
+                      <div
+                        className={`${currentTheme.bgSecondary} rounded-lg p-4 shadow-lg border-l-4 border-green-500`}
+                      >
+                        <h4
+                          className={`text-lg font-black ${currentTheme.textPrimary} mb-3 flex items-center gap-2`}
+                        >
+                          <TrendingUp className="w-5 h-5 text-green-600" />
+                          📈 Monthly Achievement %
+                        </h4>
+                        <ResponsiveContainer width="100%" height={280}>
+                          <AreaChart
+                            data={[
+                              { month: "Apr", achievement: 107.2 },
+                              { month: "May", achievement: 90.8 },
+                              { month: "Jun", achievement: 97.6 },
+                              { month: "Jul", achievement: 118.9 },
+                              { month: "Aug", achievement: 100.1 },
+                              { month: "Sep", achievement: 98.7 },
+                              { month: "Oct", achievement: 84.3 },
+                              { month: "Nov", achievement: 81.2 },
+                              { month: "Dec", achievement: 100.5 },
+                            ]}
+                            margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+                          >
+                            <defs>
+                              <linearGradient
+                                id="achievementGrad"
+                                x1="0"
+                                y1="0"
+                                x2="0"
+                                y2="1"
+                              >
+                                <stop
+                                  offset="5%"
+                                  stopColor="#10b981"
+                                  stopOpacity={0.6}
+                                />
+                                <stop
+                                  offset="95%"
+                                  stopColor="#10b981"
+                                  stopOpacity={0.1}
+                                />
+                              </linearGradient>
+                            </defs>
+                            <CartesianGrid
+                              strokeDasharray="3 3"
+                              stroke="#e2e8f0"
+                            />
+                            <XAxis
+                              dataKey="month"
+                              stroke="#334155"
+                              style={{ fontSize: "12px", fontWeight: "600" }}
+                            />
+                            <YAxis
+                              stroke="#334155"
+                              style={{ fontSize: "12px", fontWeight: "600" }}
+                              domain={[0, 130]}
+                            />
+                            <Tooltip
+                              contentStyle={{
+                                backgroundColor: "#ffffff",
+                                border: "2px solid #10b981",
+                                borderRadius: "8px",
+                                fontSize: "14px",
+                                fontWeight: "bold",
+                              }}
+                            />
+                            <Legend
+                              wrapperStyle={{
+                                fontSize: "12px",
+                                fontWeight: "600",
+                              }}
+                            />
+                            <Area
+                              type="monotone"
+                              dataKey="achievement"
+                              fill="url(#achievementGrad)"
+                              stroke="#10b981"
+                              strokeWidth={3}
+                              name="Achievement %"
+                              isAnimationActive={false}
+                            />
+                          </AreaChart>
+                        </ResponsiveContainer>
+                      </div>
+
+                      {/* Summary Cards */}
+                      <div className="grid grid-cols-3 gap-3">
+                        <div className="bg-gradient-to-br from-cyan-50 to-cyan-100 rounded-lg p-4 text-center border-2 border-cyan-300">
+                          <p className="text-sm font-bold text-cyan-700 mb-1">
+                            Total Plan
+                          </p>
+                          <p className="text-4xl font-black text-cyan-600 mono-font">
+                            1.38M
+                          </p>
+                          <p className="text-xs text-cyan-600 mt-1">Units</p>
+                        </div>
+                        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 text-center border-2 border-blue-300">
+                          <p className="text-sm font-bold text-blue-700 mb-1">
+                            Total Actual
+                          </p>
+                          <p className="text-4xl font-black text-blue-600 mono-font">
+                            1.36M
+                          </p>
+                          <p className="text-xs text-blue-600 mt-1">Units</p>
+                        </div>
+                        <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 text-center border-2 border-green-300">
+                          <p className="text-sm font-bold text-green-700 mb-1">
+                            Avg Achievement
+                          </p>
+                          <p className="text-4xl font-black text-green-600 mono-font">
+                            97.7%
+                          </p>
+                          <p className="text-xs text-green-600 mt-1">
+                            On Target
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Morale Charts */}
+                  {selectedMetric === "morale" && (
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-black text-purple-700 flex items-center gap-2">
+                        <Activity className="w-6 h-6" />
+                        😊 Safety & Morale Analytics
+                      </h3>
+
+                      {/* Unsafe Acts Trend */}
+                      <div
+                        className={`${currentTheme.bgSecondary} rounded-lg p-4 shadow-lg border-l-4 border-purple-500`}
+                      >
+                        <h4
+                          className={`text-lg font-black ${currentTheme.textPrimary} mb-3 flex items-center gap-2`}
+                        >
+                          <ShieldAlert className="w-5 h-5 text-purple-600" />
+                          🔒 Unsafe Acts Identified (Nos.)
+                        </h4>
+                        <ResponsiveContainer width="100%" height={300}>
+                          <ComposedChart
+                            data={[
+                              {
+                                month: "Apr",
+                                identified: 1,
+                                corrected: 1,
+                                target: 0,
+                              },
+                              {
+                                month: "May",
+                                identified: 2,
+                                corrected: 2,
+                                target: 0,
+                              },
+                              {
+                                month: "Jun",
+                                identified: 3,
+                                corrected: 3,
+                                target: 0,
+                              },
+                              {
+                                month: "Jul",
+                                identified: 0,
+                                corrected: 0,
+                                target: 0,
+                              },
+                              {
+                                month: "Aug",
+                                identified: 1,
+                                corrected: 1,
+                                target: 0,
+                              },
+                              {
+                                month: "Sep",
+                                identified: 0,
+                                corrected: 0,
+                                target: 0,
+                              },
+                              {
+                                month: "Oct",
+                                identified: 0,
+                                corrected: 0,
+                                target: 0,
+                              },
+                              {
+                                month: "Nov",
+                                identified: 2,
+                                corrected: 2,
+                                target: 0,
+                              },
+                              {
+                                month: "Dec",
+                                identified: 3,
+                                corrected: 3,
+                                target: 0,
+                              },
+                            ]}
+                            margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+                          >
+                            <CartesianGrid
+                              strokeDasharray="3 3"
+                              stroke="#e2e8f0"
+                            />
+                            <XAxis
+                              dataKey="month"
+                              stroke="#334155"
+                              style={{ fontSize: "12px", fontWeight: "600" }}
+                            />
+                            <YAxis
+                              stroke="#334155"
+                              style={{ fontSize: "12px", fontWeight: "600" }}
+                            />
+                            <Tooltip
+                              contentStyle={{
+                                backgroundColor: "#ffffff",
+                                border: "2px solid #8b5cf6",
+                                borderRadius: "8px",
+                                fontSize: "14px",
+                                fontWeight: "bold",
+                              }}
+                            />
+                            <Legend
+                              wrapperStyle={{
+                                fontSize: "12px",
+                                fontWeight: "600",
+                              }}
+                            />
+                            <Bar
+                              dataKey="identified"
+                              fill="#8b5cf6"
+                              name="Identified"
+                              radius={[6, 6, 0, 0]}
+                              isAnimationActive={false}
+                            />
+                            <Bar
+                              dataKey="corrected"
+                              fill="#10b981"
+                              name="Corrected"
+                              radius={[6, 6, 0, 0]}
+                              isAnimationActive={false}
+                            />
+                            <Line
+                              type="monotone"
+                              dataKey="target"
+                              stroke="#ef4444"
+                              strokeWidth={2}
+                              strokeDasharray="5 5"
+                              name="Target"
+                              isAnimationActive={false}
+                            />
+                          </ComposedChart>
+                        </ResponsiveContainer>
+                      </div>
+
+                      {/* Safety Performance */}
+                      <div className="grid grid-cols-2 gap-4">
+                        <div
+                          className={`${currentTheme.bgSecondary} rounded-lg p-4 shadow-lg border-l-4 border-green-500`}
+                        >
+                          <h4
+                            className={`text-lg font-black ${currentTheme.textPrimary} mb-3 flex items-center gap-2`}
+                          >
+                            <CheckCircle className="w-5 h-5 text-green-600" />✓
+                            Correction Rate
+                          </h4>
+                          <div className="text-center py-8">
+                            <p className="text-7xl font-black text-green-600 mono-font">
+                              100%
+                            </p>
+                            <p className="text-lg font-bold text-green-700 mt-3">
+                              All Unsafe Acts Corrected
+                            </p>
+                            <div className="mt-4 bg-green-100 rounded-lg p-3">
+                              <p className="text-sm text-green-700 font-bold">
+                                Excellent Safety Culture
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div
+                          className={`${currentTheme.bgSecondary} rounded-lg p-4 shadow-lg border-l-4 border-blue-500`}
+                        >
+                          <h4
+                            className={`text-lg font-black ${currentTheme.textPrimary} mb-3 flex items-center gap-2`}
+                          >
+                            <Activity className="w-5 h-5 text-blue-600" />
+                            📊 Monthly Comparison
+                          </h4>
+                          <ResponsiveContainer width="100%" height={200}>
+                            <BarChart
+                              data={[
+                                { month: "Q1", acts: 6 },
+                                { month: "Q2", acts: 1 },
+                                { month: "Q3", acts: 0 },
+                                { month: "Q4", acts: 5 },
+                              ]}
+                              margin={{
+                                top: 10,
+                                right: 10,
+                                left: 0,
+                                bottom: 0,
+                              }}
+                            >
+                              <CartesianGrid
+                                strokeDasharray="3 3"
+                                stroke="#e2e8f0"
+                              />
+                              <XAxis
+                                dataKey="month"
+                                stroke="#334155"
+                                style={{ fontSize: "12px", fontWeight: "600" }}
+                              />
+                              <YAxis
+                                stroke="#334155"
+                                style={{ fontSize: "12px", fontWeight: "600" }}
+                              />
+                              <Tooltip
+                                contentStyle={{
+                                  backgroundColor: "#ffffff",
+                                  border: "2px solid #3b82f6",
+                                  borderRadius: "8px",
+                                  fontSize: "14px",
+                                  fontWeight: "bold",
+                                }}
+                              />
+                              <Bar
+                                dataKey="acts"
+                                fill="#3b82f6"
+                                name="Unsafe Acts"
+                                radius={[6, 6, 0, 0]}
+                                isAnimationActive={false}
+                              />
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </div>
+
+                      {/* Summary Cards */}
+                      <div className="grid grid-cols-3 gap-3">
+                        <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 text-center border-2 border-purple-300">
+                          <p className="text-sm font-bold text-purple-700 mb-1">
+                            Total Identified
+                          </p>
+                          <p className="text-4xl font-black text-purple-600 mono-font">
+                            12
+                          </p>
+                          <p className="text-xs text-purple-600 mt-1">
+                            Unsafe Acts
+                          </p>
+                        </div>
+                        <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 text-center border-2 border-green-300">
+                          <p className="text-sm font-bold text-green-700 mb-1">
+                            Total Corrected
+                          </p>
+                          <p className="text-4xl font-black text-green-600 mono-font">
+                            12
+                          </p>
+                          <p className="text-xs text-green-600 mt-1">
+                            100% Closure
+                          </p>
+                        </div>
+                        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 text-center border-2 border-blue-300">
+                          <p className="text-sm font-bold text-blue-700 mb-1">
+                            Target
+                          </p>
+                          <p className="text-4xl font-black text-blue-600 mono-font">
+                            0
+                          </p>
+                          <p className="text-xs text-blue-600 mt-1">
+                            Unsafe Acts
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
               {/* Footer Note */}
               <div className="text-xs text-gray-600 italic mt-2 text-center">
                 * Switch between Table and Graphical views • Select different
-                PQCDSM metrics for detailed analysis
+                POCDSM metrics for detailed analysis
               </div>
             </div>
           );
@@ -2251,6 +3865,277 @@ const StaticBUDashboard = () => {
             </div>
           );
 
+        case "customer":
+          return (
+            <div className="space-y-4">
+              <h2
+                className={`text-2xl font-black ${currentTheme.textPrimary} mb-4`}
+              >
+                😊 Customer Satisfaction - Score Analysis
+              </h2>
+
+              {/* Summary Card */}
+              <div className="grid grid-cols-4 gap-4 mb-4">
+                <div
+                  className={`${currentTheme.bgSecondary} rounded-lg p-4 border-l-4 border-green-500 col-span-1`}
+                >
+                  <h4
+                    className={`text-sm font-semibold ${currentTheme.textSecondary} mb-2`}
+                  >
+                    Overall Score
+                  </h4>
+                  <p className={`text-6xl font-bold text-green-600 mono-font`}>
+                    {staticData.customer.overallScore}
+                  </p>
+                  <p className="text-sm font-bold text-green-600 mt-1">
+                    Excellent
+                  </p>
+                </div>
+                <div className={`col-span-3 grid grid-cols-3 gap-4`}>
+                  <div
+                    className={`${currentTheme.bgSecondary} rounded-lg p-4 border-l-4 border-blue-500`}
+                  >
+                    <h4
+                      className={`text-sm font-semibold ${currentTheme.textSecondary} mb-2`}
+                    >
+                      Avg Quality Score
+                    </h4>
+                    <p className={`text-4xl font-bold text-blue-600 mono-font`}>
+                      {(
+                        staticData.customer.scores.reduce(
+                          (sum, c) => sum + c.quality,
+                          0
+                        ) / staticData.customer.scores.length
+                      ).toFixed(1)}
+                    </p>
+                  </div>
+                  <div
+                    className={`${currentTheme.bgSecondary} rounded-lg p-4 border-l-4 border-cyan-500`}
+                  >
+                    <h4
+                      className={`text-sm font-semibold ${currentTheme.textSecondary} mb-2`}
+                    >
+                      Avg Delivery Score
+                    </h4>
+                    <p className={`text-4xl font-bold text-cyan-600 mono-font`}>
+                      {(
+                        staticData.customer.scores.reduce(
+                          (sum, c) => sum + c.delivery,
+                          0
+                        ) / staticData.customer.scores.length
+                      ).toFixed(1)}
+                    </p>
+                  </div>
+                  <div
+                    className={`${currentTheme.bgSecondary} rounded-lg p-4 border-l-4 border-purple-500`}
+                  >
+                    <h4
+                      className={`text-sm font-semibold ${currentTheme.textSecondary} mb-2`}
+                    >
+                      Avg Support Score
+                    </h4>
+                    <p
+                      className={`text-4xl font-bold text-purple-600 mono-font`}
+                    >
+                      {(
+                        staticData.customer.scores.reduce(
+                          (sum, c) => sum + c.support,
+                          0
+                        ) / staticData.customer.scores.length
+                      ).toFixed(1)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Chart and Table */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className={`${currentTheme.bgSecondary} rounded-lg p-4`}>
+                  <h4
+                    className={`text-base font-bold ${currentTheme.textPrimary} mb-3`}
+                  >
+                    📊 Customer-wise Overall Scores
+                  </h4>
+                  <ResponsiveContainer width="100%" height={280}>
+                    <BarChart
+                      data={staticData.customer.scores}
+                      margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                      <XAxis
+                        dataKey="name"
+                        stroke="#334155"
+                        style={{ fontSize: "11px", fontWeight: "600" }}
+                        angle={-15}
+                        textAnchor="end"
+                        height={80}
+                      />
+                      <YAxis
+                        stroke="#334155"
+                        style={{ fontSize: "13px", fontWeight: "600" }}
+                        domain={[0, 100]}
+                      />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: "#ffffff",
+                          border: "2px solid #10b981",
+                          borderRadius: "8px",
+                          fontSize: "14px",
+                          fontWeight: "bold",
+                        }}
+                      />
+                      <Bar
+                        dataKey="overall"
+                        fill="#10b981"
+                        name="Overall Score"
+                        radius={[6, 6, 0, 0]}
+                        isAnimationActive={false}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+
+                {/* Customer Scores Table */}
+                <div className={`${currentTheme.bgSecondary} rounded-lg p-4`}>
+                  <h4
+                    className={`text-base font-bold ${currentTheme.textPrimary} mb-3`}
+                  >
+                    📋 Detailed Scores by Category
+                  </h4>
+                  <div className="overflow-auto max-h-[280px]">
+                    <table className="w-full text-sm">
+                      <thead className="bg-gradient-to-r from-green-100 to-emerald-100 sticky top-0">
+                        <tr>
+                          <th className="px-3 py-2 text-left font-black text-gray-700">
+                            Customer
+                          </th>
+                          <th className="px-3 py-2 text-right font-black text-gray-700">
+                            Quality
+                          </th>
+                          <th className="px-3 py-2 text-right font-black text-gray-700">
+                            Delivery
+                          </th>
+                          <th className="px-3 py-2 text-right font-black text-gray-700">
+                            Support
+                          </th>
+                          <th className="px-3 py-2 text-right font-black text-gray-700">
+                            Overall
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {staticData.customer.scores.map((customer, idx) => (
+                          <tr
+                            key={idx}
+                            className={
+                              idx % 2 === 0 ? "bg-white" : "bg-gray-50"
+                            }
+                          >
+                            <td className="px-3 py-2 font-bold text-gray-800">
+                              {customer.name}
+                            </td>
+                            <td className="px-3 py-2 text-right font-bold text-blue-600 mono-font">
+                              {customer.quality}
+                            </td>
+                            <td className="px-3 py-2 text-right font-bold text-cyan-600 mono-font">
+                              {customer.delivery}
+                            </td>
+                            <td className="px-3 py-2 text-right font-bold text-purple-600 mono-font">
+                              {customer.support}
+                            </td>
+                            <td className="px-3 py-2 text-right">
+                              <span
+                                className={`px-2 py-1 rounded font-black mono-font ${
+                                  customer.overall >= 95
+                                    ? "bg-green-200 text-green-800"
+                                    : customer.overall >= 90
+                                    ? "bg-emerald-200 text-emerald-800"
+                                    : customer.overall >= 85
+                                    ? "bg-cyan-200 text-cyan-800"
+                                    : "bg-amber-200 text-amber-800"
+                                }`}
+                              >
+                                {customer.overall}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              {/* Detailed Multi-metric Chart */}
+              <div className={`${currentTheme.bgSecondary} rounded-lg p-4`}>
+                <h4
+                  className={`text-base font-bold ${currentTheme.textPrimary} mb-3`}
+                >
+                  📈 Customer Performance Comparison
+                </h4>
+                <ResponsiveContainer width="100%" height={250}>
+                  <ComposedChart
+                    data={staticData.customer.scores}
+                    margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                    <XAxis
+                      dataKey="name"
+                      stroke="#334155"
+                      style={{ fontSize: "13px", fontWeight: "600" }}
+                    />
+                    <YAxis
+                      stroke="#334155"
+                      style={{ fontSize: "13px", fontWeight: "600" }}
+                      domain={[0, 100]}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "#ffffff",
+                        border: "2px solid #10b981",
+                        borderRadius: "8px",
+                        fontSize: "14px",
+                        fontWeight: "bold",
+                      }}
+                    />
+                    <Legend
+                      wrapperStyle={{ fontSize: "13px", fontWeight: "600" }}
+                    />
+                    <Bar
+                      dataKey="quality"
+                      fill="#3b82f6"
+                      name="Quality"
+                      radius={[4, 4, 0, 0]}
+                      isAnimationActive={false}
+                    />
+                    <Bar
+                      dataKey="delivery"
+                      fill="#06b6d4"
+                      name="Delivery"
+                      radius={[4, 4, 0, 0]}
+                      isAnimationActive={false}
+                    />
+                    <Bar
+                      dataKey="support"
+                      fill="#8b5cf6"
+                      name="Support"
+                      radius={[4, 4, 0, 0]}
+                      isAnimationActive={false}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="overall"
+                      stroke="#10b981"
+                      strokeWidth={3}
+                      name="Overall"
+                      isAnimationActive={false}
+                    />
+                  </ComposedChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          );
+
         case "cost": {
           return (
             <div className="space-y-4">
@@ -2310,7 +4195,7 @@ const StaticBUDashboard = () => {
 
                       <div className="mt-2 bg-red-100 rounded p-2 text-center">
                         <p className="text-base font-black text-red-700 mono-font">
-                          +{data.variance.toFixed(1)}% Var
+                          +45% Var
                         </p>
                       </div>
                     </div>
@@ -5147,12 +7032,11 @@ const StaticBUDashboard = () => {
             </div>
             <div className="text-center bg-gradient-to-br from-blue-50 to-cyan-100 rounded-lg p-2">
               <p className="text-[10px] font-bold text-gray-600 mb-0.5">PLAN</p>
+
               <p
                 className={`text-3xl font-black text-blue-600 sans-font leading-tight`}
               >
-                {cardType === "sales" || cardType === "cost" ? "₹" : ""}
-                {plan}
-                {cardType === "power" ? "%" : ""}
+                99
               </p>
             </div>
           </div>
@@ -5163,19 +7047,11 @@ const StaticBUDashboard = () => {
               <span className="text-xs font-bold text-gray-700">
                 Achievement
               </span>
-              <span
-                className={`text-xl font-black ${
-                  percentage >= 100
-                    ? "text-green-600"
-                    : percentage >= 90
-                    ? "text-amber-600"
-                    : "text-red-600"
-                } sans-font`}
-              >
-                {percentage.toFixed(1)}%
+              <span className={`text-xl font-black "text-green-600" sans-font`}>
+                95.4%
               </span>
             </div>
-            <div className="relative w-full bg-gray-200 rounded-full h-3">
+            <div className="relative w-full bg-green-500 rounded-full h-3">
               <div
                 className={`h-3 rounded-full ${
                   percentage >= 100
@@ -5208,8 +7084,7 @@ const StaticBUDashboard = () => {
                   actual >= plan ? "text-green-600" : "text-red-600"
                 } sans-font`}
               >
-                {actual >= plan ? "+" : ""}
-                {(actual - plan).toFixed(cardType === "cost" ? 2 : 0)}
+                45
               </p>
             </div>
             <div
@@ -5291,19 +7166,24 @@ const StaticBUDashboard = () => {
           currentTheme.shimmer
         }; }
       `}</style>
+      {/* Header */}
 
-      {/* Header */}
-      {/* Header */}
       <div className="mb-1.5">
         <div className="flex items-center justify-between mb-1">
           <div>
             <h1
               className={`text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r ${currentTheme.headerGradient} sans-font leading-tight`}
             >
-              {selectedLine || selectedPlant || currentBU.name} DASHBOARD
+              {selectedLine || selectedPlant || currentBU.name}
             </h1>
           </div>
           <div className="flex items-center gap-3">
+            {/* Title above Daily/MTD/YTD */}
+            <div className="text-center">
+              <p className={`text-sm font-black ${currentTheme.textPrimary}`}>
+                All cost value in CR
+              </p>
+            </div>
             <div
               className={`flex gap-1 ${currentTheme.bgSecondary} p-1 rounded`}
             >
@@ -5319,19 +7199,6 @@ const StaticBUDashboard = () => {
                   theme === "dark" && "active"
                 }`}
               ></button>
-            </div>
-            <div className="text-right">
-              <div className="flex items-center gap-1 justify-end">
-                <div className="w-1.5 h-1.5 bg-green-500 rounded-full pulse-dot"></div>
-                <span className="text-green-500 text-xs font-bold uppercase">
-                  LIVE
-                </span>
-              </div>
-              <div
-                className={`${currentTheme.textPrimary} text-base font-black sans-font leading-tight`}
-              >
-                {currentTime.toLocaleTimeString("en-US", { hour12: false })}
-              </div>
             </div>
           </div>
         </div>
@@ -5350,7 +7217,7 @@ const StaticBUDashboard = () => {
                   : `${currentTheme.bgSecondary} ${currentTheme.textSecondary}`
               }`}
             >
-              KTFL Grp
+              KTFL Group
             </button>
             {Object.keys(buConfig)
               .filter((k) => k !== "overview")
@@ -5555,18 +7422,40 @@ const StaticBUDashboard = () => {
           >
             ✨ Quality
           </h3>
-          <div className="grid grid-cols-2 gap-1.5">
+
+          {/* ✅ Row 1: Scrap + Yield */}
+          <div className="grid grid-cols-2 gap-1.5 mb-2">
             <div className="text-center">
-              <p className={`text-2xl font-black text-red-500 sans-font`}>
-                {staticData.quality.daily.scrap}%
-              </p>
+              <p className="text-2xl font-black text-red-500 sans-font">2.1%</p>
               <p className="text-[9px] font-bold text-red-500">Scrap</p>
             </div>
+
             <div className="text-center">
-              <p className={`text-2xl font-black text-green-600 sans-font`}>
-                {staticData.quality.daily.yield}%
+              <p className="text-2xl font-black text-green-600 sans-font">
+                97.9%
               </p>
               <p className="text-[9px] font-bold text-green-600">Yield</p>
+            </div>
+          </div>
+
+          {/* ✅ Row 2: In House Rejection + Customer Complain */}
+          <div className="grid grid-cols-2 gap-1.5">
+            <div className="text-center">
+              <p className="text-xl font-black text-orange-500 sans-font">
+                1.2%
+              </p>
+              <p className="text-[9px] font-bold text-orange-500">
+                In House Rejection
+              </p>
+            </div>
+
+            <div className="text-center">
+              <p className="text-xl font-black text-purple-600 sans-font">
+                0.4%
+              </p>
+              <p className="text-[9px] font-bold text-purple-600">
+                Customer Complain
+              </p>
             </div>
           </div>
         </div>
@@ -5578,13 +7467,33 @@ const StaticBUDashboard = () => {
           >
             🎯 OpEx
           </h3>
-          <div className="text-center">
+
+          {/* Overall Score */}
+          <div className="text-center mb-2">
             <p
               className={`text-3xl font-black ${currentTheme.textPrimary} sans-font`}
             >
               88
             </p>
             <p className="text-[10px] font-bold text-blue-500">Score</p>
+          </div>
+
+          {/* ✅ BU Heads */}
+          <div className="grid grid-cols-3 gap-1.5">
+            <div className="text-center">
+              <p className="text-lg font-black text-green-600 sans-font">82</p>
+              <p className="text-[9px] font-bold text-green-600">BU Head 1</p>
+            </div>
+
+            <div className="text-center">
+              <p className="text-lg font-black text-orange-500 sans-font">87</p>
+              <p className="text-[9px] font-bold text-orange-500">BU Head 2</p>
+            </div>
+
+            <div className="text-center">
+              <p className="text-lg font-black text-purple-600 sans-font">91</p>
+              <p className="text-[9px] font-bold text-purple-600">BU Head 3</p>
+            </div>
           </div>
         </div>
 
@@ -5599,11 +7508,40 @@ const StaticBUDashboard = () => {
           >
             🔧 Maint
           </h3>
-          <div className="text-center">
-            <p className={`text-3xl font-black text-amber-500 sans-font`}>3</p>
-            <p className="text-[10px] font-bold text-amber-500">Open</p>
+
+          {/* ✅ Added Metrics */}
+          <div className="grid grid-cols-2 gap-1.5">
+            <div className="text-center">
+              <p className="text-lg font-black text-red-500 sans-font">4.5%</p>
+              <p className="text-[9px] font-bold text-red-500">Breakdown %</p>
+            </div>
+
+            <div className="text-center">
+              <p className="text-lg font-black text-green-600 sans-font">
+                2.3 H
+              </p>
+              <p className="text-[9px] font-bold text-green-600">MTTR</p>
+            </div>
+
+            <div className="text-center">
+              <p className="text-lg font-black text-blue-600 sans-font">
+                120 H
+              </p>
+              <p className="text-[9px] font-bold text-blue-600">MTBF</p>
+            </div>
+
+            <div className="text-center">
+              <p className="text-lg font-black text-purple-600 sans-font">
+                6.8%
+              </p>
+              <p className="text-[9px] font-bold text-purple-600">
+                Maint Cost %
+              </p>
+            </div>
           </div>
-          <p className="text-[9px] text-center text-blue-600 font-bold mt-1">
+
+          {/* PM Pillar */}
+          <p className="text-[9px] text-center text-blue-600 font-bold mt-2">
             PM Pillar →
           </p>
         </div>
@@ -5765,6 +7703,7 @@ const StaticBUDashboard = () => {
       {/* Row 3 */}
       <div className="grid grid-cols-5 gap-1.5 mb-1.5">
         {/* Inventory */}
+        {/* Inventory */}
         <div
           className="metric-card rounded-lg p-2"
           onClick={() =>
@@ -5777,22 +7716,59 @@ const StaticBUDashboard = () => {
           >
             📦 Inventory
           </h3>
-          <div className="grid grid-cols-2 gap-1.5">
-            <div className="text-center bg-gradient-to-br from-cyan-50 to-blue-100 rounded p-1">
-              <p className={`text-2xl font-black text-cyan-600 sans-font`}>
+          <div className="grid grid-cols-2 gap-2 mb-2">
+            <div className="text-center bg-gradient-to-br from-cyan-50 to-blue-100 rounded p-2">
+              <p
+                className={`text-3xl font-black text-cyan-600 sans-font mb-0.5`}
+              >
                 {staticData.inventory.turnAroundRatio}
               </p>
-              <p className="text-[9px] font-bold text-cyan-600">Ratio</p>
+              <p className="text-[10px] font-bold text-cyan-600 leading-tight">
+                ITR - Days
+              </p>
             </div>
-            <div className="text-center bg-gradient-to-br from-purple-50 to-pink-100 rounded p-1">
-              <p className={`text-2xl font-black text-purple-600 sans-font`}>
+            <div className="text-center bg-gradient-to-br from-purple-50 to-pink-100 rounded p-2">
+              <p
+                className={`text-3xl font-black text-purple-600 sans-font mb-0.5`}
+              >
                 {staticData.inventory.turnAroundDays}
               </p>
-              <p className="text-[9px] font-bold text-purple-600">Days</p>
+              <p className="text-[10px] font-bold text-purple-600 leading-tight">
+                Days
+              </p>
+            </div>
+          </div>
+
+          {/* Additional Inventory Metrics */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between items-center bg-gradient-to-r from-blue-50 to-indigo-50 rounded px-2 py-1.5">
+              <span className="text-[10px] font-bold text-gray-600">
+                Raw Material
+              </span>
+              <span className="text-sm font-black text-blue-600 sans-font">
+                420
+              </span>
+            </div>
+
+            <div className="flex justify-between items-center bg-gradient-to-r from-green-50 to-emerald-50 rounded px-2 py-1.5">
+              <span className="text-[10px] font-bold text-gray-600">
+                Work in Progress
+              </span>
+              <span className="text-sm font-black text-green-600 sans-font">
+                78%
+              </span>
+            </div>
+
+            <div className="flex justify-between items-center bg-gradient-to-r from-orange-50 to-amber-50 rounded px-2 py-1.5">
+              <span className="text-[10px] font-bold text-gray-600">
+                Finished Goods
+              </span>
+              <span className="text-sm font-black text-orange-600 sans-font">
+                7000
+              </span>
             </div>
           </div>
         </div>
-
         {/* Customer */}
         <div
           className="metric-card rounded-lg p-2"
@@ -5803,26 +7779,44 @@ const StaticBUDashboard = () => {
           >
             😊 Customer
           </h3>
-          <div className="text-center mb-1">
-            <p className={`text-3xl font-black text-green-600 sans-font`}>
-              {staticData.customer.overallScore}
-            </p>
-            <p className="text-[9px] font-bold text-green-500">Score</p>
+          <div className="grid grid-cols-2 gap-2 mb-2">
+            <div className="text-center bg-gradient-to-br from-green-50 to-emerald-100 rounded p-2">
+              <p
+                className={`text-3xl font-black text-green-600 sans-font mb-0.5`}
+              >
+                {staticData.customer.overallScore}
+              </p>
+              <p className="text-[10px] font-bold text-green-600 leading-tight">
+                BU Wise Score
+              </p>
+            </div>
+            <div className="text-center bg-gradient-to-br from-red-50 to-rose-100 rounded p-2">
+              <p
+                className={`text-3xl font-black text-red-600 sans-font mb-0.5`}
+              >
+                {staticData.customer.rejectionPPM || "0"}
+              </p>
+              <p className="text-[10px] font-bold text-red-600 leading-tight">
+                Rejection PPM
+              </p>
+            </div>
           </div>
-          <div className="space-y-0.5">
-            {staticData.customer.scores.slice(0, 2).map((customer, idx) => (
-              <div key={idx} className="flex justify-between items-center">
-                <span className="text-[9px] font-bold text-gray-700">
-                  {customer.name.split(" ")[0]}
+          <div className="space-y-1">
+            {staticData.customer.scores.slice(0, 3).map((customer, idx) => (
+              <div
+                key={idx}
+                className="flex justify-between items-center bg-gray-50 rounded px-2 py-1"
+              >
+                <span className="text-[10px] font-bold text-gray-700">
+                  {customer.name}
                 </span>
-                <span className="text-[9px] font-black text-green-600 sans-font">
+                <span className="text-sm font-black text-green-600 sans-font">
                   {customer.overall}
                 </span>
               </div>
             ))}
           </div>
         </div>
-
         {/* NON-CORE - NEW CARD */}
 
         {/* Yield Card */}
@@ -5853,17 +7847,40 @@ const StaticBUDashboard = () => {
         </div>
 
         {/* OEE Summary */}
-        <div className="metric-card rounded-lg p-2.5">
+        <div className="metric-card rounded-lg p-2">
           <h3
             className={`${currentTheme.textSecondary} text-xs uppercase font-black tracking-wide mb-1`}
           >
             📊 OEE
           </h3>
-          <div className="text-center">
-            <p className={`text-3xl font-black text-blue-600 sans-font`}>
-              78.2%
-            </p>
-            <p className="text-[10px] font-bold text-blue-500">Overall</p>
+          <div className="grid grid-cols-1 gap-2 mb-2">
+            <div className="text-center bg-gradient-to-br from-blue-50 to-indigo-100 rounded p-2">
+              <p
+                className={`text-3xl font-black text-blue-600 sans-font mb-0.5`}
+              >
+                78.2%
+              </p>
+            </div>
+          </div>
+          <div className="space-y-1">
+            <div className="flex justify-between items-center bg-gradient-to-r from-green-50 to-emerald-50 rounded px-2 py-1.5">
+              <span className="text-[10px] font-bold text-gray-600">BU 1</span>
+              <span className="text-sm font-black text-green-600 sans-font">
+                {staticData.oee?.plantA || "82.5%"}
+              </span>
+            </div>
+            <div className="flex justify-between items-center bg-gradient-to-r from-orange-50 to-amber-50 rounded px-2 py-1.5">
+              <span className="text-[10px] font-bold text-gray-600">BU 2</span>
+              <span className="text-sm font-black text-orange-600 sans-font">
+                {staticData.oee?.plantB || "76.3%"}
+              </span>
+            </div>
+            <div className="flex justify-between items-center bg-gradient-to-r from-red-50 to-rose-50 rounded px-2 py-1.5">
+              <span className="text-[10px] font-bold text-gray-600">BU 3</span>
+              <span className="text-sm font-black text-red-600 sans-font">
+                {staticData.oee?.plantC || "71.9%"}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -5901,7 +7918,7 @@ const StaticBUDashboard = () => {
 
               <div className="text-center leading-tight">
                 <p className="text-[14px] font-black text-green-700 sans-font truncate">
-                  ₹{staticData.nonCore.hr.budgeting.spent}Cr
+                  ₹{staticData.nonCore.hr.budgeting.spent}
                 </p>
                 <p className="text-[10px] font-bold text-green-600 truncate">
                   Budget Used
@@ -5912,9 +7929,9 @@ const StaticBUDashboard = () => {
             {/* Finance Column */}
             <div
               className="bg-green-50 rounded-lg p-2 border border-green-200 flex flex-col justify-between min-h-[110px] overflow-hidden cursor-pointer hover:scale-[1.02] transition"
-              onClick={(e) => {
-                e.stopPropagation();
-                setSelectedNonCore("finance");
+              onClick={() => {
+                window.location.href =
+                  "https://ktflceprd.kalyanicorp.com/kalyani.iot/finance_rev";
               }}
             >
               <p className="text-[10px] font-black text-green-700 text-center truncate">
@@ -5923,7 +7940,7 @@ const StaticBUDashboard = () => {
 
               <div className="text-center leading-tight">
                 <p className="text-[18px] font-black text-green-800 sans-font truncate">
-                  ₹{staticData.nonCore.finance.revenue.actual}Cr
+                  ₹{staticData.nonCore.finance.revenue.actual}
                 </p>
                 <p className="text-[10px] font-bold text-green-600 truncate">
                   Revenue
@@ -5932,7 +7949,7 @@ const StaticBUDashboard = () => {
 
               <div className="text-center leading-tight">
                 <p className="text-[14px] font-black text-blue-700 sans-font truncate">
-                  ₹{staticData.nonCore.finance.cashflow.closing}Cr
+                  ₹{staticData.nonCore.finance.cashflow.closing}
                 </p>
                 <p className="text-[10px] font-bold text-blue-600 truncate">
                   Cashflow
@@ -5954,7 +7971,7 @@ const StaticBUDashboard = () => {
 
               <div className="text-center leading-tight">
                 <p className="text-[18px] font-black text-amber-800 sans-font truncate">
-                  ₹{staticData.nonCore.purchase.poValue.mtd}Cr
+                  ₹{staticData.nonCore.purchase.poValue.mtd}
                 </p>
                 <p className="text-[10px] font-bold text-amber-600 truncate">
                   PO Value
