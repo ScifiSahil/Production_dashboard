@@ -345,7 +345,7 @@ const StaticBUDashboard = () => {
               <h2
                 className={`text-2xl font-black ${currentTheme.textPrimary} mb-4`}
               >
-                💰 Sales Deep Dive - Plan vs Actual Analysis
+                Sales - Plan vs Actual 
               </h2>
 
               {/* Summary Cards */}
@@ -2524,7 +2524,7 @@ const StaticBUDashboard = () => {
               <h2
                 className={`text-2xl font-black ${currentTheme.textPrimary} mb-4`}
               >
-                ⚡ Power Deep Dive - Utilization Analysis
+                Power - Utilization 
               </h2>
 
               {/* Summary Cards */}
@@ -2818,7 +2818,7 @@ const StaticBUDashboard = () => {
               <h2
                 className={`text-2xl font-black ${currentTheme.textPrimary} mb-4`}
               >
-                💵 Manufacturing Cost Deep Dive
+                Manufacturing Cost 
               </h2>
 
               {/* Summary Cards */}
@@ -3068,14 +3068,14 @@ const StaticBUDashboard = () => {
               </div>
             </div>
           );
-
+ 
         case "ht":
           return (
             <div className="space-y-4">
               <h2
                 className={`text-2xl font-black ${currentTheme.textPrimary} mb-4`}
               >
-                🔥 Heat Treatment Deep Dive - Plan vs Actual
+                Heat Treatment - Plan vs Actual
               </h2>
 
               {/* Summary Cards */}
@@ -4837,7 +4837,7 @@ const StaticBUDashboard = () => {
           </div>
           {renderCardContent("sales")}
           <p className="text-[9px] text-center text-blue-600 font-bold mt-1">
-            Deep Dive →
+            View Details →
           </p>
         </div>
 

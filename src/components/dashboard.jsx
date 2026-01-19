@@ -34,20 +34,101 @@ import {
   TrendingUp,
   TrendingDown,
 } from "lucide-react";
+import { MessageCircle, X, Send } from "lucide-react"; // Add MessageCircle, X, Send icons
 import HRDashboard from "./hrdashboard";
 import PurchaseDashboard from "./purchase-dashboard";
 import { useNavigate } from "react-router-dom";
 
 const StaticBUDashboard = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [selectedLineInModal, setSelectedLineInModal] = useState("1005 TP");
-  const [viewMode, setViewMode] = useState("table");
+  const [selectedLineInModal, setSelectedLineInModal] = useState("RNGN");
+  const [viewMode, setViewMode] = useState("graphical");
   const [selectedMetric, setSelectedMetric] = useState("productivity");
   const [theme, setTheme] = useState("lightBlue");
   const [selectedBU, setSelectedBU] = useState("overview");
   const [selectedPlant, setSelectedPlant] = useState(null);
   const [selectedLine, setSelectedLine] = useState(null);
   const [globalView, setGlobalView] = useState("daily");
+  const [selectedOEEBU, setSelectedOEEBU] = useState(null); // BU selection in modal
+  const [selectedOEEPlant, setSelectedOEEPlant] = useState(null); // Plant selection
+  const [qualityViewMode, setQualityViewMode] = useState("graphical");
+  // Existing state variables ke saath add karo
+  const [oeeViewMode, setOEEViewMode] = useState("tabular"); // "tabular" or "graphical"
+  const [selectedQualityBU, setSelectedQualityBU] = useState(null);
+  const [selectedQualityPlant, setSelectedQualityPlant] = useState(null);
+  // OpEx states - ADD THESE ↓
+  const [selectedOpExBU, setSelectedOpExBU] = useState(null);
+  const [selectedOpExPlant, setSelectedOpExPlant] = useState(null);
+  const [opexViewMode, setOpExViewMode] = useState("tabular");
+  // ✅ NEW: Chatbot state variables
+  const [isChatOpen, setIsChatOpen] = useState(false);
+
+  const [chatMessages, setChatMessages] = useState([
+    {
+      type: "bot",
+      text: "Hello! I'm your KTFL Dashboard Assistant. How can I help you today?",
+      timestamp: new Date(),
+    },
+  ]);
+  const [chatInput, setChatInput] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+
+  // ✅ NEW: Chatbot helper function
+  const handleChatSend = () => {
+    if (!chatInput.trim()) return;
+
+    // Add user message
+    const userMessage = {
+      type: "user",
+      text: chatInput,
+      timestamp: new Date(),
+    };
+    setChatMessages((prev) => [...prev, userMessage]);
+    setChatInput("");
+    setIsTyping(true);
+
+    // Simulate bot response
+    setTimeout(() => {
+      const botResponse = {
+        type: "bot",
+        text: getBotResponse(chatInput),
+        timestamp: new Date(),
+      };
+      setChatMessages((prev) => [...prev, botResponse]);
+      setIsTyping(false);
+    }, 1000);
+  };
+
+  const handleSalesCardClick = () => {
+    navigate("/noncore/kalyani");
+  };
+
+  // ✅ NEW: Bot response logic
+  const getBotResponse = (userInput) => {
+    const input = userInput.toLowerCase();
+
+    if (input.includes("sales") || input.includes("revenue")) {
+      return `Current Sales: Daily ₹${staticData.sales.daily.actual}Cr (${staticData.sales.daily.achievement}% achievement), MTD ₹${staticData.sales.mtd.actual}Cr, YTD ₹${staticData.sales.ytd.actual}Cr`;
+    } else if (input.includes("production") || input.includes("oee")) {
+      return `Production Status: Daily Achievement ${staticData.production.daily.achievement}%, Overall OEE: ${staticData.oee.overall}%`;
+    } else if (input.includes("power") || input.includes("energy")) {
+      return `Power Utilization: Daily ${staticData.power.daily.utilization}%, MTD ${staticData.power.mtd.utilization}%, YTD ${staticData.power.ytd.utilization}%`;
+    } else if (input.includes("quality") || input.includes("scrap")) {
+      return `Quality Metrics: Scrap ${staticData.quality.daily.scrap}%, Yield ${staticData.quality.daily.yield}%`;
+    } else if (input.includes("safety") || input.includes("accident")) {
+      return `Safety Status: Major Accidents: ${staticData.safety.major}, Minor: ${staticData.safety.minor}, First Aid: ${staticData.safety.firstAid}`;
+    } else if (input.includes("npd") || input.includes("project")) {
+      return `NPD Projects: Total ${staticData.npd.total}, Active ${staticData.npd.active}`;
+    } else if (
+      input.includes("help") ||
+      input.includes("hi") ||
+      input.includes("hello")
+    ) {
+      return "I can help you with: Sales, Production, Power, Quality, Safety, NPD, Customer Satisfaction, Inventory, Maintenance. Just ask me about any metric!";
+    } else {
+      return "I can provide information about Sales, Production, Power, Quality, Safety, NPD, and more. What would you like to know?";
+    }
+  };
 
   const navigate = useNavigate();
 
@@ -56,9 +137,11 @@ const StaticBUDashboard = () => {
   // values: null | "hr" | "finance" | "purchase"
 
   useEffect(() => {
+    if (selectedCard) return; // modal open => stop timer
+
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [selectedCard]);
 
   const themes = {
     lightBlue: {
@@ -105,47 +188,47 @@ const StaticBUDashboard = () => {
 
   // BU Configuration
   const buConfig = {
-    overview: { name: "KTFL GROUP", plants: [] },
+    overview: { name: "KTFL Group", plants: [] },
+
     bu1: {
-      name: "BU Head 1",
+      name: "BU 1",
       plants: {
-        "R2-5": [
+        // ✅ New Plants (BU1)
+        Ranjangaon: [
           "1005 TP",
           "2504TP",
           "1000 T Screw Press",
           "4003 TP",
           "4004 TP",
         ],
-        "R1-16": ["R1", "1602", "1001", "1003", "630", "2502"],
-        "MDW-7": [
-          "Line A",
-          "Line B",
-          "Line C",
-          "Line D",
-          "Line E",
-          "Line F",
-          "Line G",
-        ],
+        Bhiwadi: [],
+        Mundhwa: ["Line 1", "Line 2", "Line 3", "Line 4", "Line 5", "Line 6"],
+        Gujrat: [],
+        Baramati: [],
       },
     },
+
     bu2: {
-      name: "BU Head 2",
+      name: "BU 2",
       plants: {
-        "Baramati-7": [
-          "B-Line 1",
-          "B-Line 2",
-          "B-Line 3",
-          "B-Line 4",
-          "B-Line 5",
-        ],
-        "Chakan-7": ["C-Line 1", "C-Line 2", "C-Line 3", "C-Line 4"],
+        Baramati: ["B-Line 1", "B-Line 2", "B-Line 3", "B-Line 4", "B-Line 5"],
+        Chakan: ["C-Line 1", "C-Line 2", "C-Line 3", "C-Line 4"],
+
+        // ✅ New Plants (BU2)
+        "Khed 1": [],
+        "Khed 2": [],
       },
     },
+
     bu3: {
-      name: "BU Head 3",
+      name: "BU 3",
       plants: {
         Bhiwadi: ["BH-Line 1", "BH-Line 2", "BH-Line 3"],
         Gujarat: ["GJ-Line 1", "GJ-Line 2", "GJ-Line 3"],
+
+        // ✅ New Plants (BU3)
+        Inmet: [],
+        Yokoha: [],
       },
     },
   };
@@ -186,9 +269,261 @@ const StaticBUDashboard = () => {
       ytd: { actual: 2850, plan: 3000, scm: 4.4 },
     },
     quality: {
-      daily: { scrap: 2.3, target: 2.5, yield: 97.7 },
-      mtd: { scrap: 2.4, target: 2.5, yield: 97.6 },
-      ytd: { scrap: 2.5, target: 2.5, yield: 97.5 },
+      overall: 96.5,
+      bu1: {
+        overall: 97.2,
+        plants: {
+          Ranjangaon: {
+            scrap: 2.1,
+            yield: 97.9,
+            inHouseRejection: 1.2,
+            customerComplaint: 0.4,
+            lines: {
+              "1005 TP": {
+                scrap: 2.0,
+                yield: 98.0,
+                rejection: 1.1,
+                complaint: 0.3,
+              },
+              "2504TP": {
+                scrap: 2.2,
+                yield: 97.8,
+                rejection: 1.3,
+                complaint: 0.5,
+              },
+              "1000 T Screw Press": {
+                scrap: 2.1,
+                yield: 97.9,
+                rejection: 1.2,
+                complaint: 0.4,
+              },
+              "4003 TP": {
+                scrap: 2.0,
+                yield: 98.0,
+                rejection: 1.0,
+                complaint: 0.3,
+              },
+              "4004 TP": {
+                scrap: 2.3,
+                yield: 97.7,
+                rejection: 1.4,
+                complaint: 0.5,
+              },
+            },
+          },
+          Mundhwa: {
+            scrap: 2.3,
+            yield: 97.7,
+            inHouseRejection: 1.3,
+            customerComplaint: 0.5,
+            lines: {
+              "Line 1": {
+                scrap: 2.2,
+                yield: 97.8,
+                rejection: 1.2,
+                complaint: 0.4,
+              },
+              "Line 2": {
+                scrap: 2.4,
+                yield: 97.6,
+                rejection: 1.4,
+                complaint: 0.6,
+              },
+              "Line 3": {
+                scrap: 2.3,
+                yield: 97.7,
+                rejection: 1.3,
+                complaint: 0.5,
+              },
+              "Line 4": {
+                scrap: 2.2,
+                yield: 97.8,
+                rejection: 1.2,
+                complaint: 0.4,
+              },
+              "Line 5": {
+                scrap: 2.1,
+                yield: 97.9,
+                rejection: 1.1,
+                complaint: 0.3,
+              },
+              "Line 6": {
+                scrap: 2.5,
+                yield: 97.5,
+                rejection: 1.5,
+                complaint: 0.7,
+              },
+            },
+          },
+          Bhiwadi: {
+            scrap: 2.5,
+            yield: 97.5,
+            inHouseRejection: 1.5,
+            customerComplaint: 0.6,
+            lines: {},
+          },
+        },
+      },
+      bu2: {
+        overall: 96.8,
+        plants: {
+          Baramati: {
+            scrap: 2.4,
+            yield: 97.6,
+            inHouseRejection: 1.4,
+            customerComplaint: 0.5,
+            lines: {
+              "B-Line 1": {
+                scrap: 2.3,
+                yield: 97.7,
+                rejection: 1.3,
+                complaint: 0.4,
+              },
+              "B-Line 2": {
+                scrap: 2.4,
+                yield: 97.6,
+                rejection: 1.4,
+                complaint: 0.5,
+              },
+              "B-Line 3": {
+                scrap: 2.5,
+                yield: 97.5,
+                rejection: 1.5,
+                complaint: 0.6,
+              },
+              "B-Line 4": {
+                scrap: 2.4,
+                yield: 97.6,
+                rejection: 1.4,
+                complaint: 0.5,
+              },
+              "B-Line 5": {
+                scrap: 2.3,
+                yield: 97.7,
+                rejection: 1.3,
+                complaint: 0.4,
+              },
+            },
+          },
+          Chakan: {
+            scrap: 2.6,
+            yield: 97.4,
+            inHouseRejection: 1.6,
+            customerComplaint: 0.7,
+            lines: {
+              "C-Line 1": {
+                scrap: 2.5,
+                yield: 97.5,
+                rejection: 1.5,
+                complaint: 0.6,
+              },
+              "C-Line 2": {
+                scrap: 2.6,
+                yield: 97.4,
+                rejection: 1.6,
+                complaint: 0.7,
+              },
+              "C-Line 3": {
+                scrap: 2.7,
+                yield: 97.3,
+                rejection: 1.7,
+                complaint: 0.8,
+              },
+              "C-Line 4": {
+                scrap: 2.6,
+                yield: 97.4,
+                rejection: 1.6,
+                complaint: 0.7,
+              },
+            },
+          },
+          "Khed 1": {
+            scrap: 2.7,
+            yield: 97.3,
+            inHouseRejection: 1.7,
+            customerComplaint: 0.8,
+            lines: {},
+          },
+          "Khed 2": {
+            scrap: 2.6,
+            yield: 97.4,
+            inHouseRejection: 1.6,
+            customerComplaint: 0.7,
+            lines: {},
+          },
+        },
+      },
+      bu3: {
+        overall: 95.8,
+        plants: {
+          Bhiwadi: {
+            scrap: 2.8,
+            yield: 97.2,
+            inHouseRejection: 1.8,
+            customerComplaint: 0.9,
+            lines: {
+              "BH-Line 1": {
+                scrap: 2.7,
+                yield: 97.3,
+                rejection: 1.7,
+                complaint: 0.8,
+              },
+              "BH-Line 2": {
+                scrap: 2.8,
+                yield: 97.2,
+                rejection: 1.8,
+                complaint: 0.9,
+              },
+              "BH-Line 3": {
+                scrap: 2.9,
+                yield: 97.1,
+                rejection: 1.9,
+                complaint: 1.0,
+              },
+            },
+          },
+          Gujarat: {
+            scrap: 2.9,
+            yield: 97.1,
+            inHouseRejection: 1.9,
+            customerComplaint: 1.0,
+            lines: {
+              "GJ-Line 1": {
+                scrap: 2.8,
+                yield: 97.2,
+                rejection: 1.8,
+                complaint: 0.9,
+              },
+              "GJ-Line 2": {
+                scrap: 2.9,
+                yield: 97.1,
+                rejection: 1.9,
+                complaint: 1.0,
+              },
+              "GJ-Line 3": {
+                scrap: 3.0,
+                yield: 97.0,
+                rejection: 2.0,
+                complaint: 1.1,
+              },
+            },
+          },
+          Inmet: {
+            scrap: 3.0,
+            yield: 97.0,
+            inHouseRejection: 2.0,
+            customerComplaint: 1.1,
+            lines: {},
+          },
+          Yokoha: {
+            scrap: 2.9,
+            yield: 97.1,
+            inHouseRejection: 1.9,
+            customerComplaint: 1.0,
+            lines: {},
+          },
+        },
+      },
     },
     safety: {
       major: 2,
@@ -595,6 +930,139 @@ const StaticBUDashboard = () => {
       mtd: { actual: 97.6, target: 98.5, variance: -0.9 },
       ytd: { actual: 97.9, target: 98.0, variance: -0.1 },
     },
+
+    oee: {
+      overall: 78.2,
+      bu1: {
+        overall: 82.5,
+        plants: {
+          Ranjangaon: {
+            oee: 85.2,
+            availability: 92,
+            performance: 94,
+            quality: 98.5,
+            lines: {
+              "1005 TP": { oee: 87, avail: 93, perf: 95, quality: 98.5 },
+              "2504TP": { oee: 84, avail: 91, perf: 93, quality: 99 },
+              "1000 T Screw Press": {
+                oee: 83,
+                avail: 90,
+                perf: 93,
+                quality: 99.2,
+              },
+              "4003 TP": { oee: 86, avail: 92, perf: 95, quality: 98.3 },
+              "4004 TP": { oee: 85, avail: 91, perf: 94, quality: 99.1 },
+            },
+          },
+          Mundhwa: {
+            oee: 81.3,
+            availability: 89,
+            performance: 92,
+            quality: 99.2,
+            lines: {
+              "Line 1": { oee: 83, avail: 90, perf: 93, quality: 99 },
+              "Line 2": { oee: 82, avail: 89, perf: 92, quality: 99.5 },
+              "Line 3": { oee: 80, avail: 88, perf: 91, quality: 99.3 },
+              "Line 4": { oee: 81, avail: 89, perf: 92, quality: 99.1 },
+              "Line 5": { oee: 82, avail: 90, perf: 92, quality: 99.2 },
+              "Line 6": { oee: 80, avail: 88, perf: 91, quality: 99.4 },
+            },
+          },
+          Bhiwadi: {
+            oee: 79.8,
+            availability: 87,
+            performance: 91,
+            quality: 100.8,
+            lines: {},
+          },
+        },
+      },
+      bu2: {
+        overall: 76.3,
+        plants: {
+          Baramati: {
+            oee: 78.5,
+            availability: 86,
+            performance: 90,
+            quality: 101.2,
+            lines: {
+              "B-Line 1": { oee: 80, avail: 88, perf: 91, quality: 100 },
+              "B-Line 2": { oee: 79, avail: 87, perf: 90, quality: 101 },
+              "B-Line 3": { oee: 77, avail: 85, perf: 89, quality: 102 },
+              "B-Line 4": { oee: 78, avail: 86, perf: 90, quality: 101.5 },
+              "B-Line 5": { oee: 79, avail: 87, perf: 91, quality: 100.8 },
+            },
+          },
+          Chakan: {
+            oee: 75.2,
+            availability: 84,
+            performance: 88,
+            quality: 101.8,
+            lines: {
+              "C-Line 1": { oee: 76, avail: 85, perf: 89, quality: 101 },
+              "C-Line 2": { oee: 75, avail: 84, perf: 88, quality: 102 },
+              "C-Line 3": { oee: 74, avail: 83, perf: 87, quality: 102.5 },
+              "C-Line 4": { oee: 76, avail: 85, perf: 89, quality: 101.2 },
+            },
+          },
+          "Khed 1": {
+            oee: 74.8,
+            availability: 83,
+            performance: 87,
+            quality: 103.5,
+            lines: {},
+          },
+          "Khed 2": {
+            oee: 75.5,
+            availability: 84,
+            performance: 88,
+            quality: 102.2,
+            lines: {},
+          },
+        },
+      },
+      bu3: {
+        overall: 71.9,
+        plants: {
+          Bhiwadi: {
+            oee: 73.5,
+            availability: 82,
+            performance: 86,
+            quality: 104.2,
+            lines: {
+              "BH-Line 1": { oee: 74, avail: 83, perf: 87, quality: 103 },
+              "BH-Line 2": { oee: 73, avail: 82, perf: 86, quality: 104 },
+              "BH-Line 3": { oee: 74, avail: 83, perf: 87, quality: 104.5 },
+            },
+          },
+          Gujarat: {
+            oee: 72.1,
+            availability: 81,
+            performance: 85,
+            quality: 104.8,
+            lines: {
+              "GJ-Line 1": { oee: 73, avail: 82, perf: 86, quality: 104 },
+              "GJ-Line 2": { oee: 72, avail: 81, perf: 85, quality: 105 },
+              "GJ-Line 3": { oee: 71, avail: 80, perf: 84, quality: 105.5 },
+            },
+          },
+          Inmet: {
+            oee: 70.5,
+            availability: 80,
+            performance: 84,
+            quality: 105.2,
+            lines: {},
+          },
+          Yokoha: {
+            oee: 71.2,
+            availability: 81,
+            performance: 85,
+            quality: 103.5,
+            lines: {},
+          },
+        },
+      },
+    },
   };
 
   // Static chart data
@@ -641,6 +1109,24 @@ const StaticBUDashboard = () => {
     { day: "Sat", ht: 80, scm: 4.0 },
   ];
 
+  const getBUMetrics = (buKey) => {
+    const plants = staticData.quality[buKey].plants;
+    const plantValues = Object.values(plants);
+
+    const avg = (key) =>
+      (
+        plantValues.reduce((sum, p) => sum + (p[key] || 0), 0) /
+        (plantValues.length || 1)
+      ).toFixed(1);
+
+    return {
+      scrap: avg("scrap"),
+      yield: avg("yield"),
+      inHouseRejection: 12,
+      customerComplaint: 6,
+    };
+  };
+
   // Modal Component
   const DetailModal = ({ card, onClose }) => {
     if (!card) return null;
@@ -650,11 +1136,26 @@ const StaticBUDashboard = () => {
         case "sales":
           return (
             <div className="space-y-4">
-              <h2
-                className={`text-2xl font-black ${currentTheme.textPrimary} mb-4`}
-              >
-                💰 Sales Deep Dive - Plan vs Actual Analysis
-              </h2>
+              {/* ✅ Header with Detail Sale View Button */}
+              <div className="flex items-center justify-between mb-4">
+                <h2
+                  className={`text-2xl font-black ${currentTheme.textPrimary}`}
+                >
+                  Sales - Plan vs Actual
+                </h2>
+
+                {/* ✅ Detail Sale View Tab/Button */}
+                <button
+                  onClick={() =>
+                    window.open("/dahsboard.html", "_blank", "noreferrer")
+                  }
+                  className="px-6 py-3 rounded-lg font-black text-base transition-all flex items-center gap-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg hover:scale-105 hover:shadow-xl"
+                >
+                  <span>📊</span>
+                  Detail Sale
+                  <span>→</span>
+                </button>
+              </div>
 
               {/* Summary Cards */}
               <div className="grid grid-cols-3 gap-4">
@@ -1028,15 +1529,333 @@ const StaticBUDashboard = () => {
                   </tbody>
                 </table>
               </div>
+
+              {/* ✅ Another Detail View Button at Bottom (Optional) */}
+              <div className="flex justify-center pt-4">
+                <button
+                  onClick={() => navigate("/noncore/kalyani")}
+                  className="px-8 py-4 rounded-lg font-black text-lg transition-all flex items-center gap-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg hover:scale-105 hover:shadow-xl"
+                >
+                  <span>🔍</span>
+                  Open Detailed Sale Analysis
+                  <span>→</span>
+                </button>
+              </div>
             </div>
           );
+
+        case "oee":
+          // ✅ Different variable names use karo
+          const selectedBUOEEData = selectedOEEBU
+            ? staticData.oee[selectedOEEBU]
+            : null;
+          const selectedPlantOEEData =
+            selectedOEEPlant && selectedBUOEEData
+              ? selectedBUOEEData.plants[selectedOEEPlant]
+              : null;
+
+          return (
+            <div className="space-y-4">
+              <h2
+                className={`text-2xl font-black ${currentTheme.textPrimary} mb-4 flex items-center gap-3`}
+              >
+                <span>📊</span>
+                OEE (Overall Equipment Effectiveness) Analysis
+              </h2>
+
+              {/* BU Selection Tabs */}
+              {!selectedOEEBU && (
+                <div className="flex gap-3 justify-center mb-4 flex-wrap">
+                  <button
+                    onClick={() => setSelectedOEEBU("bu1")}
+                    className="px-6 py-3 rounded-lg font-black text-base transition-all flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg hover:scale-105"
+                  >
+                    BU 1 - {staticData.oee.bu1.overall}%
+                  </button>
+                  <button
+                    onClick={() => setSelectedOEEBU("bu2")}
+                    className="px-6 py-3 rounded-lg font-black text-base transition-all flex items-center gap-2 bg-gradient-to-r from-orange-600 to-amber-600 text-white shadow-lg hover:scale-105"
+                  >
+                    BU 2 - {staticData.oee.bu2.overall}%
+                  </button>
+                  <button
+                    onClick={() => setSelectedOEEBU("bu3")}
+                    className="px-6 py-3 rounded-lg font-black text-base transition-all flex items-center gap-2 bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-lg hover:scale-105"
+                  >
+                    BU 3 - {staticData.oee.bu3.overall}%
+                  </button>
+                </div>
+              )}
+
+              {/* Back Button */}
+              {selectedOEEBU && (
+                <button
+                  onClick={() => {
+                    if (selectedOEEPlant) {
+                      setSelectedOEEPlant(null);
+                    } else {
+                      setSelectedOEEBU(null);
+                    }
+                  }}
+                  className="mb-4 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg font-bold text-sm flex items-center gap-2"
+                >
+                  ← Back {selectedOEEPlant ? "to Plants" : "to BU Selection"}
+                </button>
+              )}
+
+              {/* Plant-wise View */}
+              {selectedOEEBU && !selectedOEEPlant && (
+                <div className="space-y-4">
+                  <h3 className="text-xl font-black text-blue-700 flex items-center gap-2">
+                    <span>🏭</span>
+                    {selectedOEEBU === "bu1"
+                      ? "BU 1"
+                      : selectedOEEBU === "bu2"
+                      ? "BU 2"
+                      : "BU 3"}{" "}
+                    - Plant-wise OEE
+                  </h3>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    {Object.entries(selectedBUOEEData.plants).map(
+                      ([plantName, plantData]) => (
+                        <div
+                          key={plantName}
+                          className={`${currentTheme.bgSecondary} rounded-lg p-4 shadow-lg border-l-4 border-blue-500 cursor-pointer hover:scale-[1.02] transition`}
+                          onClick={() => setSelectedOEEPlant(plantName)}
+                        >
+                          <h4
+                            className={`text-lg font-black ${currentTheme.textPrimary} mb-3`}
+                          >
+                            {plantName}
+                          </h4>
+
+                          <div className="grid grid-cols-2 gap-3 mb-3">
+                            <div className="text-center bg-gradient-to-br from-blue-50 to-indigo-100 rounded p-2">
+                              <p className="text-3xl font-black text-blue-600 sans-font">
+                                {plantData.oee}%
+                              </p>
+                              <p className="text-xs font-bold text-blue-600">
+                                OEE
+                              </p>
+                            </div>
+                            <div className="text-center bg-gradient-to-br from-green-50 to-emerald-100 rounded p-2">
+                              <p className="text-3xl font-black text-green-600 sans-font">
+                                {plantData.availability}%
+                              </p>
+                              <p className="text-xs font-bold text-green-600">
+                                Avail
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="text-center bg-gradient-to-br from-cyan-50 to-blue-100 rounded p-2">
+                              <p className="text-2xl font-black text-cyan-600 sans-font">
+                                {plantData.performance}%
+                              </p>
+                              <p className="text-xs font-bold text-cyan-600">
+                                Perf
+                              </p>
+                            </div>
+                            <div className="text-center bg-gradient-to-br from-purple-50 to-pink-100 rounded p-2">
+                              <p className="text-2xl font-black text-purple-600 sans-font">
+                                {plantData.quality}%
+                              </p>
+                              <p className="text-xs font-bold text-purple-600">
+                                Quality
+                              </p>
+                            </div>
+                          </div>
+
+                          <p className="text-xs text-center text-blue-600 font-bold mt-3">
+                            Click to view lines →
+                          </p>
+                        </div>
+                      )
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Line-wise View */}
+              {selectedOEEPlant && selectedPlantOEEData && (
+                <div className="space-y-4">
+                  <h3 className="text-xl font-black text-green-700 flex items-center gap-2">
+                    <span>📏</span>
+                    {selectedOEEPlant} - Line-wise OEE
+                  </h3>
+
+                  {/* Plant Summary */}
+                  <div className="grid grid-cols-4 gap-3 mb-4">
+                    <div
+                      className={`${currentTheme.bgSecondary} rounded-lg p-3 text-center border-l-4 border-blue-500`}
+                    >
+                      <p className="text-sm font-bold text-gray-600 mb-1">
+                        Overall OEE
+                      </p>
+                      <p className="text-4xl font-black text-blue-600 sans-font">
+                        {selectedPlantOEEData.oee}%
+                      </p>
+                    </div>
+                    <div
+                      className={`${currentTheme.bgSecondary} rounded-lg p-3 text-center border-l-4 border-green-500`}
+                    >
+                      <p className="text-sm font-bold text-gray-600 mb-1">
+                        Availability
+                      </p>
+                      <p className="text-4xl font-black text-green-600 sans-font">
+                        {selectedPlantOEEData.availability}%
+                      </p>
+                    </div>
+                    <div
+                      className={`${currentTheme.bgSecondary} rounded-lg p-3 text-center border-l-4 border-cyan-500`}
+                    >
+                      <p className="text-sm font-bold text-gray-600 mb-1">
+                        Performance
+                      </p>
+                      <p className="text-4xl font-black text-cyan-600 sans-font">
+                        {selectedPlantOEEData.performance}%
+                      </p>
+                    </div>
+                    <div
+                      className={`${currentTheme.bgSecondary} rounded-lg p-3 text-center border-l-4 border-purple-500`}
+                    >
+                      <p className="text-sm font-bold text-gray-600 mb-1">
+                        Quality
+                      </p>
+                      <p className="text-4xl font-black text-purple-600 sans-font">
+                        {selectedPlantOEEData.quality}%
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Lines Table */}
+                  {Object.keys(selectedPlantOEEData.lines).length > 0 ? (
+                    <div
+                      className={`${currentTheme.bgSecondary} rounded-lg p-4`}
+                    >
+                      <h4
+                        className={`text-base font-bold ${currentTheme.textPrimary} mb-3`}
+                      >
+                        📋 Line-wise Performance
+                      </h4>
+                      <table className="w-full text-sm">
+                        <thead className="bg-gradient-to-r from-blue-100 to-cyan-100">
+                          <tr>
+                            <th className="px-4 py-3 text-left font-black text-gray-700">
+                              Line
+                            </th>
+                            <th className="px-4 py-3 text-right font-black text-gray-700">
+                              Availability
+                            </th>
+                            <th className="px-4 py-3 text-right font-black text-gray-700">
+                              Performance
+                            </th>
+                            <th className="px-4 py-3 text-right font-black text-gray-700">
+                              Quality
+                            </th>
+                            <th className="px-4 py-3 text-right font-black text-gray-700">
+                              OEE
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {Object.entries(selectedPlantOEEData.lines).map(
+                            ([lineName, lineData], idx) => (
+                              <tr
+                                key={idx}
+                                className={
+                                  idx % 2 === 0 ? "bg-white" : "bg-gray-50"
+                                }
+                              >
+                                <td className="px-4 py-3 font-bold text-gray-800">
+                                  {lineName}
+                                </td>
+                                <td className="px-4 py-3 text-right font-bold text-green-600 mono-font">
+                                  {lineData.avail}%
+                                </td>
+                                <td className="px-4 py-3 text-right font-bold text-cyan-600 mono-font">
+                                  {lineData.perf}%
+                                </td>
+                                <td className="px-4 py-3 text-right font-bold text-purple-600 mono-font">
+                                  {lineData.quality}%
+                                </td>
+                                <td className="px-4 py-3 text-right">
+                                  <span
+                                    className={`px-3 py-1 rounded-full font-black ${
+                                      lineData.oee >= 85
+                                        ? "bg-green-200 text-green-800"
+                                        : lineData.oee >= 75
+                                        ? "bg-yellow-200 text-yellow-800"
+                                        : "bg-red-200 text-red-800"
+                                    }`}
+                                  >
+                                    {lineData.oee}%
+                                  </span>
+                                </td>
+                              </tr>
+                            )
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <div className="text-center p-8 bg-gray-100 rounded-lg">
+                      <p className="text-lg font-bold text-gray-600">
+                        No line data available for this plant
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Overall Summary (when no BU selected) */}
+              {!selectedOEEBU && (
+                <div className={`${currentTheme.bgSecondary} rounded-lg p-4`}>
+                  <h4
+                    className={`text-base font-bold ${currentTheme.textPrimary} mb-3`}
+                  >
+                    🏢 Group-wide OEE Summary
+                  </h4>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="text-center p-4 bg-gradient-to-br from-green-50 to-emerald-100 rounded-lg">
+                      <p className="text-sm font-bold text-gray-600 mb-2">
+                        BU 1
+                      </p>
+                      <p className="text-5xl font-black text-green-600 sans-font">
+                        {staticData.oee.bu1.overall}%
+                      </p>
+                    </div>
+                    <div className="text-center p-4 bg-gradient-to-br from-orange-50 to-amber-100 rounded-lg">
+                      <p className="text-sm font-bold text-gray-600 mb-2">
+                        BU 2
+                      </p>
+                      <p className="text-5xl font-black text-orange-600 sans-font">
+                        {staticData.oee.bu2.overall}%
+                      </p>
+                    </div>
+                    <div className="text-center p-4 bg-gradient-to-br from-red-50 to-rose-100 rounded-lg">
+                      <p className="text-sm font-bold text-gray-600 mb-2">
+                        BU 3
+                      </p>
+                      <p className="text-5xl font-black text-red-600 sans-font">
+                        {staticData.oee.bu3.overall}%
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+
         case "ht":
           return (
             <div className="space-y-4">
               <h2
                 className={`text-2xl font-black ${currentTheme.textPrimary} mb-4`}
               >
-                🔥 Heat Treatment Deep Dive - Plan vs Actual
+                Heat Treatment - Plan vs Actual
               </h2>
 
               {/* Summary Cards */}
@@ -1767,29 +2586,106 @@ const StaticBUDashboard = () => {
           );
 
         case "production":
+          const lineToPlantMapping = {
+            MDWA: {
+              plant: "MDW-7",
+              lines: [
+                "Line A",
+                "Line B",
+                "Line C",
+                "Line D",
+                "Line E",
+                "Line F",
+                "Line G",
+              ],
+            },
+            RNGN: {
+              plant: "R1-16",
+              lines: [
+                "630 TP",
+                "1001 TP",
+                "1002 TP",
+                "1003 TP",
+                "1601 TP",
+                "1602 TP",
+                "2501 TP",
+                "2502 TP",
+                "2503 TP",
+                "2505 TP",
+                "2506 TP",
+                "3000 TP",
+                "4000 TP",
+                "4001 TP",
+                "4002 TP",
+                "ALU LINE TP",
+              ],
+            },
+            KTPL: {
+              plant: "R2-5",
+              lines: [
+                "1005 TP",
+                "2504TP",
+                "1000 T Screw Press",
+                "4003 TP",
+                "4004 TP",
+              ],
+            },
+            BRFT: {
+              plant: "Baramati-7",
+              lines: [
+                "B-Line 1",
+                "B-Line 2",
+                "B-Line 3",
+                "B-Line 4",
+                "B-Line 5",
+              ],
+            },
+            CHKN: {
+              plant: "Chakan-7",
+              lines: ["C-Line 1", "C-Line 2", "C-Line 3", "C-Line 4"],
+            },
+            KHD: {
+              plant: "Bhiwadi",
+              lines: ["BH-Line 1", "BH-Line 2", "BH-Line 3"],
+            },
+            KHD2: {
+              plant: "Gujarat",
+              lines: ["GJ-Line 1", "GJ-Line 2", "GJ-Line 3"],
+            },
+            // Baaki bhi add kar lo same pattern mein
+          };
+
+          const currentPlantData =
+            lineToPlantMapping[selectedLineInModal] ||
+            lineToPlantMapping["MDWA"];
+
           return (
             <div className="space-y-4">
               <h2
                 className={`text-2xl font-black ${currentTheme.textPrimary} mb-4`}
               >
-                🏭 Cell Wise PQCDSM (Productivity, Quality, Cost, Delivery,
-                Safety & Morale)
+                PQCDSM (Productivity, Quality, Cost, Delivery, Safety & Morale)
               </h2>
 
               {/* Line Selection Tabs */}
-              <div className="flex gap-2 flex-wrap border-b-2 border-blue-300 pb-2">
+              {/* <div className="flex gap-2 flex-wrap border-b-2 border-blue-300 pb-2">
                 {[
-                  "1005 TP",
-                  "2504TP",
-                  "1000 T Screw Press",
-                  "4003 TP",
-                  "4004 TP",
-                  "R1 - mahesh gade",
-                  "1602",
-                  "1001",
-                  "1003",
-                  "630",
-                  "2502",
+                  "MDWA",
+                  "RNGN",
+                  "KTPL",
+                  "BRFT",
+                  "CHKN",
+                  "KHD",
+                  "KHD2",
+                  "AMBT",
+                  "CHGR",
+                  "AMBT-3",
+                  "BRM2",
+                  "BHWD",
+                  "GUJR",
+                  "HTRN",
+                  "MIMJ",
+                  "YOKOHA",
                 ].map((line) => (
                   <button
                     key={line}
@@ -1803,8 +2699,38 @@ const StaticBUDashboard = () => {
                     {line}
                   </button>
                 ))}
-              </div>
+              </div> */}
 
+              {/* Line Selection Tabs */}
+              <div className="flex gap-2 flex-wrap border-b-2 border-blue-300 pb-2">
+                {Object.keys(lineToPlantMapping).map((lineKey) => (
+                  <button
+                    key={lineKey}
+                    onClick={() => setSelectedLineInModal(lineKey)}
+                    className={`px-4 py-2 rounded-t-lg font-bold text-sm transition-all ${
+                      selectedLineInModal === lineKey
+                        ? "bg-blue-500 text-white shadow-lg"
+                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                    }`}
+                  >
+                    {lineKey}
+                  </button>
+                ))}
+              </div>
+              {/* Plant Info Display */}
+              <div>
+                {/* Lines Display */}
+                <div className="mt-2 flex gap-2 flex-wrap">
+                  {currentPlantData.lines.map((line, idx) => (
+                    <span
+                      key={idx}
+                      className="px-3 py-1 bg-white rounded-full text-xs font-bold text-blue-600 border border-blue-200"
+                    >
+                      {line}
+                    </span>
+                  ))}
+                </div>
+              </div>
               {/* View Mode Tabs */}
               <div className="flex gap-3 justify-center mb-4">
                 <button
@@ -1816,7 +2742,7 @@ const StaticBUDashboard = () => {
                   }`}
                 >
                   <FileText className="w-5 h-5" />
-                  📋 Table View
+                  Table View
                 </button>
                 <button
                   onClick={() => setViewMode("graphical")}
@@ -1827,7 +2753,7 @@ const StaticBUDashboard = () => {
                   }`}
                 >
                   <Activity className="w-5 h-5" />
-                  📊 Graphical View
+                  Graphical View
                 </button>
                 <button
                   onClick={() =>
@@ -1836,7 +2762,7 @@ const StaticBUDashboard = () => {
                   }
                   className="px-6 py-3 rounded-lg font-black text-base transition-all flex items-center gap-2 bg-gray-200 text-gray-700 hover:bg-gray-300"
                 >
-                  📌 Detail Tab
+                  📌 Detail
                 </button>
               </div>
 
@@ -2259,12 +3185,7 @@ const StaticBUDashboard = () => {
                           <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             170000
                           </td>
-                          <td
-                            rowSpan="2"
-                            className="border border-gray-300 px-3 py-2 text-center font-bold mono-font bg-yellow-100"
-                          >
-                            Capacity
-                            <br />
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font bg-yellow-100">
                             160000
                           </td>
                         </tr>
@@ -2281,7 +3202,7 @@ const StaticBUDashboard = () => {
                           <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             171573
                           </td>
-                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
+                          <td clasName="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             145352
                           </td>
                           <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
@@ -2299,11 +3220,15 @@ const StaticBUDashboard = () => {
                           <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             118000
                           </td>
+
                           <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             113674
                           </td>
                           <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font">
                             170864
+                          </td>
+                          <td className="border border-gray-300 px-3 py-2 text-center font-bold mono-font bg-yellow-100">
+                            180000
                           </td>
                         </tr>
 
@@ -3577,7 +4502,7 @@ const StaticBUDashboard = () => {
               <h2
                 className={`text-2xl font-black ${currentTheme.textPrimary} mb-4`}
               >
-                ⚡ Power Deep Dive - Utilization Analysis
+                Power - Utilization
               </h2>
 
               {/* Summary Cards */}
@@ -3864,14 +4789,1178 @@ const StaticBUDashboard = () => {
               </div>
             </div>
           );
+        // Quality Analysis with Tabular and Graphical Views
+        case "quality":
+          const selectedBUQualityData = selectedQualityBU
+            ? staticData.quality[selectedQualityBU]
+            : null;
+          const selectedPlantQualityData =
+            selectedQualityPlant && selectedBUQualityData
+              ? selectedBUQualityData.plants[selectedQualityPlant]
+              : null;
 
+          return (
+            <div className="space-y-4">
+              <h2
+                className={`text-2xl font-black ${currentTheme.textPrimary} mb-4 flex items-center gap-3`}
+              >
+                <span>✨</span>
+                Quality Analysis - Scrap, Yield & Rejections
+              </h2>
+
+              {/* View Mode Toggle - Show only when BU is selected */}
+              {selectedQualityBU && (
+                <div className="flex justify-center mb-4">
+                  <div className="inline-flex rounded-lg bg-gray-200 p-1">
+                    <button
+                      onClick={() => setQualityViewMode("tabular")}
+                      className={`px-6 py-2 rounded-lg font-bold text-sm transition-all ${
+                        qualityViewMode === "tabular"
+                          ? "bg-white shadow-md text-gray-900"
+                          : "text-gray-600 hover:text-gray-900"
+                      }`}
+                    >
+                      📊 Tabular View
+                    </button>
+                    <button
+                      onClick={() => setQualityViewMode("graphical")}
+                      className={`px-6 py-2 rounded-lg font-bold text-sm transition-all ${
+                        qualityViewMode === "graphical"
+                          ? "bg-white shadow-md text-gray-900"
+                          : "text-gray-600 hover:text-gray-900"
+                      }`}
+                    >
+                      📈 Graphical View
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* BU Selection Tabs */}
+              {!selectedQualityBU && (
+                <div className="flex gap-3 justify-center mb-4 flex-wrap">
+                  {["bu1", "bu2", "bu3"].map((buKey) => {
+                    const buName =
+                      buKey === "bu1"
+                        ? "BU 1"
+                        : buKey === "bu2"
+                        ? "BU 2"
+                        : "BU 3";
+
+                    const metrics = getBUMetrics(buKey);
+
+                    return (
+                      <button
+                        key={buKey}
+                        onClick={() => setSelectedQualityBU(buKey)}
+                        className="w-[340px] px-6 py-4 rounded-xl font-black text-base transition-all 
+                 bg-white text-gray-900 shadow-md border border-gray-200 
+                 hover:shadow-lg hover:scale-[1.02]"
+                      >
+                        <div className="flex items-center justify-between mb-3">
+                          <span className="text-lg">{buName}</span>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3 text-left text-sm font-bold">
+                          <div className="bg-gray-100 rounded-lg p-2">
+                            Scrap:{" "}
+                            <span className="font-black text-gray-900">
+                              {metrics.scrap}%
+                            </span>
+                          </div>
+                          <div className="bg-gray-100 rounded-lg p-2">
+                            Yield:{" "}
+                            <span className="font-black text-gray-900">
+                              {metrics.yield}%
+                            </span>
+                          </div>
+                          <div className="bg-gray-100 rounded-lg p-2">
+                            In-House Rej:{" "}
+                            <span className="font-black text-gray-900">
+                              {metrics.inHouseRejection}
+                            </span>
+                          </div>
+                          <div className="bg-gray-100 rounded-lg p-2">
+                            Cust Complaint:{" "}
+                            <span className="font-black text-gray-900">
+                              {metrics.customerComplaint}
+                            </span>
+                          </div>
+                        </div>
+
+                        <p className="text-xs mt-3 text-gray-500 font-bold">
+                          Click to view plants →
+                        </p>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Back Button */}
+              {selectedQualityBU && (
+                <button
+                  onClick={() => {
+                    if (selectedQualityPlant) {
+                      setSelectedQualityPlant(null);
+                    } else {
+                      setSelectedQualityBU(null);
+                    }
+                  }}
+                  className="mb-4 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg font-bold text-sm flex items-center gap-2"
+                >
+                  ← Back{" "}
+                  {selectedQualityPlant ? "to Plants" : "to BU Selection"}
+                </button>
+              )}
+
+              {/* TABULAR VIEW - Plant-wise */}
+              {selectedQualityBU &&
+                !selectedQualityPlant &&
+                qualityViewMode === "tabular" && (
+                  <div className="space-y-4">
+                    <h3 className="text-xl font-black text-green-700 flex items-center gap-2">
+                      <span>🏭</span>
+                      {selectedQualityBU === "bu1"
+                        ? "BU 1"
+                        : selectedQualityBU === "bu2"
+                        ? "BU 2"
+                        : "BU 3"}{" "}
+                      - Plant-wise Quality
+                    </h3>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      {Object.entries(selectedBUQualityData.plants).map(
+                        ([plantName, plantData]) => (
+                          <div
+                            key={plantName}
+                            className={`${currentTheme.bgSecondary} rounded-lg p-4 shadow-lg border-l-4 border-green-500 cursor-pointer hover:scale-[1.02] transition`}
+                            onClick={() => setSelectedQualityPlant(plantName)}
+                          >
+                            <h4
+                              className={`text-lg font-black ${currentTheme.textPrimary} mb-3`}
+                            >
+                              {plantName}
+                            </h4>
+
+                            <div className="grid grid-cols-2 gap-3 mb-3">
+                              <div className="text-center bg-gradient-to-br from-red-50 to-rose-100 rounded p-2">
+                                <p className="text-3xl font-black text-red-600 sans-font">
+                                  {plantData.scrap}%
+                                </p>
+                                <p className="text-xs font-bold text-red-600">
+                                  Scrap
+                                </p>
+                              </div>
+                              <div className="text-center bg-gradient-to-br from-green-50 to-emerald-100 rounded p-2">
+                                <p className="text-3xl font-black text-green-600 sans-font">
+                                  {plantData.yield}%
+                                </p>
+                                <p className="text-xs font-bold text-green-600">
+                                  Yield
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3">
+                              <div className="text-center bg-gradient-to-br from-orange-50 to-amber-100 rounded p-2">
+                                <p className="text-2xl font-black text-orange-600 sans-font">
+                                  {plantData.inHouseRejection}%
+                                </p>
+                                <p className="text-xs font-bold text-orange-600">
+                                  In-House Rej
+                                </p>
+                              </div>
+                              <div className="text-center bg-gradient-to-br from-purple-50 to-pink-100 rounded p-2">
+                                <p className="text-2xl font-black text-purple-600 sans-font">
+                                  {plantData.customerComplaint}%
+                                </p>
+                                <p className="text-xs font-bold text-purple-600">
+                                  Cust Complaint
+                                </p>
+                              </div>
+                            </div>
+
+                            <p className="text-xs text-center text-green-600 font-bold mt-3">
+                              Click to view lines →
+                            </p>
+                          </div>
+                        )
+                      )}
+                    </div>
+                  </div>
+                )}
+
+              {/* GRAPHICAL VIEW - Plant-wise with Modern Charts */}
+              {selectedQualityBU &&
+                !selectedQualityPlant &&
+                qualityViewMode === "graphical" && (
+                  <div className="space-y-4">
+                    <h3 className="text-xl font-black text-green-700 flex items-center gap-2">
+                      <span>📊</span>
+                      {selectedQualityBU === "bu1"
+                        ? "BU 1"
+                        : selectedQualityBU === "bu2"
+                        ? "BU 2"
+                        : "BU 3"}{" "}
+                      - Plant-wise Quality (Graphical)
+                    </h3>
+
+                    {/* Radial Progress Cards - All Metrics */}
+                    <div className="grid grid-cols-2 gap-4">
+                      {Object.entries(selectedBUQualityData.plants).map(
+                        ([plantName, plantData]) => (
+                          <div
+                            key={plantName}
+                            className={`${currentTheme.bgSecondary} rounded-lg p-5 shadow-lg cursor-pointer hover:scale-[1.02] transition border-2 border-gray-200 hover:border-green-400`}
+                            onClick={() => setSelectedQualityPlant(plantName)}
+                          >
+                            <h4 className="text-lg font-black text-gray-800 mb-4 text-center">
+                              {plantName}
+                            </h4>
+
+                            <div className="grid grid-cols-2 gap-4">
+                              {/* Yield Radial */}
+                              <div className="flex flex-col items-center">
+                                <div className="relative w-24 h-24">
+                                  <svg
+                                    className="transform -rotate-90"
+                                    width="96"
+                                    height="96"
+                                  >
+                                    {/* Background circle */}
+                                    <circle
+                                      cx="48"
+                                      cy="48"
+                                      r="40"
+                                      fill="none"
+                                      stroke="#e5e7eb"
+                                      strokeWidth="8"
+                                    />
+                                    {/* Progress circle */}
+                                    <circle
+                                      cx="48"
+                                      cy="48"
+                                      r="40"
+                                      fill="none"
+                                      stroke="#22c55e"
+                                      strokeWidth="8"
+                                      strokeDasharray={`${
+                                        (plantData.yield / 100) * 251.2
+                                      } 251.2`}
+                                      strokeLinecap="round"
+                                    />
+                                  </svg>
+                                  <div className="absolute inset-0 flex items-center justify-center">
+                                    <span className="text-lg font-black text-green-600">
+                                      {plantData.yield}%
+                                    </span>
+                                  </div>
+                                </div>
+                                <p className="text-xs font-bold text-green-600 mt-2">
+                                  Yield
+                                </p>
+                              </div>
+
+                              {/* Scrap Radial */}
+                              <div className="flex flex-col items-center">
+                                <div className="relative w-24 h-24">
+                                  <svg
+                                    className="transform -rotate-90"
+                                    width="96"
+                                    height="96"
+                                  >
+                                    <circle
+                                      cx="48"
+                                      cy="48"
+                                      r="40"
+                                      fill="none"
+                                      stroke="#e5e7eb"
+                                      strokeWidth="8"
+                                    />
+                                    <circle
+                                      cx="48"
+                                      cy="48"
+                                      r="40"
+                                      fill="none"
+                                      stroke="#ef4444"
+                                      strokeWidth="8"
+                                      strokeDasharray={`${
+                                        (plantData.scrap / 10) * 251.2
+                                      } 251.2`}
+                                      strokeLinecap="round"
+                                    />
+                                  </svg>
+                                  <div className="absolute inset-0 flex items-center justify-center">
+                                    <span className="text-lg font-black text-red-600">
+                                      {plantData.scrap}%
+                                    </span>
+                                  </div>
+                                </div>
+                                <p className="text-xs font-bold text-red-600 mt-2">
+                                  Scrap
+                                </p>
+                              </div>
+
+                              {/* In-House Rejection Radial */}
+                              <div className="flex flex-col items-center">
+                                <div className="relative w-24 h-24">
+                                  <svg
+                                    className="transform -rotate-90"
+                                    width="96"
+                                    height="96"
+                                  >
+                                    <circle
+                                      cx="48"
+                                      cy="48"
+                                      r="40"
+                                      fill="none"
+                                      stroke="#e5e7eb"
+                                      strokeWidth="8"
+                                    />
+                                    <circle
+                                      cx="48"
+                                      cy="48"
+                                      r="40"
+                                      fill="none"
+                                      stroke="#f97316"
+                                      strokeWidth="8"
+                                      strokeDasharray={`${
+                                        (plantData.inHouseRejection / 5) * 251.2
+                                      } 251.2`}
+                                      strokeLinecap="round"
+                                    />
+                                  </svg>
+                                  <div className="absolute inset-0 flex items-center justify-center">
+                                    <span className="text-lg font-black text-orange-600">
+                                      {plantData.inHouseRejection}%
+                                    </span>
+                                  </div>
+                                </div>
+                                <p className="text-xs font-bold text-orange-600 mt-2">
+                                  In-House Rej
+                                </p>
+                              </div>
+
+                              {/* Customer Complaint Radial */}
+                              <div className="flex flex-col items-center">
+                                <div className="relative w-24 h-24">
+                                  <svg
+                                    className="transform -rotate-90"
+                                    width="96"
+                                    height="96"
+                                  >
+                                    <circle
+                                      cx="48"
+                                      cy="48"
+                                      r="40"
+                                      fill="none"
+                                      stroke="#e5e7eb"
+                                      strokeWidth="8"
+                                    />
+                                    <circle
+                                      cx="48"
+                                      cy="48"
+                                      r="40"
+                                      fill="none"
+                                      stroke="#a855f7"
+                                      strokeWidth="8"
+                                      strokeDasharray={`${
+                                        (plantData.customerComplaint / 3) *
+                                        251.2
+                                      } 251.2`}
+                                      strokeLinecap="round"
+                                    />
+                                  </svg>
+                                  <div className="absolute inset-0 flex items-center justify-center">
+                                    <span className="text-lg font-black text-purple-600">
+                                      {plantData.customerComplaint}%
+                                    </span>
+                                  </div>
+                                </div>
+                                <p className="text-xs font-bold text-purple-600 mt-2">
+                                  Cust Complaint
+                                </p>
+                              </div>
+                            </div>
+
+                            <p className="text-xs text-center text-green-600 font-bold mt-4">
+                              Click to view lines →
+                            </p>
+                          </div>
+                        )
+                      )}
+                    </div>
+
+                    {/* Comparison Bar Chart */}
+                    <div
+                      className={`${currentTheme.bgSecondary} rounded-lg p-5 shadow-lg mt-6`}
+                    >
+                      <h4 className="text-lg font-black text-gray-700 mb-5 flex items-center gap-2">
+                        📊 Plant Comparison - All Metrics
+                      </h4>
+
+                      <div className="space-y-6">
+                        {/* Yield Comparison */}
+                        <div>
+                          <p className="text-sm font-black text-green-600 mb-2">
+                            🟢 Yield Percentage
+                          </p>
+                          <div className="space-y-2">
+                            {Object.entries(selectedBUQualityData.plants).map(
+                              ([plantName, plantData]) => (
+                                <div
+                                  key={plantName}
+                                  className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2 rounded"
+                                  onClick={() =>
+                                    setSelectedQualityPlant(plantName)
+                                  }
+                                >
+                                  <span className="font-bold text-gray-700 w-28 text-sm">
+                                    {plantName}
+                                  </span>
+                                  <div className="flex-1 h-8 bg-gray-200 rounded-lg overflow-hidden relative">
+                                    <div
+                                      className="h-full bg-gradient-to-r from-green-400 to-green-600 flex items-center justify-end px-3 transition-all duration-500"
+                                      style={{ width: `${plantData.yield}%` }}
+                                    >
+                                      <span className="text-white font-black text-sm">
+                                        {plantData.yield}%
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              )
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Scrap Comparison */}
+                        <div>
+                          <p className="text-sm font-black text-red-600 mb-2">
+                            🔴 Scrap Percentage
+                          </p>
+                          <div className="space-y-2">
+                            {Object.entries(selectedBUQualityData.plants).map(
+                              ([plantName, plantData]) => (
+                                <div
+                                  key={plantName}
+                                  className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2 rounded"
+                                  onClick={() =>
+                                    setSelectedQualityPlant(plantName)
+                                  }
+                                >
+                                  <span className="font-bold text-gray-700 w-28 text-sm">
+                                    {plantName}
+                                  </span>
+                                  <div className="flex-1 h-8 bg-gray-200 rounded-lg overflow-hidden relative">
+                                    <div
+                                      className="h-full bg-gradient-to-r from-red-400 to-red-600 flex items-center justify-end px-3 transition-all duration-500"
+                                      style={{
+                                        width: `${
+                                          (plantData.scrap / 10) * 100
+                                        }%`,
+                                      }}
+                                    >
+                                      <span className="text-white font-black text-sm">
+                                        {plantData.scrap}%
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              )
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+              {/* TABULAR VIEW - Line-wise */}
+              {selectedQualityPlant &&
+                selectedPlantQualityData &&
+                qualityViewMode === "tabular" && (
+                  <div className="space-y-4">
+                    <h3 className="text-xl font-black text-blue-700 flex items-center gap-2">
+                      <span>📏</span>
+                      {selectedQualityPlant} - Line-wise Quality
+                    </h3>
+
+                    {/* Plant Summary */}
+                    <div className="grid grid-cols-4 gap-3 mb-4">
+                      <div
+                        className={`${currentTheme.bgSecondary} rounded-lg p-3 text-center border-l-4 border-red-500`}
+                      >
+                        <p className="text-sm font-bold text-gray-600 mb-1">
+                          Scrap
+                        </p>
+                        <p className="text-4xl font-black text-red-600 sans-font">
+                          {selectedPlantQualityData.scrap}%
+                        </p>
+                      </div>
+                      <div
+                        className={`${currentTheme.bgSecondary} rounded-lg p-3 text-center border-l-4 border-green-500`}
+                      >
+                        <p className="text-sm font-bold text-gray-600 mb-1">
+                          Yield
+                        </p>
+                        <p className="text-4xl font-black text-green-600 sans-font">
+                          {selectedPlantQualityData.yield}%
+                        </p>
+                      </div>
+                      <div
+                        className={`${currentTheme.bgSecondary} rounded-lg p-3 text-center border-l-4 border-orange-500`}
+                      >
+                        <p className="text-sm font-bold text-gray-600 mb-1">
+                          In-House Rej
+                        </p>
+                        <p className="text-4xl font-black text-orange-600 sans-font">
+                          {selectedPlantQualityData.inHouseRejection}%
+                        </p>
+                      </div>
+                      <div
+                        className={`${currentTheme.bgSecondary} rounded-lg p-3 text-center border-l-4 border-purple-500`}
+                      >
+                        <p className="text-sm font-bold text-gray-600 mb-1">
+                          Cust Complaint
+                        </p>
+                        <p className="text-4xl font-black text-purple-600 sans-font">
+                          {selectedPlantQualityData.customerComplaint}%
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Lines Table */}
+                    {Object.keys(selectedPlantQualityData.lines).length > 0 ? (
+                      <div
+                        className={`${currentTheme.bgSecondary} rounded-lg p-4`}
+                      >
+                        <h4
+                          className={`text-base font-bold ${currentTheme.textPrimary} mb-3`}
+                        >
+                          📋 Line-wise Quality Performance
+                        </h4>
+                        <table className="w-full text-sm">
+                          <thead className="bg-gradient-to-r from-green-100 to-emerald-100">
+                            <tr>
+                              <th className="px-4 py-3 text-left font-black text-gray-700">
+                                Line
+                              </th>
+                              <th className="px-4 py-3 text-right font-black text-gray-700">
+                                Scrap
+                              </th>
+                              <th className="px-4 py-3 text-right font-black text-gray-700">
+                                Yield
+                              </th>
+                              <th className="px-4 py-3 text-right font-black text-gray-700">
+                                In-House Rej
+                              </th>
+                              <th className="px-4 py-3 text-right font-black text-gray-700">
+                                Cust Complaint
+                              </th>
+                              <th className="px-4 py-3 text-center font-black text-gray-700">
+                                Status
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {Object.entries(selectedPlantQualityData.lines).map(
+                              ([lineName, lineData], idx) => (
+                                <tr
+                                  key={idx}
+                                  className={
+                                    idx % 2 === 0 ? "bg-white" : "bg-gray-50"
+                                  }
+                                >
+                                  <td className="px-4 py-3 font-bold text-gray-800">
+                                    {lineName}
+                                  </td>
+                                  <td className="px-4 py-3 text-right font-bold text-red-600 mono-font">
+                                    {lineData.scrap}%
+                                  </td>
+                                  <td className="px-4 py-3 text-right font-bold text-green-600 mono-font">
+                                    {lineData.yield}%
+                                  </td>
+                                  <td className="px-4 py-3 text-right font-bold text-orange-600 mono-font">
+                                    {lineData.rejection}%
+                                  </td>
+                                  <td className="px-4 py-3 text-right font-bold text-purple-600 mono-font">
+                                    {lineData.complaint}%
+                                  </td>
+                                  <td className="px-4 py-3 text-center">
+                                    <span
+                                      className={`px-3 py-1 rounded-full font-black ${
+                                        lineData.yield >= 98
+                                          ? "bg-green-200 text-green-800"
+                                          : lineData.yield >= 97
+                                          ? "bg-yellow-200 text-yellow-800"
+                                          : "bg-red-200 text-red-800"
+                                      }`}
+                                    >
+                                      {lineData.yield >= 98
+                                        ? "✓ Excellent"
+                                        : lineData.yield >= 97
+                                        ? "⚠ Good"
+                                        : "✗ Poor"}
+                                    </span>
+                                  </td>
+                                </tr>
+                              )
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    ) : (
+                      <div className="text-center p-8 bg-gray-100 rounded-lg">
+                        <p className="text-lg font-bold text-gray-600">
+                          No line data available for this plant
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+              {/* GRAPHICAL VIEW - Line-wise with Modern Visual Charts */}
+              {selectedQualityPlant &&
+                selectedPlantQualityData &&
+                qualityViewMode === "graphical" && (
+                  <div className="space-y-4">
+                    <h3 className="text-xl font-black text-blue-700 flex items-center gap-2">
+                      <span>📊</span>
+                      {selectedQualityPlant} - Line-wise Quality (Graphical)
+                    </h3>
+
+                    {/* Plant Summary Cards */}
+                    <div className="grid grid-cols-4 gap-3 mb-4">
+                      <div
+                        className={`${currentTheme.bgSecondary} rounded-lg p-3 text-center border-l-4 border-red-500`}
+                      >
+                        <p className="text-sm font-bold text-gray-600 mb-1">
+                          Scrap
+                        </p>
+                        <p className="text-4xl font-black text-red-600 sans-font">
+                          {selectedPlantQualityData.scrap}%
+                        </p>
+                      </div>
+                      <div
+                        className={`${currentTheme.bgSecondary} rounded-lg p-3 text-center border-l-4 border-green-500`}
+                      >
+                        <p className="text-sm font-bold text-gray-600 mb-1">
+                          Yield
+                        </p>
+                        <p className="text-4xl font-black text-green-600 sans-font">
+                          {selectedPlantQualityData.yield}%
+                        </p>
+                      </div>
+                      <div
+                        className={`${currentTheme.bgSecondary} rounded-lg p-3 text-center border-l-4 border-orange-500`}
+                      >
+                        <p className="text-sm font-bold text-gray-600 mb-1">
+                          In-House Rej
+                        </p>
+                        <p className="text-4xl font-black text-orange-600 sans-font">
+                          {selectedPlantQualityData.inHouseRejection}%
+                        </p>
+                      </div>
+                      <div
+                        className={`${currentTheme.bgSecondary} rounded-lg p-3 text-center border-l-4 border-purple-500`}
+                      >
+                        <p className="text-sm font-bold text-gray-600 mb-1">
+                          Cust Complaint
+                        </p>
+                        <p className="text-4xl font-black text-purple-600 sans-font">
+                          {selectedPlantQualityData.customerComplaint}%
+                        </p>
+                      </div>
+                    </div>
+
+                    {Object.keys(selectedPlantQualityData.lines).length > 0 ? (
+                      <>
+                        {/* Radial Progress Grid for Each Line */}
+                        <div className="grid grid-cols-2 gap-4">
+                          {Object.entries(selectedPlantQualityData.lines).map(
+                            ([lineName, lineData]) => (
+                              <div
+                                key={lineName}
+                                className={`${currentTheme.bgSecondary} rounded-lg p-4 shadow-lg border-2 border-gray-200`}
+                              >
+                                <h4 className="text-base font-black text-gray-800 mb-3 text-center">
+                                  {lineName}
+                                </h4>
+
+                                <div className="grid grid-cols-2 gap-3">
+                                  {/* Yield */}
+                                  <div className="flex flex-col items-center">
+                                    <div className="relative w-20 h-20">
+                                      <svg
+                                        className="transform -rotate-90"
+                                        width="80"
+                                        height="80"
+                                      >
+                                        <circle
+                                          cx="40"
+                                          cy="40"
+                                          r="32"
+                                          fill="none"
+                                          stroke="#e5e7eb"
+                                          strokeWidth="6"
+                                        />
+                                        <circle
+                                          cx="40"
+                                          cy="40"
+                                          r="32"
+                                          fill="none"
+                                          stroke={
+                                            lineData.yield >= 98
+                                              ? "#22c55e"
+                                              : lineData.yield >= 97
+                                              ? "#eab308"
+                                              : "#ef4444"
+                                          }
+                                          strokeWidth="6"
+                                          strokeDasharray={`${
+                                            (lineData.yield / 100) * 201
+                                          } 201`}
+                                          strokeLinecap="round"
+                                        />
+                                      </svg>
+                                      <div className="absolute inset-0 flex items-center justify-center">
+                                        <span className="text-sm font-black text-gray-800">
+                                          {lineData.yield}%
+                                        </span>
+                                      </div>
+                                    </div>
+                                    <p className="text-xs font-bold text-green-600 mt-1">
+                                      Yield
+                                    </p>
+                                  </div>
+
+                                  {/* Scrap */}
+                                  <div className="flex flex-col items-center">
+                                    <div className="relative w-20 h-20">
+                                      <svg
+                                        className="transform -rotate-90"
+                                        width="80"
+                                        height="80"
+                                      >
+                                        <circle
+                                          cx="40"
+                                          cy="40"
+                                          r="32"
+                                          fill="none"
+                                          stroke="#e5e7eb"
+                                          strokeWidth="6"
+                                        />
+                                        <circle
+                                          cx="40"
+                                          cy="40"
+                                          r="32"
+                                          fill="none"
+                                          stroke="#ef4444"
+                                          strokeWidth="6"
+                                          strokeDasharray={`${
+                                            (lineData.scrap / 10) * 201
+                                          } 201`}
+                                          strokeLinecap="round"
+                                        />
+                                      </svg>
+                                      <div className="absolute inset-0 flex items-center justify-center">
+                                        <span className="text-sm font-black text-gray-800">
+                                          {lineData.scrap}%
+                                        </span>
+                                      </div>
+                                    </div>
+                                    <p className="text-xs font-bold text-red-600 mt-1">
+                                      Scrap
+                                    </p>
+                                  </div>
+
+                                  {/* Rejection */}
+                                  <div className="flex flex-col items-center">
+                                    <div className="relative w-20 h-20">
+                                      <svg
+                                        className="transform -rotate-90"
+                                        width="80"
+                                        height="80"
+                                      >
+                                        <circle
+                                          cx="40"
+                                          cy="40"
+                                          r="32"
+                                          fill="none"
+                                          stroke="#e5e7eb"
+                                          strokeWidth="6"
+                                        />
+                                        <circle
+                                          cx="40"
+                                          cy="40"
+                                          r="32"
+                                          fill="none"
+                                          stroke="#f97316"
+                                          strokeWidth="6"
+                                          strokeDasharray={`${
+                                            (lineData.rejection / 5) * 201
+                                          } 201`}
+                                          strokeLinecap="round"
+                                        />
+                                      </svg>
+                                      <div className="absolute inset-0 flex items-center justify-center">
+                                        <span className="text-sm font-black text-gray-800">
+                                          {lineData.rejection}%
+                                        </span>
+                                      </div>
+                                    </div>
+                                    <p className="text-xs font-bold text-orange-600 mt-1">
+                                      Rejection
+                                    </p>
+                                  </div>
+
+                                  {/* Complaint */}
+                                  <div className="flex flex-col items-center">
+                                    <div className="relative w-20 h-20">
+                                      <svg
+                                        className="transform -rotate-90"
+                                        width="80"
+                                        height="80"
+                                      >
+                                        <circle
+                                          cx="40"
+                                          cy="40"
+                                          r="32"
+                                          fill="none"
+                                          stroke="#e5e7eb"
+                                          strokeWidth="6"
+                                        />
+                                        <circle
+                                          cx="40"
+                                          cy="40"
+                                          r="32"
+                                          fill="none"
+                                          stroke="#a855f7"
+                                          strokeWidth="6"
+                                          strokeDasharray={`${
+                                            (lineData.complaint / 3) * 201
+                                          } 201`}
+                                          strokeLinecap="round"
+                                        />
+                                      </svg>
+                                      <div className="absolute inset-0 flex items-center justify-center">
+                                        <span className="text-sm font-black text-gray-800">
+                                          {lineData.complaint}%
+                                        </span>
+                                      </div>
+                                    </div>
+                                    <p className="text-xs font-bold text-purple-600 mt-1">
+                                      Complaint
+                                    </p>
+                                  </div>
+                                </div>
+
+                                {/* Status Badge */}
+                                <div className="mt-3 text-center">
+                                  <span
+                                    className={`px-3 py-1 rounded-full font-black text-xs ${
+                                      lineData.yield >= 98
+                                        ? "bg-green-200 text-green-800"
+                                        : lineData.yield >= 97
+                                        ? "bg-yellow-200 text-yellow-800"
+                                        : "bg-red-200 text-red-800"
+                                    }`}
+                                  >
+                                    {lineData.yield >= 98
+                                      ? "✓ Excellent"
+                                      : lineData.yield >= 97
+                                      ? "⚠ Good"
+                                      : "✗ Poor"}
+                                  </span>
+                                </div>
+                              </div>
+                            )
+                          )}
+                        </div>
+
+                        {/* Stacked Comparison Bars */}
+                        <div
+                          className={`${currentTheme.bgSecondary} rounded-lg p-5 shadow-lg mt-6`}
+                        >
+                          <h4 className="text-lg font-black text-gray-700 mb-4 flex items-center gap-2">
+                            📊 Line Performance Comparison
+                          </h4>
+
+                          <div className="space-y-4">
+                            {Object.entries(selectedPlantQualityData.lines).map(
+                              ([lineName, lineData]) => (
+                                <div key={lineName}>
+                                  <div className="flex items-center justify-between mb-2">
+                                    <span className="font-black text-gray-800 text-sm">
+                                      {lineName}
+                                    </span>
+                                    <span
+                                      className={`text-xs font-bold px-2 py-1 rounded ${
+                                        lineData.yield >= 98
+                                          ? "bg-green-100 text-green-700"
+                                          : lineData.yield >= 97
+                                          ? "bg-yellow-100 text-yellow-700"
+                                          : "bg-red-100 text-red-700"
+                                      }`}
+                                    >
+                                      Yield: {lineData.yield}%
+                                    </span>
+                                  </div>
+
+                                  {/* Grouped Mini Bars */}
+                                  <div className="grid grid-cols-4 gap-2">
+                                    {/* Yield */}
+                                    <div>
+                                      <div className="h-16 bg-gray-200 rounded relative overflow-hidden">
+                                        <div
+                                          className="absolute bottom-0 w-full bg-gradient-to-t from-green-500 to-green-400 transition-all duration-500"
+                                          style={{
+                                            height: `${lineData.yield}%`,
+                                          }}
+                                        ></div>
+                                        <div className="absolute inset-0 flex items-end justify-center pb-1">
+                                          <span className="text-xs font-black text-white mix-blend-difference">
+                                            {lineData.yield}%
+                                          </span>
+                                        </div>
+                                      </div>
+                                      <p className="text-xs font-bold text-green-600 text-center mt-1">
+                                        Yield
+                                      </p>
+                                    </div>
+
+                                    {/* Scrap */}
+                                    <div>
+                                      <div className="h-16 bg-gray-200 rounded relative overflow-hidden">
+                                        <div
+                                          className="absolute bottom-0 w-full bg-gradient-to-t from-red-500 to-red-400 transition-all duration-500"
+                                          style={{
+                                            height: `${
+                                              (lineData.scrap / 10) * 100
+                                            }%`,
+                                          }}
+                                        ></div>
+                                        <div className="absolute inset-0 flex items-end justify-center pb-1">
+                                          <span className="text-xs font-black text-white mix-blend-difference">
+                                            {lineData.scrap}%
+                                          </span>
+                                        </div>
+                                      </div>
+                                      <p className="text-xs font-bold text-red-600 text-center mt-1">
+                                        Scrap
+                                      </p>
+                                    </div>
+
+                                    {/* Rejection */}
+                                    <div>
+                                      <div className="h-16 bg-gray-200 rounded relative overflow-hidden">
+                                        <div
+                                          className="absolute bottom-0 w-full bg-gradient-to-t from-orange-500 to-orange-400 transition-all duration-500"
+                                          style={{
+                                            height: `${
+                                              (lineData.rejection / 5) * 100
+                                            }%`,
+                                          }}
+                                        ></div>
+                                        <div className="absolute inset-0 flex items-end justify-center pb-1">
+                                          <span className="text-xs font-black text-white mix-blend-difference">
+                                            {lineData.rejection}%
+                                          </span>
+                                        </div>
+                                      </div>
+                                      <p className="text-xs font-bold text-orange-600 text-center mt-1">
+                                        Reject
+                                      </p>
+                                    </div>
+
+                                    {/* Complaint */}
+                                    <div>
+                                      <div className="h-16 bg-gray-200 rounded relative overflow-hidden">
+                                        <div
+                                          className="absolute bottom-0 w-full bg-gradient-to-t from-purple-500 to-purple-400 transition-all duration-500"
+                                          style={{
+                                            height: `${
+                                              (lineData.complaint / 3) * 100
+                                            }%`,
+                                          }}
+                                        ></div>
+                                        <div className="absolute inset-0 flex items-end justify-center pb-1">
+                                          <span className="text-xs font-black text-white mix-blend-difference">
+                                            {lineData.complaint}%
+                                          </span>
+                                        </div>
+                                      </div>
+                                      <p className="text-xs font-bold text-purple-600 text-center mt-1">
+                                        Comp
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                              )
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Heat Map Style Metric Cards */}
+                        <div
+                          className={`${currentTheme.bgSecondary} rounded-lg p-5 shadow-lg mt-6`}
+                        >
+                          <h4 className="text-lg font-black text-gray-700 mb-4 flex items-center gap-2">
+                            🔥 Performance Heat Map
+                          </h4>
+
+                          <div className="grid grid-cols-4 gap-3">
+                            {/* Yield Heat Map */}
+                            <div>
+                              <p className="text-xs font-black text-gray-700 mb-2 text-center">
+                                Yield
+                              </p>
+                              <div className="space-y-1">
+                                {Object.entries(
+                                  selectedPlantQualityData.lines
+                                ).map(([lineName, lineData]) => (
+                                  <div
+                                    key={lineName}
+                                    className={`p-2 rounded text-center transition-all ${
+                                      lineData.yield >= 98
+                                        ? "bg-green-500 text-white"
+                                        : lineData.yield >= 97
+                                        ? "bg-yellow-400 text-gray-900"
+                                        : "bg-red-500 text-white"
+                                    }`}
+                                  >
+                                    <p className="text-xs font-black">
+                                      {lineName}
+                                    </p>
+                                    <p className="text-sm font-black">
+                                      {lineData.yield}%
+                                    </p>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Scrap Heat Map */}
+                            <div>
+                              <p className="text-xs font-black text-gray-700 mb-2 text-center">
+                                Scrap
+                              </p>
+                              <div className="space-y-1">
+                                {Object.entries(
+                                  selectedPlantQualityData.lines
+                                ).map(([lineName, lineData]) => (
+                                  <div
+                                    key={lineName}
+                                    className="p-2 rounded text-center"
+                                    style={{
+                                      backgroundColor: `rgba(239, 68, 68, ${
+                                        lineData.scrap / 10
+                                      })`,
+                                      color:
+                                        lineData.scrap > 5
+                                          ? "white"
+                                          : "#374151",
+                                    }}
+                                  >
+                                    <p className="text-xs font-black">
+                                      {lineName}
+                                    </p>
+                                    <p className="text-sm font-black">
+                                      {lineData.scrap}%
+                                    </p>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Rejection Heat Map */}
+                            <div>
+                              <p className="text-xs font-black text-gray-700 mb-2 text-center">
+                                Rejection
+                              </p>
+                              <div className="space-y-1">
+                                {Object.entries(
+                                  selectedPlantQualityData.lines
+                                ).map(([lineName, lineData]) => (
+                                  <div
+                                    key={lineName}
+                                    className="p-2 rounded text-center"
+                                    style={{
+                                      backgroundColor: `rgba(249, 115, 22, ${
+                                        lineData.rejection / 5
+                                      })`,
+                                      color:
+                                        lineData.rejection > 2.5
+                                          ? "white"
+                                          : "#374151",
+                                    }}
+                                  >
+                                    <p className="text-xs font-black">
+                                      {lineName}
+                                    </p>
+                                    <p className="text-sm font-black">
+                                      {lineData.rejection}%
+                                    </p>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Complaint Heat Map */}
+                            <div>
+                              <p className="text-xs font-black text-gray-700 mb-2 text-center">
+                                Complaint
+                              </p>
+                              <div className="space-y-1">
+                                {Object.entries(
+                                  selectedPlantQualityData.lines
+                                ).map(([lineName, lineData]) => (
+                                  <div
+                                    key={lineName}
+                                    className="p-2 rounded text-center"
+                                    style={{
+                                      backgroundColor: `rgba(168, 85, 247, ${
+                                        lineData.complaint / 3
+                                      })`,
+                                      color:
+                                        lineData.complaint > 1.5
+                                          ? "white"
+                                          : "#374151",
+                                    }}
+                                  >
+                                    <p className="text-xs font-black">
+                                      {lineName}
+                                    </p>
+                                    <p className="text-sm font-black">
+                                      {lineData.complaint}%
+                                    </p>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="text-center p-8 bg-gray-100 rounded-lg">
+                        <p className="text-lg font-bold text-gray-600">
+                          No line data available for this plant
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+            </div>
+          );
         case "customer":
           return (
             <div className="space-y-4">
               <h2
                 className={`text-2xl font-black ${currentTheme.textPrimary} mb-4`}
               >
-                😊 Customer Satisfaction - Score Analysis
+                😊 Customer Satisfaction - Score Card
               </h2>
 
               {/* Summary Card */}
@@ -4136,13 +6225,733 @@ const StaticBUDashboard = () => {
             </div>
           );
 
+        case "opex":
+          // OpEx Data handling
+          const selectedBUOpExData = selectedOpExBU
+            ? staticData.opex[selectedOpExBU]
+            : null;
+          const selectedPlantOpExData =
+            selectedOpExPlant && selectedBUOpExData
+              ? selectedBUOpExData.plants[selectedOpExPlant]
+              : null;
+
+          return (
+            <div className="h-[calc(100vh-200px)] flex flex-col">
+              <h2
+                className={`text-xl font-black ${currentTheme.textPrimary} mb-3 flex items-center gap-2`}
+              >
+                <span>🎯</span>
+                OpEx Analysis
+              </h2>
+
+              {/* View Mode Toggle - Show only when BU is selected */}
+              {selectedOpExBU && (
+                <div className="flex justify-center mb-3">
+                  <div className="inline-flex rounded-lg bg-gray-200 p-1">
+                    <button
+                      onClick={() => setOpExViewMode("tabular")}
+                      className={`px-4 py-1 rounded-lg font-bold text-xs transition-all ${
+                        opexViewMode === "tabular"
+                          ? "bg-white shadow-md text-gray-900"
+                          : "text-gray-600 hover:text-gray-900"
+                      }`}
+                    >
+                      📊 Table
+                    </button>
+                    <button
+                      onClick={() => setOpExViewMode("graphical")}
+                      className={`px-4 py-1 rounded-lg font-bold text-xs transition-all ${
+                        opexViewMode === "graphical"
+                          ? "bg-white shadow-md text-gray-900"
+                          : "text-gray-600 hover:text-gray-900"
+                      }`}
+                    >
+                      📈 Graph
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* BU Selection Tabs */}
+              {!selectedOpExBU && (
+                <div className="flex-1 flex flex-col">
+                  <div className="flex gap-2 justify-center mb-3 flex-wrap">
+                    <button
+                      onClick={() => setSelectedOpExBU("bu1")}
+                      className="px-5 py-2 rounded-lg font-black text-sm transition-all bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg hover:scale-105"
+                    >
+                      BU 1 - {staticData.opex.bu1.overall}
+                    </button>
+                    <button
+                      onClick={() => setSelectedOpExBU("bu2")}
+                      className="px-5 py-2 rounded-lg font-black text-sm transition-all bg-gradient-to-r from-orange-600 to-amber-600 text-white shadow-lg hover:scale-105"
+                    >
+                      BU 2 - {staticData.opex.bu2.overall}
+                    </button>
+                    <button
+                      onClick={() => setSelectedOpExBU("bu3")}
+                      className="px-5 py-2 rounded-lg font-black text-sm transition-all bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg hover:scale-105"
+                    >
+                      BU 3 - {staticData.opex.bu3.overall}
+                    </button>
+                  </div>
+
+                  {/* Overall Summary */}
+                  <div
+                    className={`${currentTheme.bgSecondary} rounded-lg p-4 flex-1`}
+                  >
+                    <h4
+                      className={`text-sm font-bold ${currentTheme.textPrimary} mb-3`}
+                    >
+                      🏢 Group-wide OpEx Summary
+                    </h4>
+                    <div className="grid grid-cols-3 gap-3 h-[calc(100%-2rem)]">
+                      <div className="text-center p-3 bg-gradient-to-br from-green-50 to-emerald-100 rounded-lg flex flex-col justify-center">
+                        <p className="text-xs font-bold text-gray-600 mb-1">
+                          BU 1
+                        </p>
+                        <p className="text-4xl font-black text-green-600 sans-font">
+                          {staticData.opex.bu1.overall}
+                        </p>
+                        <p className="text-xs font-bold text-gray-500 mt-1">
+                          Score
+                        </p>
+                      </div>
+                      <div className="text-center p-3 bg-gradient-to-br from-orange-50 to-amber-100 rounded-lg flex flex-col justify-center">
+                        <p className="text-xs font-bold text-gray-600 mb-1">
+                          BU 2
+                        </p>
+                        <p className="text-4xl font-black text-orange-600 sans-font">
+                          {staticData.opex.bu2.overall}
+                        </p>
+                        <p className="text-xs font-bold text-gray-500 mt-1">
+                          Score
+                        </p>
+                      </div>
+                      <div className="text-center p-3 bg-gradient-to-br from-purple-50 to-pink-100 rounded-lg flex flex-col justify-center">
+                        <p className="text-xs font-bold text-gray-600 mb-1">
+                          BU 3
+                        </p>
+                        <p className="text-4xl font-black text-purple-600 sans-font">
+                          {staticData.opex.bu3.overall}
+                        </p>
+                        <p className="text-xs font-bold text-gray-500 mt-1">
+                          Score
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Back Button */}
+              {selectedOpExBU && (
+                <button
+                  onClick={() => {
+                    if (selectedOpExPlant) {
+                      setSelectedOpExPlant(null);
+                    } else {
+                      setSelectedOpExBU(null);
+                    }
+                  }}
+                  className="mb-2 px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded-lg font-bold text-xs flex items-center gap-1 self-start"
+                >
+                  ← Back {selectedOpExPlant ? "to Plants" : "to BU"}
+                </button>
+              )}
+
+              {/* TABULAR VIEW - Plant-wise */}
+              {selectedOpExBU &&
+                !selectedOpExPlant &&
+                opexViewMode === "tabular" && (
+                  <div className="flex-1 flex flex-col overflow-hidden">
+                    <h3 className="text-base font-black text-blue-700 flex items-center gap-2 mb-2">
+                      <span>🏭</span>
+                      {selectedOpExBU === "bu1"
+                        ? "BU 1"
+                        : selectedOpExBU === "bu2"
+                        ? "BU 2"
+                        : "BU 3"}{" "}
+                      Plants
+                    </h3>
+
+                    <div className="grid grid-cols-2 gap-2 flex-1">
+                      {Object.entries(selectedBUOpExData.plants).map(
+                        ([plantName, plantData]) => (
+                          <div
+                            key={plantName}
+                            className={`${currentTheme.bgSecondary} rounded-lg p-3 shadow-lg border-l-4 border-purple-500 cursor-pointer hover:scale-[1.02] transition`}
+                            onClick={() => setSelectedOpExPlant(plantName)}
+                          >
+                            <h4
+                              className={`text-sm font-black ${currentTheme.textPrimary} mb-2`}
+                            >
+                              {plantName}
+                            </h4>
+
+                            <div className="grid grid-cols-2 gap-2">
+                              <div className="text-center bg-gradient-to-br from-purple-50 to-pink-100 rounded p-2">
+                                <p className="text-2xl font-black text-purple-600 sans-font">
+                                  {plantData.score}
+                                </p>
+                                <p className="text-xs font-bold text-purple-600">
+                                  Score
+                                </p>
+                              </div>
+                              <div className="text-center bg-gradient-to-br from-blue-50 to-indigo-100 rounded p-2">
+                                <p className="text-2xl font-black text-blue-600 sans-font">
+                                  {plantData.efficiency}%
+                                </p>
+                                <p className="text-xs font-bold text-blue-600">
+                                  Efficiency
+                                </p>
+                              </div>
+                              <div className="text-center bg-gradient-to-br from-green-50 to-emerald-100 rounded p-2">
+                                <p className="text-xl font-black text-green-600 sans-font">
+                                  {plantData.cost}
+                                </p>
+                                <p className="text-xs font-bold text-green-600">
+                                  Cost Index
+                                </p>
+                              </div>
+                              <div className="text-center bg-gradient-to-br from-orange-50 to-amber-100 rounded p-2">
+                                <p className="text-xl font-black text-orange-600 sans-font">
+                                  {plantData.productivity}
+                                </p>
+                                <p className="text-xs font-bold text-orange-600">
+                                  Productivity
+                                </p>
+                              </div>
+                            </div>
+
+                            <p className="text-xs text-center text-purple-600 font-bold mt-2">
+                              Click for lines →
+                            </p>
+                          </div>
+                        )
+                      )}
+                    </div>
+                  </div>
+                )}
+
+              {/* GRAPHICAL VIEW - Plant-wise */}
+              {selectedOpExBU &&
+                !selectedOpExPlant &&
+                opexViewMode === "graphical" && (
+                  <div className="flex-1 flex flex-col overflow-hidden">
+                    <h3 className="text-base font-black text-blue-700 flex items-center gap-2 mb-2">
+                      <span>📊</span>
+                      {selectedOpExBU === "bu1"
+                        ? "BU 1"
+                        : selectedOpExBU === "bu2"
+                        ? "BU 2"
+                        : "BU 3"}{" "}
+                      - Graphical
+                    </h3>
+
+                    <div className="grid grid-cols-2 gap-2 flex-1">
+                      {Object.entries(selectedBUOpExData.plants).map(
+                        ([plantName, plantData]) => (
+                          <div
+                            key={plantName}
+                            className={`${currentTheme.bgSecondary} rounded-lg p-3 shadow-lg cursor-pointer hover:scale-[1.02] transition border-2 border-gray-200 hover:border-purple-400`}
+                            onClick={() => setSelectedOpExPlant(plantName)}
+                          >
+                            <h4 className="text-sm font-black text-gray-800 mb-2 text-center">
+                              {plantName}
+                            </h4>
+
+                            <div className="grid grid-cols-2 gap-2">
+                              {/* OpEx Score Radial */}
+                              <div className="flex flex-col items-center col-span-2">
+                                <div className="relative w-20 h-20">
+                                  <svg
+                                    className="transform -rotate-90"
+                                    width="80"
+                                    height="80"
+                                  >
+                                    <circle
+                                      cx="40"
+                                      cy="40"
+                                      r="34"
+                                      fill="none"
+                                      stroke="#e5e7eb"
+                                      strokeWidth="6"
+                                    />
+                                    <circle
+                                      cx="40"
+                                      cy="40"
+                                      r="34"
+                                      fill="none"
+                                      stroke={
+                                        plantData.score >= 85
+                                          ? "#a855f7"
+                                          : plantData.score >= 75
+                                          ? "#f59e0b"
+                                          : "#ef4444"
+                                      }
+                                      strokeWidth="6"
+                                      strokeDasharray={`${
+                                        (plantData.score / 100) * 213.6
+                                      } 213.6`}
+                                      strokeLinecap="round"
+                                    />
+                                  </svg>
+                                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                    <span className="text-lg font-black text-purple-600">
+                                      {plantData.score}
+                                    </span>
+                                    <span className="text-xs font-bold text-gray-600">
+                                      Score
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Efficiency */}
+                              <div className="flex flex-col items-center">
+                                <div className="relative w-14 h-14">
+                                  <svg
+                                    className="transform -rotate-90"
+                                    width="56"
+                                    height="56"
+                                  >
+                                    <circle
+                                      cx="28"
+                                      cy="28"
+                                      r="22"
+                                      fill="none"
+                                      stroke="#e5e7eb"
+                                      strokeWidth="5"
+                                    />
+                                    <circle
+                                      cx="28"
+                                      cy="28"
+                                      r="22"
+                                      fill="none"
+                                      stroke="#3b82f6"
+                                      strokeWidth="5"
+                                      strokeDasharray={`${
+                                        (plantData.efficiency / 100) * 138.2
+                                      } 138.2`}
+                                      strokeLinecap="round"
+                                    />
+                                  </svg>
+                                  <div className="absolute inset-0 flex items-center justify-center">
+                                    <span className="text-xs font-black text-blue-600">
+                                      {plantData.efficiency}%
+                                    </span>
+                                  </div>
+                                </div>
+                                <p className="text-xs font-bold text-blue-600 mt-1">
+                                  Efficiency
+                                </p>
+                              </div>
+
+                              {/* Cost Index */}
+                              <div className="flex flex-col items-center">
+                                <div className="relative w-14 h-14">
+                                  <svg
+                                    className="transform -rotate-90"
+                                    width="56"
+                                    height="56"
+                                  >
+                                    <circle
+                                      cx="28"
+                                      cy="28"
+                                      r="22"
+                                      fill="none"
+                                      stroke="#e5e7eb"
+                                      strokeWidth="5"
+                                    />
+                                    <circle
+                                      cx="28"
+                                      cy="28"
+                                      r="22"
+                                      fill="none"
+                                      stroke="#22c55e"
+                                      strokeWidth="5"
+                                      strokeDasharray={`${
+                                        (plantData.cost / 100) * 138.2
+                                      } 138.2`}
+                                      strokeLinecap="round"
+                                    />
+                                  </svg>
+                                  <div className="absolute inset-0 flex items-center justify-center">
+                                    <span className="text-xs font-black text-green-600">
+                                      {plantData.cost}
+                                    </span>
+                                  </div>
+                                </div>
+                                <p className="text-xs font-bold text-green-600 mt-1">
+                                  Cost
+                                </p>
+                              </div>
+
+                              {/* Productivity */}
+                              <div className="flex flex-col items-center col-span-2">
+                                <div className="relative w-14 h-14">
+                                  <svg
+                                    className="transform -rotate-90"
+                                    width="56"
+                                    height="56"
+                                  >
+                                    <circle
+                                      cx="28"
+                                      cy="28"
+                                      r="22"
+                                      fill="none"
+                                      stroke="#e5e7eb"
+                                      strokeWidth="5"
+                                    />
+                                    <circle
+                                      cx="28"
+                                      cy="28"
+                                      r="22"
+                                      fill="none"
+                                      stroke="#f97316"
+                                      strokeWidth="5"
+                                      strokeDasharray={`${
+                                        (plantData.productivity / 100) * 138.2
+                                      } 138.2`}
+                                      strokeLinecap="round"
+                                    />
+                                  </svg>
+                                  <div className="absolute inset-0 flex items-center justify-center">
+                                    <span className="text-xs font-black text-orange-600">
+                                      {plantData.productivity}
+                                    </span>
+                                  </div>
+                                </div>
+                                <p className="text-xs font-bold text-orange-600 mt-1">
+                                  Productivity
+                                </p>
+                              </div>
+                            </div>
+
+                            <p className="text-xs text-center text-purple-600 font-bold mt-2">
+                              Click for lines →
+                            </p>
+                          </div>
+                        )
+                      )}
+                    </div>
+                  </div>
+                )}
+
+              {/* TABULAR VIEW - Line-wise */}
+              {selectedOpExPlant &&
+                selectedPlantOpExData &&
+                opexViewMode === "tabular" && (
+                  <div className="flex-1 flex flex-col overflow-hidden">
+                    <h3 className="text-base font-black text-green-700 flex items-center gap-2 mb-2">
+                      <span>📏</span>
+                      {selectedOpExPlant} - Lines
+                    </h3>
+
+                    {/* Plant Summary - Compact */}
+                    <div className="grid grid-cols-4 gap-2 mb-2">
+                      <div
+                        className={`${currentTheme.bgSecondary} rounded-lg p-2 text-center border-l-4 border-purple-500`}
+                      >
+                        <p className="text-xs font-bold text-gray-600">Score</p>
+                        <p className="text-2xl font-black text-purple-600 sans-font">
+                          {selectedPlantOpExData.score}
+                        </p>
+                      </div>
+                      <div
+                        className={`${currentTheme.bgSecondary} rounded-lg p-2 text-center border-l-4 border-blue-500`}
+                      >
+                        <p className="text-xs font-bold text-gray-600">
+                          Efficiency
+                        </p>
+                        <p className="text-2xl font-black text-blue-600 sans-font">
+                          {selectedPlantOpExData.efficiency}%
+                        </p>
+                      </div>
+                      <div
+                        className={`${currentTheme.bgSecondary} rounded-lg p-2 text-center border-l-4 border-green-500`}
+                      >
+                        <p className="text-xs font-bold text-gray-600">Cost</p>
+                        <p className="text-2xl font-black text-green-600 sans-font">
+                          {selectedPlantOpExData.cost}
+                        </p>
+                      </div>
+                      <div
+                        className={`${currentTheme.bgSecondary} rounded-lg p-2 text-center border-l-4 border-orange-500`}
+                      >
+                        <p className="text-xs font-bold text-gray-600">
+                          Productivity
+                        </p>
+                        <p className="text-2xl font-black text-orange-600 sans-font">
+                          {selectedPlantOpExData.productivity}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Lines Table - Compact */}
+                    {Object.keys(selectedPlantOpExData.lines).length > 0 ? (
+                      <div
+                        className={`${currentTheme.bgSecondary} rounded-lg p-2 flex-1 overflow-auto`}
+                      >
+                        <table className="w-full text-xs">
+                          <thead className="bg-gradient-to-r from-purple-100 to-pink-100 sticky top-0">
+                            <tr>
+                              <th className="px-2 py-2 text-left font-black text-gray-700">
+                                Line
+                              </th>
+                              <th className="px-2 py-2 text-right font-black text-gray-700">
+                                Efficiency
+                              </th>
+                              <th className="px-2 py-2 text-right font-black text-gray-700">
+                                Cost
+                              </th>
+                              <th className="px-2 py-2 text-right font-black text-gray-700">
+                                Productivity
+                              </th>
+                              <th className="px-2 py-2 text-right font-black text-gray-700">
+                                Score
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {Object.entries(selectedPlantOpExData.lines).map(
+                              ([lineName, lineData], idx) => (
+                                <tr
+                                  key={idx}
+                                  className={
+                                    idx % 2 === 0 ? "bg-white" : "bg-gray-50"
+                                  }
+                                >
+                                  <td className="px-2 py-2 font-bold text-gray-800">
+                                    {lineName}
+                                  </td>
+                                  <td className="px-2 py-2 text-right font-bold text-blue-600">
+                                    {lineData.efficiency}%
+                                  </td>
+                                  <td className="px-2 py-2 text-right font-bold text-green-600">
+                                    {lineData.cost}
+                                  </td>
+                                  <td className="px-2 py-2 text-right font-bold text-orange-600">
+                                    {lineData.productivity}
+                                  </td>
+                                  <td className="px-2 py-2 text-right">
+                                    <span
+                                      className={`px-2 py-1 rounded-full font-black text-xs ${
+                                        lineData.score >= 85
+                                          ? "bg-purple-200 text-purple-800"
+                                          : lineData.score >= 75
+                                          ? "bg-yellow-200 text-yellow-800"
+                                          : "bg-red-200 text-red-800"
+                                      }`}
+                                    >
+                                      {lineData.score}
+                                    </span>
+                                  </td>
+                                </tr>
+                              )
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    ) : (
+                      <div className="text-center p-4 bg-gray-100 rounded-lg">
+                        <p className="text-sm font-bold text-gray-600">
+                          No line data available
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+              {/* GRAPHICAL VIEW - Line-wise - COMPACT */}
+              {selectedOpExPlant &&
+                selectedPlantOpExData &&
+                opexViewMode === "graphical" && (
+                  <div className="flex-1 flex flex-col overflow-hidden">
+                    <h3 className="text-base font-black text-green-700 flex items-center gap-2 mb-2">
+                      <span>📊</span>
+                      {selectedOpExPlant} - Graph
+                    </h3>
+
+                    {/* Plant Summary - Compact */}
+                    <div className="grid grid-cols-4 gap-2 mb-2">
+                      <div
+                        className={`${currentTheme.bgSecondary} rounded-lg p-2 text-center border-l-4 border-purple-500`}
+                      >
+                        <p className="text-xs font-bold text-gray-600">Score</p>
+                        <p className="text-2xl font-black text-purple-600 sans-font">
+                          {selectedPlantOpExData.score}
+                        </p>
+                      </div>
+                      <div
+                        className={`${currentTheme.bgSecondary} rounded-lg p-2 text-center border-l-4 border-blue-500`}
+                      >
+                        <p className="text-xs font-bold text-gray-600">
+                          Efficiency
+                        </p>
+                        <p className="text-2xl font-black text-blue-600 sans-font">
+                          {selectedPlantOpExData.efficiency}%
+                        </p>
+                      </div>
+                      <div
+                        className={`${currentTheme.bgSecondary} rounded-lg p-2 text-center border-l-4 border-green-500`}
+                      >
+                        <p className="text-xs font-bold text-gray-600">Cost</p>
+                        <p className="text-2xl font-black text-green-600 sans-font">
+                          {selectedPlantOpExData.cost}
+                        </p>
+                      </div>
+                      <div
+                        className={`${currentTheme.bgSecondary} rounded-lg p-2 text-center border-l-4 border-orange-500`}
+                      >
+                        <p className="text-xs font-bold text-gray-600">
+                          Productivity
+                        </p>
+                        <p className="text-2xl font-black text-orange-600 sans-font">
+                          {selectedPlantOpExData.productivity}
+                        </p>
+                      </div>
+                    </div>
+
+                    {Object.keys(selectedPlantOpExData.lines).length > 0 ? (
+                      <div className="grid grid-cols-2 gap-2 flex-1 overflow-auto">
+                        {Object.entries(selectedPlantOpExData.lines).map(
+                          ([lineName, lineData]) => (
+                            <div
+                              key={lineName}
+                              className={`${currentTheme.bgSecondary} rounded-lg p-2 shadow border-2 border-gray-200`}
+                            >
+                              <h4 className="text-xs font-black text-gray-800 mb-2 text-center">
+                                {lineName}
+                              </h4>
+
+                              {/* Score - Main */}
+                              <div className="flex justify-center mb-2">
+                                <div className="relative w-16 h-16">
+                                  <svg
+                                    className="transform -rotate-90"
+                                    width="64"
+                                    height="64"
+                                  >
+                                    <circle
+                                      cx="32"
+                                      cy="32"
+                                      r="26"
+                                      fill="none"
+                                      stroke="#e5e7eb"
+                                      strokeWidth="5"
+                                    />
+                                    <circle
+                                      cx="32"
+                                      cy="32"
+                                      r="26"
+                                      fill="none"
+                                      stroke={
+                                        lineData.score >= 85
+                                          ? "#a855f7"
+                                          : lineData.score >= 75
+                                          ? "#eab308"
+                                          : "#ef4444"
+                                      }
+                                      strokeWidth="5"
+                                      strokeDasharray={`${
+                                        (lineData.score / 100) * 163.4
+                                      } 163.4`}
+                                      strokeLinecap="round"
+                                    />
+                                  </svg>
+                                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                    <span className="text-sm font-black text-gray-800">
+                                      {lineData.score}
+                                    </span>
+                                    <span className="text-xs font-bold text-gray-600">
+                                      Score
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Components - Mini bars */}
+                              <div className="grid grid-cols-3 gap-1">
+                                <div>
+                                  <div className="h-10 bg-gray-200 rounded relative overflow-hidden">
+                                    <div
+                                      className="absolute bottom-0 w-full bg-gradient-to-t from-blue-500 to-blue-400"
+                                      style={{
+                                        height: `${lineData.efficiency}%`,
+                                      }}
+                                    ></div>
+                                  </div>
+                                  <p className="text-xs font-bold text-blue-600 text-center mt-1">
+                                    {lineData.efficiency}%
+                                  </p>
+                                </div>
+                                <div>
+                                  <div className="h-10 bg-gray-200 rounded relative overflow-hidden">
+                                    <div
+                                      className="absolute bottom-0 w-full bg-gradient-to-t from-green-500 to-green-400"
+                                      style={{ height: `${lineData.cost}%` }}
+                                    ></div>
+                                  </div>
+                                  <p className="text-xs font-bold text-green-600 text-center mt-1">
+                                    {lineData.cost}
+                                  </p>
+                                </div>
+                                <div>
+                                  <div className="h-10 bg-gray-200 rounded relative overflow-hidden">
+                                    <div
+                                      className="absolute bottom-0 w-full bg-gradient-to-t from-orange-500 to-orange-400"
+                                      style={{
+                                        height: `${lineData.productivity}%`,
+                                      }}
+                                    ></div>
+                                  </div>
+                                  <p className="text-xs font-bold text-orange-600 text-center mt-1">
+                                    {lineData.productivity}
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="mt-2 text-center">
+                                <span
+                                  className={`px-2 py-1 rounded-full font-black text-xs ${
+                                    lineData.score >= 85
+                                      ? "bg-purple-200 text-purple-800"
+                                      : lineData.score >= 75
+                                      ? "bg-yellow-200 text-yellow-800"
+                                      : "bg-red-200 text-red-800"
+                                  }`}
+                                >
+                                  {lineData.score >= 85
+                                    ? "✓ Good"
+                                    : lineData.score >= 75
+                                    ? "⚠ OK"
+                                    : "✗ Low"}
+                                </span>
+                              </div>
+                            </div>
+                          )
+                        )}
+                      </div>
+                    ) : (
+                      <div className="text-center p-4 bg-gray-100 rounded-lg">
+                        <p className="text-sm font-bold text-gray-600">
+                          No line data
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+            </div>
+          );
         case "cost": {
           return (
             <div className="space-y-4">
               <h2
                 className={`text-2xl font-black ${currentTheme.textPrimary} mb-4`}
               >
-                💵 Manufacturing Cost Deep Dive
+                Manufacturing Cost
               </h2>
 
               {/* Summary Cards */}
@@ -6848,32 +9657,14 @@ const StaticBUDashboard = () => {
         onClick={onClose}
       >
         <div
-          className="relative w-full max-w-7xl max-h-[90vh] overflow-y-auto rounded-2xl p-6"
+          className="relative w-full max-w-7xl h-[90vh] rounded-2xl flex flex-col"
           style={{
             background: `linear-gradient(135deg, ${currentTheme.cardBg} 0%, ${currentTheme.cardBgEnd} 100%)`,
             border: `1px solid ${currentTheme.shimmer}`,
           }}
           onClick={(e) => e.stopPropagation()}
         >
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 p-2 rounded-lg bg-red-500/20 hover:bg-red-500/40 transition z-10"
-          >
-            <svg
-              className="w-7 h-7 text-red-500"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-          {renderContent()}
+          <div className="flex-1 overflow-y-auto p-6">{renderContent()}</div>
         </div>
       </div>
     );
@@ -7170,20 +9961,31 @@ const StaticBUDashboard = () => {
 
       <div className="mb-1.5">
         <div className="flex items-center justify-between mb-1">
-          <div>
+          {/* Left Side: Logo + Heading */}
+          <div className="flex items-center gap-3">
+            {/* ✅ Company Logo from public folder */}
+            <img
+              src="/image.png" // ✅ public/logo.png
+              alt="Company Logo"
+              className="w-12 h-12 object-contain"
+            />
+
             <h1
               className={`text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r ${currentTheme.headerGradient} sans-font leading-tight`}
             >
               {selectedLine || selectedPlant || currentBU.name}
             </h1>
           </div>
+
+          {/* Right Side */}
           <div className="flex items-center gap-3">
             {/* Title above Daily/MTD/YTD */}
             <div className="text-center">
               <p className={`text-sm font-black ${currentTheme.textPrimary}`}>
-                All cost value in CR
+                All cost value in ₹ Cr
               </p>
             </div>
+
             <div
               className={`flex gap-1 ${currentTheme.bgSecondary} p-1 rounded`}
             >
@@ -7193,6 +9995,7 @@ const StaticBUDashboard = () => {
                   theme === "lightBlue" && "active"
                 }`}
               ></button>
+
               <button
                 onClick={() => setTheme("dark")}
                 className={`theme-btn w-6 h-6 rounded bg-slate-800 ${
@@ -7202,6 +10005,7 @@ const StaticBUDashboard = () => {
             </div>
           </div>
         </div>
+
         {/* Navigation */}
         <div className="flex items-center justify-between gap-2 mb-1">
           <div className="flex gap-1">
@@ -7242,7 +10046,7 @@ const StaticBUDashboard = () => {
 
           {/* Global View Tabs */}
           <div className="flex gap-1 bg-gradient-to-r from-blue-600 to-purple-600 p-1 rounded shadow">
-            {["overview", "daily", "mtd", "ytd"].map((view) => (
+            {["daily", "mtd", "ytd"].map((view) => (
               <button
                 key={view}
                 onClick={() => setGlobalView(view)}
@@ -7309,16 +10113,16 @@ const StaticBUDashboard = () => {
             <h3
               className={`${currentTheme.textSecondary} text-xs uppercase font-black tracking-wide`}
             >
-              💰 Sales
+              💰 Sales & Marketing
             </h3>
-            <div className="flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-green-100">
+            {/* <div className="flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-green-100">
               <span className="text-green-600">📈</span>
               <span className="text-[9px] font-black text-green-600">+3%</span>
-            </div>
+            </div> */}
           </div>
           {renderCardContent("sales")}
           <p className="text-[9px] text-center text-blue-600 font-bold mt-1">
-            Deep Dive →
+            View Details →
           </p>
         </div>
 
@@ -7339,7 +10143,7 @@ const StaticBUDashboard = () => {
           </div>
           {renderCardContent("production")}
           <p className="text-[9px] text-center text-blue-600 font-bold mt-1">
-            OEE →
+            View Details →
           </p>
         </div>
 
@@ -7363,17 +10167,14 @@ const StaticBUDashboard = () => {
           </div>
           {renderCardContent("power")}
           <p className="text-[9px] text-center text-blue-600 font-bold mt-1">
-            Analysis →
+            View Details →
           </p>
         </div>
 
         {/* Mfg Cost Card */}
         <div
-          className="metric-card rounded-lg p-2"
-          onClick={() => {
-            window.location.href =
-              "https://ktflceprd.kalyanicorp.com/kalyani.iot/costing";
-          }}
+          className="metric-card rounded-lg p-2.5"
+          onClick={() => navigate("/noncore/cost")}
         >
           <div className="flex items-start justify-between mb-1">
             <h3
@@ -7387,7 +10188,7 @@ const StaticBUDashboard = () => {
           </div>
           {renderCardContent("cost")}
           <p className="text-[9px] text-center text-blue-600 font-bold mt-1">
-            Breakdown →
+            View Details →
           </p>
         </div>
 
@@ -7408,22 +10209,24 @@ const StaticBUDashboard = () => {
           </div>
           {renderCardContent("ht")}
           <p className="text-[9px] text-center text-blue-600 font-bold mt-1">
-            Details →
+            View Details →
           </p>
         </div>
       </div>
 
       {/* Row 2 */}
       <div className="grid grid-cols-5 gap-1.5 mb-1.5">
-        {/* Quality Card with Yield */}
-        <div className="metric-card rounded-lg p-2.5">
+        <div
+          className="metric-card rounded-lg p-2.5"
+          onClick={() => setSelectedCard("quality")} // ✅ Add this
+        >
           <h3
             className={`${currentTheme.textSecondary} text-xs uppercase font-black tracking-wide mb-1`}
           >
             ✨ Quality
           </h3>
 
-          {/* ✅ Row 1: Scrap + Yield */}
+          {/* Rest of the code same */}
           <div className="grid grid-cols-2 gap-1.5 mb-2">
             <div className="text-center">
               <p className="text-2xl font-black text-red-500 sans-font">2.1%</p>
@@ -7438,7 +10241,6 @@ const StaticBUDashboard = () => {
             </div>
           </div>
 
-          {/* ✅ Row 2: In House Rejection + Customer Complain */}
           <div className="grid grid-cols-2 gap-1.5">
             <div className="text-center">
               <p className="text-xl font-black text-orange-500 sans-font">
@@ -7458,6 +10260,11 @@ const StaticBUDashboard = () => {
               </p>
             </div>
           </div>
+
+          {/* ✅ Add View Details */}
+          <p className="text-[9px] text-center text-blue-600 font-bold mt-1">
+            View Details →
+          </p>
         </div>
 
         {/* OpEx */}
@@ -7478,21 +10285,21 @@ const StaticBUDashboard = () => {
             <p className="text-[10px] font-bold text-blue-500">Score</p>
           </div>
 
-          {/* ✅ BU Heads */}
+          {/* ✅ BUs */}
           <div className="grid grid-cols-3 gap-1.5">
             <div className="text-center">
               <p className="text-lg font-black text-green-600 sans-font">82</p>
-              <p className="text-[9px] font-bold text-green-600">BU Head 1</p>
+              <p className="text-[9px] font-bold text-green-600">BU 1</p>
             </div>
 
             <div className="text-center">
               <p className="text-lg font-black text-orange-500 sans-font">87</p>
-              <p className="text-[9px] font-bold text-orange-500">BU Head 2</p>
+              <p className="text-[9px] font-bold text-orange-500">BU 2</p>
             </div>
 
             <div className="text-center">
               <p className="text-lg font-black text-purple-600 sans-font">91</p>
-              <p className="text-[9px] font-bold text-purple-600">BU Head 3</p>
+              <p className="text-[9px] font-bold text-purple-600">BU 3</p>
             </div>
           </div>
         </div>
@@ -7506,7 +10313,7 @@ const StaticBUDashboard = () => {
           <h3
             className={`${currentTheme.textSecondary} text-xs uppercase font-black tracking-wide mb-1`}
           >
-            🔧 Maint
+            🔧 Maintenance
           </h3>
 
           {/* ✅ Added Metrics */}
@@ -7542,7 +10349,7 @@ const StaticBUDashboard = () => {
 
           {/* PM Pillar */}
           <p className="text-[9px] text-center text-blue-600 font-bold mt-2">
-            PM Pillar →
+            View Details →
           </p>
         </div>
 
@@ -7650,7 +10457,7 @@ const StaticBUDashboard = () => {
           </div>
 
           <p className="text-[8px] text-center text-blue-600 font-bold mt-1">
-            View ESG →
+            View Details →
           </p>
         </div>
 
@@ -7665,7 +10472,7 @@ const StaticBUDashboard = () => {
             🚀 NPD
           </h3>
           <div className="space-y-1">
-            {staticData.npd.projects.slice(0, 2).map((project, idx) => (
+            {staticData.npd.projects.slice(0, 3).map((project, idx) => (
               <div
                 key={idx}
                 className={`${currentTheme.bgSecondary} rounded p-1`}
@@ -7706,10 +10513,7 @@ const StaticBUDashboard = () => {
         {/* Inventory */}
         <div
           className="metric-card rounded-lg p-2"
-          onClick={() =>
-            (window.location.href =
-              "https://ktflceprd.kalyanicorp.com/kalyani.iot/ppc-forging")
-          }
+          onClick={() => navigate("/noncore/inventory")} // ✅ Change this
         >
           <h3
             className={`${currentTheme.textSecondary} text-xs uppercase font-black tracking-wide mb-1`}
@@ -7842,10 +10646,11 @@ const StaticBUDashboard = () => {
           {renderCardContent("yield")}
 
           <p className="text-[9px] text-center text-blue-600 font-bold mt-1">
-            View →
+            View Details →
           </p>
         </div>
 
+        {/* OEE Summary */}
         {/* OEE Summary */}
         <div className="metric-card rounded-lg p-2">
           <h3
@@ -7858,27 +10663,53 @@ const StaticBUDashboard = () => {
               <p
                 className={`text-3xl font-black text-blue-600 sans-font mb-0.5`}
               >
-                78.2%
+                {staticData.oee.overall}%
               </p>
             </div>
           </div>
           <div className="space-y-1">
-            <div className="flex justify-between items-center bg-gradient-to-r from-green-50 to-emerald-50 rounded px-2 py-1.5">
+            {/* ✅ BU1 - Clickable */}
+            <div
+              className="flex justify-between items-center bg-gradient-to-r from-green-50 to-emerald-50 rounded px-2 py-1.5 cursor-pointer hover:shadow-md transition"
+              onClick={() => {
+                setSelectedCard("oee");
+                setSelectedOEEBU("bu1");
+                setSelectedOEEPlant(null);
+              }}
+            >
               <span className="text-[10px] font-bold text-gray-600">BU 1</span>
               <span className="text-sm font-black text-green-600 sans-font">
-                {staticData.oee?.plantA || "82.5%"}
+                {staticData.oee.bu1.overall}%
               </span>
             </div>
-            <div className="flex justify-between items-center bg-gradient-to-r from-orange-50 to-amber-50 rounded px-2 py-1.5">
+
+            {/* ✅ BU2 - Clickable */}
+            <div
+              className="flex justify-between items-center bg-gradient-to-r from-orange-50 to-amber-50 rounded px-2 py-1.5 cursor-pointer hover:shadow-md transition"
+              onClick={() => {
+                setSelectedCard("oee");
+                setSelectedOEEBU("bu2");
+                setSelectedOEEPlant(null);
+              }}
+            >
               <span className="text-[10px] font-bold text-gray-600">BU 2</span>
               <span className="text-sm font-black text-orange-600 sans-font">
-                {staticData.oee?.plantB || "76.3%"}
+                {staticData.oee.bu2.overall}%
               </span>
             </div>
-            <div className="flex justify-between items-center bg-gradient-to-r from-red-50 to-rose-50 rounded px-2 py-1.5">
+
+            {/* ✅ BU3 - Clickable */}
+            <div
+              className="flex justify-between items-center bg-gradient-to-r from-red-50 to-rose-50 rounded px-2 py-1.5 cursor-pointer hover:shadow-md transition"
+              onClick={() => {
+                setSelectedCard("oee");
+                setSelectedOEEBU("bu3");
+                setSelectedOEEPlant(null);
+              }}
+            >
               <span className="text-[10px] font-bold text-gray-600">BU 3</span>
               <span className="text-sm font-black text-red-600 sans-font">
-                {staticData.oee?.plantC || "71.9%"}
+                {staticData.oee.bu3.overall}%
               </span>
             </div>
           </div>
@@ -7930,8 +10761,7 @@ const StaticBUDashboard = () => {
             <div
               className="bg-green-50 rounded-lg p-2 border border-green-200 flex flex-col justify-between min-h-[110px] overflow-hidden cursor-pointer hover:scale-[1.02] transition"
               onClick={() => {
-                window.location.href =
-                  "https://ktflceprd.kalyanicorp.com/kalyani.iot/finance_rev";
+                window.location.href = "/noncore/finance";
               }}
             >
               <p className="text-[10px] font-black text-green-700 text-center truncate">
@@ -8025,7 +10855,118 @@ const StaticBUDashboard = () => {
       {selectedNonCore === "purchase" && (
         <PurchaseDashboard onBack={() => setSelectedNonCore(null)} />
       )}
+      {/* ✅ NEW: Chatbot Floating Icon */}
+      {!isChatOpen && (
+        <button
+          onClick={() => setIsChatOpen(true)}
+          className="fixed bottom-6 right-6 w-16 h-16 bg-blue-600 rounded-full shadow-lg flex items-center justify-center z-50"
+        >
+          <MessageCircle className="w-8 h-8 text-white" />
+        </button>
+      )}
 
+      {/* ✅ NEW: Chatbot Window */}
+      {isChatOpen && (
+        <div
+          className="fixed bottom-6 right-6 w-96 h-[600px] bg-white rounded-2xl shadow-2xl flex flex-col z-50"
+          style={{
+            border: "2px solid #3b82f6",
+            boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3)",
+          }}
+        >
+          {/* Chatbot Header */}
+          <div className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-4 rounded-t-2xl flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                <MessageCircle className="w-6 h-6 text-blue-600" />
+              </div>
+              <div>
+                <h3 className="font-black text-lg">KTFL Assistant</h3>
+                <p className="text-xs text-blue-100">Online</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setIsChatOpen(false)}
+              className="hover:bg-white/20 rounded-full p-2 transition"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Chat Messages */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
+            {chatMessages.map((message, index) => (
+              <div
+                key={index}
+                className={`flex ${
+                  message.type === "user" ? "justify-end" : "justify-start"
+                }`}
+              >
+                <div
+                  className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+                    message.type === "user"
+                      ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white"
+                      : "bg-white text-gray-800 border border-gray-200"
+                  }`}
+                >
+                  <p className="text-sm font-semibold">{message.text}</p>
+                  <p
+                    className={`text-xs mt-1 ${
+                      message.type === "user"
+                        ? "text-blue-100"
+                        : "text-gray-500"
+                    }`}
+                  >
+                    {message.timestamp.toLocaleTimeString("en-GB", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </p>
+                </div>
+              </div>
+            ))}
+
+            {/* Typing Indicator */}
+            {isTyping && (
+              <div className="flex justify-start">
+                <div className="bg-white rounded-2xl px-4 py-3 border border-gray-200">
+                  <div className="flex gap-1">
+                    <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
+                    <div
+                      className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"
+                      style={{ animationDelay: "0.1s" }}
+                    ></div>
+                    <div
+                      className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"
+                      style={{ animationDelay: "0.2s" }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Chat Input */}
+          <div className="p-4 bg-white border-t border-gray-200 rounded-b-2xl">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={chatInput}
+                onChange={(e) => setChatInput(e.target.value)}
+                onKeyPress={(e) => e.key === "Enter" && handleChatSend()}
+                placeholder="Ask about metrics..."
+                className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-blue-600 text-sm font-semibold"
+              />
+              <button
+                onClick={handleChatSend}
+                className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-3 rounded-xl hover:shadow-lg transition"
+              >
+                <Send className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* {selectedNonCore === "finance" && (
         <FinanceDashboard onBack={() => setSelectedNonCore(null)} />
       )} */}

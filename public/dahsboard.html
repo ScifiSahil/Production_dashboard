@@ -1,0 +1,5074 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kalyani Technoforge Ltd. - Marketing Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .header {
+        background: white;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 30px;
+        animation: slideDown 0.5s ease;
+      }
+
+      .company-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .company-info img {
+        height: 50px;
+        width: auto;
+      }
+
+      .company-info h1 {
+        color: #1565c0;
+        font-size: 28px;
+        font-weight: 600;
+      }
+
+      .header-right {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .add-visit-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #4caf50, #388e3c);
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+        transition: all 0.3s ease;
+      }
+
+      .add-visit-icon:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 15px rgba(76, 175, 80, 0.5);
+      }
+
+      .date-time {
+        color: #666;
+        font-size: 14px;
+      }
+
+      .dashboard-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 25px;
+        margin-bottom: 30px;
+      }
+
+      .card {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        animation: fadeInUp 0.6s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #2196f3, #64b5f6);
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+
+      .card-title {
+        font-size: 18px;
+        color: #1565c0;
+        font-weight: 600;
+      }
+
+      .card-icon {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #2196f3, #1976d2);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 20px;
+      }
+
+      .chart-container {
+        position: relative;
+        height: 200px;
+        margin-top: 10px;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        animation: fadeIn 0.3s ease;
+      }
+
+      .modal-content {
+        background: white;
+        width: 90%;
+        max-width: none;
+        margin: 5vh auto;
+        padding: 30px;
+        border-radius: 15px;
+        max-height: 90vh;
+        overflow-y: auto;
+        animation: slideUp 0.3s ease;
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #e3f2fd;
+        flex-wrap: wrap;
+        gap: 15px;
+      }
+
+      .modal-title {
+        font-size: 24px;
+        color: #1565c0;
+        font-weight: 600;
+      }
+
+      .close-btn {
+        background: #f44336;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background 0.3s;
+        flex-shrink: 0;
+      }
+
+      .close-btn:hover {
+        background: #d32f2f;
+      }
+
+      .time-filter-btn-compact {
+        padding: 6px 12px;
+        border: 1.5px solid #2196f3;
+        background: white;
+        color: #2196f3;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+      }
+
+      .time-filter-btn-compact:hover {
+        background: #e3f2fd;
+        transform: translateY(-1px);
+      }
+
+      .time-filter-btn-compact.active {
+        background: linear-gradient(135deg, #2196f3, #1976d2);
+        color: white;
+        border-color: #1976d2;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      .form-group label {
+        display: block;
+        color: #1565c0;
+        margin-bottom: 5px;
+        font-weight: 500;
+      }
+
+      .form-group input,
+      .form-group textarea {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #e3f2fd;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: border 0.3s;
+      }
+
+      .form-group input:focus,
+      .form-group textarea:focus {
+        outline: none;
+        border-color: #2196f3;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #2196f3, #1976d2);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 500;
+        transition: transform 0.3s;
+      }
+
+      .btn-primary:hover {
+        transform: scale(1.05);
+      }
+
+      .visit-list {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .visit-item {
+        background: #f5f5f5;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 15px;
+        border-left: 4px solid #2196f3;
+      }
+
+      .ai-chatbot {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 999;
+      }
+
+      .ai-toggle {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #2196f3, #1976d2);
+        color: white;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        font-size: 24px;
+        transition: transform 0.3s;
+      }
+
+      .ai-toggle:hover {
+        transform: scale(1.1);
+      }
+
+      .ai-chat-window {
+        display: none;
+        position: absolute;
+        bottom: 80px;
+        right: 0;
+        width: 350px;
+        height: 450px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+      }
+
+      .ai-chat-header {
+        background: linear-gradient(135deg, #2196f3, #1976d2);
+        color: white;
+        padding: 15px;
+        font-weight: 500;
+      }
+
+      .ai-chat-body {
+        height: 320px;
+        overflow-y: auto;
+        padding: 15px;
+        background: #f9f9f9;
+      }
+
+      .ai-chat-input {
+        padding: 15px;
+        border-top: 1px solid #e0e0e0;
+        display: flex;
+        gap: 10px;
+      }
+
+      .ai-chat-input input {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #e0e0e0;
+        border-radius: 25px;
+        outline: none;
+      }
+
+      .ai-chat-input button {
+        padding: 10px 20px;
+        background: #2196f3;
+        color: white;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+      }
+
+      .message {
+        margin-bottom: 10px;
+        padding: 10px;
+        border-radius: 10px;
+        max-width: 80%;
+      }
+
+      .user-message {
+        background: #2196f3;
+        color: white;
+        margin-left: auto;
+      }
+
+      .ai-message {
+        background: white;
+        border: 1px solid #e0e0e0;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+      }
+
+      .stat-item {
+        background: #f5f5f5;
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+      }
+
+      .stat-value {
+        font-size: 24px;
+        font-weight: bold;
+        color: #1565c0;
+      }
+
+      .stat-label {
+        color: #666;
+        margin-top: 5px;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .plant-list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        margin-top: 20px;
+      }
+
+      .plant-category {
+        background: #f9f9f9;
+        padding: 15px;
+        border-radius: 10px;
+      }
+
+      .plant-category h4 {
+        color: #1565c0;
+        margin-bottom: 10px;
+      }
+
+      .plant-category ul {
+        list-style: none;
+        padding-left: 10px;
+      }
+
+      .plant-category li {
+        padding: 5px 0;
+        color: #666;
+      }
+
+      .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin-top: 15px;
+      }
+
+      .kpi-item {
+        background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+      }
+
+      .kpi-value {
+        font-size: 28px;
+        font-weight: bold;
+        color: #1565c0;
+      }
+
+      .kpi-label {
+        color: #666;
+        font-size: 12px;
+        margin-top: 5px;
+      }
+
+      .clickable-chart-container {
+        background: #f9f9f9;
+        padding: 20px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+      }
+
+      .clickable-chart-container:hover {
+        background: #fff;
+        border: 2px solid #2196f3;
+        box-shadow: 0 4px 15px rgba(33, 150, 243, 0.2);
+        transform: translateY(-3px);
+      }
+
+      .time-filter-btn {
+        padding: 10px 20px;
+        border: 2px solid #2196f3;
+        background: white;
+        color: #2196f3;
+        border-radius: 25px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+      }
+
+      .time-filter-btn:hover {
+        background: #e3f2fd;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
+      }
+
+      .time-filter-btn.active {
+        background: linear-gradient(135deg, #2196f3, #1976d2);
+        color: white;
+        border-color: #1976d2;
+      }
+
+      /* Capacity + Visit Reports layout */
+      .capacity-visit-row {
+        display: grid;
+        grid-template-columns: 1fr 1.3fr;
+        gap: 25px;
+        margin-top: 30px;
+      }
+
+      .capacity-card {
+        height: 100%;
+      }
+
+      .visit-side {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      @media (max-width: 900px) {
+        .capacity-visit-row {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <div class="header">
+      <div class="company-info">
+        <img
+          src="https://upload.wikimedia.org/wikipedia/en/6/67/Kalyani_Group_logo.svg"
+          alt="Kalyani Logo"
+        />
+        <h1>Kalyani Technoforge Ltd.</h1>
+      </div>
+      <div class="header-right">
+        <button
+          class="add-visit-icon"
+          onclick="openVisitReportModal()"
+          title="Add Visit Report"
+        >
+          📝
+        </button>
+        <div class="date-time" id="dateTime"></div>
+      </div>
+    </div>
+
+    <!-- Main Dashboard Cards -->
+    <div class="dashboard-container">
+      <!-- Sales Card -->
+      <div class="card" onclick="openModal('sales')">
+        <div class="card-header">
+          <div class="card-title">Sales</div>
+          <div class="card-icon">₹</div>
+        </div>
+        <div class="chart-container">
+          <canvas id="salesChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Business Pipeline Card -->
+      <div class="card" onclick="openModal('pipeline')">
+        <div class="card-header">
+          <div class="card-title">Business Pipeline</div>
+          <div class="card-icon">📊</div>
+        </div>
+        <div class="chart-container">
+          <canvas id="pipelineChart"></canvas>
+        </div>
+      </div>
+
+      <!-- RFQ Card -->
+      <div class="card" onclick="openModal('rfq')">
+        <div class="card-header">
+          <div class="card-title">RFQ</div>
+          <div class="card-icon">📋</div>
+        </div>
+        <div class="chart-container">
+          <canvas id="rfqChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Quality Complaints Card -->
+      <div class="card" onclick="openModal('quality')">
+        <div class="card-header">
+          <div class="card-title">Quality Complaints</div>
+          <div class="card-icon">⚠️</div>
+        </div>
+        <div class="chart-container">
+          <canvas id="qualityChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Outstanding Receivables Card -->
+      <div class="card" onclick="openModal('outstanding')">
+        <div class="card-header">
+          <div class="card-title">Outstanding Receivables</div>
+          <div class="card-icon">💰</div>
+        </div>
+        <div class="chart-container">
+          <canvas id="outstandingChart"></canvas>
+        </div>
+      </div>
+
+      <!-- EDI Card -->
+      <div class="card" onclick="openModal('edi')">
+        <div class="card-header">
+          <div class="card-title">EDI</div>
+          <div class="card-icon">📡</div>
+        </div>
+        <div class="kpi-grid">
+          <div class="kpi-item">
+            <div class="kpi-value">98.5%</div>
+            <div class="kpi-label">Accuracy</div>
+          </div>
+          <div class="kpi-item">
+            <div class="kpi-value">1.2s</div>
+            <div class="kpi-label">Avg Response</div>
+          </div>
+          <div class="kpi-item">
+            <div class="kpi-value">15,234</div>
+            <div class="kpi-label">Transactions</div>
+          </div>
+          <div class="kpi-item">
+            <div class="kpi-value">99.8%</div>
+            <div class="kpi-label">Uptime</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Capacity + Visit Reports Side by Side -->
+    <div class="capacity-visit-row">
+      <!-- Capacity Utilization -->
+      <div class="card capacity-card" onclick="openModal('capacity')">
+        <div class="card-header">
+          <div class="card-title">Forging Capacity Utilization</div>
+          <div class="card-icon">⚙️</div>
+        </div>
+        <div class="chart-container">
+          <canvas id="capacityChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Recent Visit Reports -->
+      <div class="visit-list visit-side">
+        <h3 style="color: #1565c0; margin-bottom: 20px">
+          Recent Visit Reports
+        </h3>
+        <div id="visitList"></div>
+      </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Visit Report Modal -->
+    <div id="visitReportModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">Add Visit Report</h2>
+          <button class="close-btn" onclick="closeModal('visitReportModal')">
+            ×
+          </button>
+        </div>
+        <div
+          style="
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+          "
+        >
+          <div class="form-group">
+            <label>Company Name</label>
+            <input
+              type="text"
+              id="companyName"
+              placeholder="Enter company name"
+            />
+          </div>
+          <div class="form-group">
+            <label>Customer Attendee</label>
+            <input
+              type="text"
+              id="attendee"
+              placeholder="Enter attendee name"
+            />
+          </div>
+          <div class="form-group">
+            <label>Date of Visit</label>
+            <input type="date" id="visitDate" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Minutes of Meeting</label>
+          <textarea
+            id="mom"
+            rows="4"
+            placeholder="Enter meeting minutes"
+          ></textarea>
+        </div>
+        <button class="btn-primary" onclick="addVisitReport()">
+          Add Visit Report
+        </button>
+      </div>
+    </div>
+
+    <!-- Sales Modal -->
+    <div id="salesModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              width: 100%;
+            "
+          >
+            <div style="display: flex; align-items: baseline; gap: 10px">
+              <h2 class="modal-title" style="margin: 0">Sales Dashboard</h2>
+              <span
+                id="salesPeriodDisplay"
+                style="color: #666; font-size: 16px; font-style: italic"
+                >(Q3 2025)</span
+              >
+            </div>
+            <div style="display: flex; align-items: center; gap: 15px">
+              <!-- Time Frame Filter in Header -->
+              <div style="display: flex; gap: 8px; align-items: center">
+                <span style="color: #666; font-size: 14px; font-weight: 500"
+                  >Time Frame:</span
+                >
+                <button
+                  class="time-filter-btn-compact"
+                  data-period="current-month"
+                  onclick="filterSalesData('current-month')"
+                >
+                  Current Month
+                </button>
+                <button
+                  class="time-filter-btn-compact active"
+                  data-period="last-quarter"
+                  onclick="filterSalesData('last-quarter')"
+                >
+                  Last Quarter
+                </button>
+                <button
+                  class="time-filter-btn-compact"
+                  data-period="last-6-months"
+                  onclick="filterSalesData('last-6-months')"
+                >
+                  Last 6 Months
+                </button>
+                <button
+                  class="time-filter-btn-compact"
+                  data-period="ytd"
+                  onclick="filterSalesData('ytd')"
+                >
+                  YTD
+                </button>
+                <button
+                  class="time-filter-btn-compact"
+                  data-period="last-year"
+                  onclick="filterSalesData('last-year')"
+                >
+                  Last Year
+                </button>
+                <button
+                  class="time-filter-btn-compact"
+                  data-period="last-2-years"
+                  onclick="filterSalesData('last-2-years')"
+                >
+                  Last 2 Years
+                </button>
+              </div>
+              <button class="close-btn" onclick="closeModal('salesModal')">
+                ×
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main View -->
+        <div id="salesMainView">
+          <div class="stats-grid">
+            <div class="stat-item">
+              <div class="stat-value">₹125.3Cr</div>
+              <div class="stat-label">Total Revenue</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">+18.5%</div>
+              <div class="stat-label">YoY Growth</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">87</div>
+              <div class="stat-label">Active Clients</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">₹14.2Cr</div>
+              <div class="stat-label">Monthly Average</div>
+            </div>
+          </div>
+
+          <div
+            style="
+              display: grid;
+              grid-template-columns: repeat(2, 1fr);
+              gap: 25px;
+              margin-top: 30px;
+            "
+          >
+            <!-- Continent-wise Sales -->
+            <div
+              style="background: #f9f9f9; padding: 20px; border-radius: 10px"
+            >
+              <h4 style="color: #1565c0; margin-bottom: 15px; font-size: 16px">
+                Continent-wise Sales
+              </h4>
+              <div style="position: relative; height: 250px">
+                <canvas id="continentChart"></canvas>
+              </div>
+            </div>
+
+            <!-- Plant-wise Performance -->
+            <div
+              class="clickable-chart-container"
+              onclick="showSalesDetail('plant')"
+            >
+              <h4 style="color: #1565c0; margin-bottom: 15px; font-size: 16px">
+                Plant-wise Performance
+              </h4>
+              <div style="position: relative; height: 250px">
+                <canvas id="plantChart"></canvas>
+              </div>
+              <div
+                style="
+                  text-align: center;
+                  color: #666;
+                  font-size: 12px;
+                  margin-top: 10px;
+                "
+              >
+                Click to view details →
+              </div>
+            </div>
+
+            <!-- Sector Analysis -->
+            <div
+              class="clickable-chart-container"
+              onclick="showSalesDetail('sector')"
+            >
+              <h4 style="color: #1565c0; margin-bottom: 15px; font-size: 16px">
+                Sector Analysis
+              </h4>
+              <div style="position: relative; height: 250px">
+                <canvas id="sectorChart"></canvas>
+              </div>
+              <div
+                style="
+                  text-align: center;
+                  color: #666;
+                  font-size: 12px;
+                  margin-top: 10px;
+                "
+              >
+                Click to view details →
+              </div>
+            </div>
+
+            <!-- Product Category Distribution -->
+            <div
+              class="clickable-chart-container"
+              onclick="showSalesDetail('product')"
+            >
+              <h4 style="color: #1565c0; margin-bottom: 15px; font-size: 16px">
+                Product Category Distribution
+              </h4>
+              <div style="position: relative; height: 250px">
+                <canvas id="productChart"></canvas>
+              </div>
+              <div
+                style="
+                  text-align: center;
+                  color: #666;
+                  font-size: 12px;
+                  margin-top: 10px;
+                "
+              >
+                Click to view details →
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Detail Views -->
+        <div id="salesDetailView" style="display: none">
+          <button
+            onclick="backToSalesMain()"
+            style="
+              background: #1565c0;
+              color: white;
+              border: none;
+              padding: 10px 20px;
+              border-radius: 5px;
+              cursor: pointer;
+              margin-bottom: 20px;
+            "
+          >
+            ← Back to Overview
+          </button>
+          <div id="salesDetailContent"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pipeline Modal -->
+    <div id="pipelineModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              width: 100%;
+            "
+          >
+            <div style="display: flex; align-items: baseline; gap: 10px">
+              <h2 class="modal-title" style="margin: 0">
+                Business Pipeline Details
+              </h2>
+              <span
+                id="pipelinePeriodDisplay"
+                style="color: #666; font-size: 16px; font-style: italic"
+                >(Q3 2025)</span
+              >
+            </div>
+            <div style="display: flex; align-items: center; gap: 15px">
+              <div style="display: flex; gap: 8px; align-items: center">
+                <span style="color: #666; font-size: 14px; font-weight: 500"
+                  >Time Frame:</span
+                >
+                <button
+                  class="time-filter-btn-compact pipeline-filter"
+                  data-period="current-month"
+                  onclick="filterPipelineData('current-month')"
+                >
+                  Current Month
+                </button>
+                <button
+                  class="time-filter-btn-compact pipeline-filter active"
+                  data-period="last-quarter"
+                  onclick="filterPipelineData('last-quarter')"
+                >
+                  Last Quarter
+                </button>
+                <button
+                  class="time-filter-btn-compact pipeline-filter"
+                  data-period="last-6-months"
+                  onclick="filterPipelineData('last-6-months')"
+                >
+                  Last 6 Months
+                </button>
+                <button
+                  class="time-filter-btn-compact pipeline-filter"
+                  data-period="ytd"
+                  onclick="filterPipelineData('ytd')"
+                >
+                  YTD
+                </button>
+                <button
+                  class="time-filter-btn-compact pipeline-filter"
+                  data-period="last-year"
+                  onclick="filterPipelineData('last-year')"
+                >
+                  Last Year
+                </button>
+                <button
+                  class="time-filter-btn-compact pipeline-filter"
+                  data-period="last-2-years"
+                  onclick="filterPipelineData('last-2-years')"
+                >
+                  Last 2 Years
+                </button>
+              </div>
+              <button class="close-btn" onclick="closeModal('pipelineModal')">
+                ×
+              </button>
+            </div>
+          </div>
+        </div>
+        <h3 style="color: #1565c0; margin-bottom: 20px">Segment Analysis</h3>
+        <canvas id="segmentDetailChart" height="100"></canvas>
+
+        <div class="stats-grid" style="margin-top: 30px">
+          <div class="stat-item">
+            <div class="stat-value">₹45.8Cr</div>
+            <div class="stat-label">Auto Segment Pipeline</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">₹32.4Cr</div>
+            <div class="stat-label">Gear Segment Pipeline</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">68%</div>
+            <div class="stat-label">Conversion Rate</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">42 days</div>
+            <div class="stat-label">Avg. Sales Cycle</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RFQ Modal -->
+    <div id="rfqModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              width: 100%;
+            "
+          >
+            <div style="display: flex; align-items: baseline; gap: 10px">
+              <h2 class="modal-title" style="margin: 0">RFQ Dashboard</h2>
+              <span
+                id="rfqPeriodDisplay"
+                style="color: #666; font-size: 16px; font-style: italic"
+                >(Q3 2025)</span
+              >
+            </div>
+            <div style="display: flex; align-items: center; gap: 15px">
+              <div style="display: flex; gap: 8px; align-items: center">
+                <span style="color: #666; font-size: 14px; font-weight: 500"
+                  >Time Frame:</span
+                >
+                <button
+                  class="time-filter-btn-compact rfq-filter"
+                  data-period="current-month"
+                  onclick="filterRfqData('current-month')"
+                >
+                  Current Month
+                </button>
+                <button
+                  class="time-filter-btn-compact rfq-filter active"
+                  data-period="last-quarter"
+                  onclick="filterRfqData('last-quarter')"
+                >
+                  Last Quarter
+                </button>
+                <button
+                  class="time-filter-btn-compact rfq-filter"
+                  data-period="last-6-months"
+                  onclick="filterRfqData('last-6-months')"
+                >
+                  Last 6 Months
+                </button>
+                <button
+                  class="time-filter-btn-compact rfq-filter"
+                  data-period="ytd"
+                  onclick="filterRfqData('ytd')"
+                >
+                  YTD
+                </button>
+                <button
+                  class="time-filter-btn-compact rfq-filter"
+                  data-period="last-year"
+                  onclick="filterRfqData('last-year')"
+                >
+                  Last Year
+                </button>
+                <button
+                  class="time-filter-btn-compact rfq-filter"
+                  data-period="last-2-years"
+                  onclick="filterRfqData('last-2-years')"
+                >
+                  Last 2 Years
+                </button>
+              </div>
+              <button class="close-btn" onclick="closeModal('rfqModal')">
+                ×
+              </button>
+            </div>
+          </div>
+        </div>
+        <h3 style="color: #1565c0; margin-bottom: 20px">
+          RFQ Status Distribution
+        </h3>
+        <canvas id="rfqStatusChart" height="100"></canvas>
+
+        <div class="stats-grid" style="margin-top: 30px">
+          <div class="stat-item">
+            <div class="stat-value">156</div>
+            <div class="stat-label">Total RFQs</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">42</div>
+            <div class="stat-label">Business Awarded</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">67</div>
+            <div class="stat-label">Serious Discussion</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">35</div>
+            <div class="stat-label">RFQ Stage</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">12</div>
+            <div class="stat-label">Lost</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quality Modal -->
+    <div id="qualityModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              width: 100%;
+            "
+          >
+            <div style="display: flex; align-items: baseline; gap: 10px">
+              <h2 class="modal-title" style="margin: 0">
+                Quality Complaints Analysis
+              </h2>
+              <span
+                id="qualityPeriodDisplay"
+                style="color: #666; font-size: 16px; font-style: italic"
+                >(Q3 2025)</span
+              >
+            </div>
+            <div style="display: flex; align-items: center; gap: 15px">
+              <div style="display: flex; gap: 8px; align-items: center">
+                <span style="color: #666; font-size: 14px; font-weight: 500"
+                  >Time Frame:</span
+                >
+                <button
+                  class="time-filter-btn-compact quality-filter"
+                  data-period="current-month"
+                  onclick="filterQualityData('current-month')"
+                >
+                  Current Month
+                </button>
+                <button
+                  class="time-filter-btn-compact quality-filter active"
+                  data-period="last-quarter"
+                  onclick="filterQualityData('last-quarter')"
+                >
+                  Last Quarter
+                </button>
+                <button
+                  class="time-filter-btn-compact quality-filter"
+                  data-period="last-6-months"
+                  onclick="filterQualityData('last-6-months')"
+                >
+                  Last 6 Months
+                </button>
+                <button
+                  class="time-filter-btn-compact quality-filter"
+                  data-period="ytd"
+                  onclick="filterQualityData('ytd')"
+                >
+                  YTD
+                </button>
+                <button
+                  class="time-filter-btn-compact quality-filter"
+                  data-period="last-year"
+                  onclick="filterQualityData('last-year')"
+                >
+                  Last Year
+                </button>
+                <button
+                  class="time-filter-btn-compact quality-filter"
+                  data-period="last-2-years"
+                  onclick="filterQualityData('last-2-years')"
+                >
+                  Last 2 Years
+                </button>
+              </div>
+              <button class="close-btn" onclick="closeModal('qualityModal')">
+                ×
+              </button>
+            </div>
+          </div>
+        </div>
+        <h3 style="color: #1565c0; margin-bottom: 20px">
+          Organization Group Level Complaints
+        </h3>
+        <canvas id="qualityGroupChart" height="100"></canvas>
+
+        <h3 style="color: #1565c0; margin: 30px 0 20px">
+          Plant-wise Quality Status
+        </h3>
+        <div class="plant-list">
+          <div class="plant-category">
+            <h4>Machining Plants Status</h4>
+            <ul>
+              <li>Khed: 3 Open, 12 Closed</li>
+              <li>Ambethan 1: 2 Open, 8 Closed</li>
+              <li>Ambethan 2: 1 Open, 6 Closed</li>
+              <li>Ambethan 3: 0 Open, 4 Closed</li>
+              <li>Chakan: 2 Open, 9 Closed</li>
+              <li>Bhiwadi: 1 Open, 7 Closed</li>
+              <li>Gujarat: 2 Open, 5 Closed</li>
+              <li>KTFL Medicomp: 0 Open, 3 Closed</li>
+            </ul>
+          </div>
+          <div class="plant-category">
+            <h4>Forging Plants Status</h4>
+            <ul>
+              <li>KTFL R1: 2 Open, 15 Closed</li>
+              <li>KTTPL R2: 3 Open, 11 Closed</li>
+              <li>KTFL Mundhwa: 1 Open, 8 Closed</li>
+              <li>KTFL Baramati: 2 Open, 10 Closed</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Outstanding Modal -->
+    <div id="outstandingModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              width: 100%;
+            "
+          >
+            <div style="display: flex; align-items: baseline; gap: 10px">
+              <h2 class="modal-title" style="margin: 0">
+                Outstanding Receivables Analysis
+              </h2>
+              <span
+                id="outstandingPeriodDisplay"
+                style="color: #666; font-size: 16px; font-style: italic"
+                >(Q3 2025)</span
+              >
+            </div>
+            <div style="display: flex; align-items: center; gap: 15px">
+              <div style="display: flex; gap: 8px; align-items: center">
+                <span style="color: #666; font-size: 14px; font-weight: 500"
+                  >Time Frame:</span
+                >
+                <button
+                  class="time-filter-btn-compact outstanding-filter"
+                  data-period="current-month"
+                  onclick="filterOutstandingData('current-month')"
+                >
+                  Current Month
+                </button>
+                <button
+                  class="time-filter-btn-compact outstanding-filter active"
+                  data-period="last-quarter"
+                  onclick="filterOutstandingData('last-quarter')"
+                >
+                  Last Quarter
+                </button>
+                <button
+                  class="time-filter-btn-compact outstanding-filter"
+                  data-period="last-6-months"
+                  onclick="filterOutstandingData('last-6-months')"
+                >
+                  Last 6 Months
+                </button>
+                <button
+                  class="time-filter-btn-compact outstanding-filter"
+                  data-period="ytd"
+                  onclick="filterOutstandingData('ytd')"
+                >
+                  YTD
+                </button>
+                <button
+                  class="time-filter-btn-compact outstanding-filter"
+                  data-period="last-year"
+                  onclick="filterOutstandingData('last-year')"
+                >
+                  Last Year
+                </button>
+                <button
+                  class="time-filter-btn-compact outstanding-filter"
+                  data-period="last-2-years"
+                  onclick="filterOutstandingData('last-2-years')"
+                >
+                  Last 2 Years
+                </button>
+              </div>
+              <button
+                class="time-filter-btn-compact outstanding-filter"
+                onclick="window.open('https://ktflceprd.kalyanicorp.com/kalyani.iot/finance_rev', '_blank')"
+                style="padding: 8px 20px; font-size: 14px; margin: 0"
+              >
+                📊 Details
+              </button>
+              <button
+                class="close-btn"
+                onclick="closeModal('outstandingModal')"
+              >
+                ×
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Summary Stats -->
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-value">₹8.22Cr</div>
+            <div class="stat-label">Total Outstanding</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">5</div>
+            <div class="stat-label">Top Customers</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">65%</div>
+            <div class="stat-label">INR Share</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">45%</div>
+            <div class="stat-label">Current (0-30 days)</div>
+          </div>
+        </div>
+
+        <!-- All Charts in Grid -->
+        <div
+          style="
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+          "
+        >
+          <!-- Customer-wise Outstanding -->
+          <div style="background: #f9f9f9; padding: 20px; border-radius: 10px">
+            <h4 style="color: #1565c0; margin-bottom: 15px; font-size: 16px">
+              Customer-wise Outstanding
+            </h4>
+            <div style="position: relative; height: 280px">
+              <canvas id="customerOutstandingChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Currency-wise Distribution -->
+          <div style="background: #f9f9f9; padding: 20px; border-radius: 10px">
+            <h4 style="color: #1565c0; margin-bottom: 15px; font-size: 16px">
+              Currency-wise Distribution
+            </h4>
+            <div style="position: relative; height: 280px">
+              <canvas id="currencyChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Overdue Status -->
+          <div style="background: #f9f9f9; padding: 20px; border-radius: 10px">
+            <h4 style="color: #1565c0; margin-bottom: 15px; font-size: 16px">
+              Overdue Status
+            </h4>
+            <div style="position: relative; height: 280px">
+              <canvas id="overdueChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Detailed Table -->
+        <h4 style="color: #1565c0; margin-top: 40px; margin-bottom: 15px">
+          Customer Outstanding Details
+        </h4>
+        <div style="overflow-x: auto">
+          <table
+            style="width: 100%; border-collapse: collapse; min-width: 800px"
+          >
+            <thead>
+              <tr style="background: #e3f2fd">
+                <th style="padding: 12px; text-align: left">Customer Name</th>
+                <th style="padding: 12px; text-align: center">
+                  Outstanding (₹ Lakhs)
+                </th>
+                <th style="padding: 12px; text-align: center">Currency</th>
+                <th style="padding: 12px; text-align: center">0-30 Days</th>
+                <th style="padding: 12px; text-align: center">31-60 Days</th>
+                <th style="padding: 12px; text-align: center">61-90 Days</th>
+                <th style="padding: 12px; text-align: center">90+ Days</th>
+                <th style="padding: 12px; text-align: center">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom: 1px solid #e0e0e0">
+                <td style="padding: 12px">Tata Motors</td>
+                <td
+                  style="padding: 12px; text-align: center; font-weight: bold"
+                >
+                  ₹245
+                </td>
+                <td style="padding: 12px; text-align: center">INR</td>
+                <td style="padding: 12px; text-align: center">₹150</td>
+                <td style="padding: 12px; text-align: center">₹60</td>
+                <td style="padding: 12px; text-align: center">₹25</td>
+                <td style="padding: 12px; text-align: center">₹10</td>
+                <td style="padding: 12px; text-align: center">
+                  <span
+                    style="
+                      background: #4caf50;
+                      color: white;
+                      padding: 5px 10px;
+                      border-radius: 15px;
+                      font-size: 11px;
+                    "
+                    >Good</span
+                  >
+                </td>
+              </tr>
+              <tr style="border-bottom: 1px solid #e0e0e0; background: #f9f9f9">
+                <td style="padding: 12px">Mahindra & Mahindra</td>
+                <td
+                  style="padding: 12px; text-align: center; font-weight: bold"
+                >
+                  ₹189
+                </td>
+                <td style="padding: 12px; text-align: center">INR</td>
+                <td style="padding: 12px; text-align: center">₹100</td>
+                <td style="padding: 12px; text-align: center">₹55</td>
+                <td style="padding: 12px; text-align: center">₹20</td>
+                <td style="padding: 12px; text-align: center">₹14</td>
+                <td style="padding: 12px; text-align: center">
+                  <span
+                    style="
+                      background: #4caf50;
+                      color: white;
+                      padding: 5px 10px;
+                      border-radius: 15px;
+                      font-size: 11px;
+                    "
+                    >Good</span
+                  >
+                </td>
+              </tr>
+              <tr style="border-bottom: 1px solid #e0e0e0">
+                <td style="padding: 12px">Bajaj Auto</td>
+                <td
+                  style="padding: 12px; text-align: center; font-weight: bold"
+                >
+                  ₹156
+                </td>
+                <td style="padding: 12px; text-align: center">INR</td>
+                <td style="padding: 12px; text-align: center">₹70</td>
+                <td style="padding: 12px; text-align: center">₹50</td>
+                <td style="padding: 12px; text-align: center">₹30</td>
+                <td style="padding: 12px; text-align: center">₹6</td>
+                <td style="padding: 12px; text-align: center">
+                  <span
+                    style="
+                      background: #ff9800;
+                      color: white;
+                      padding: 5px 10px;
+                      border-radius: 15px;
+                      font-size: 11px;
+                    "
+                    >Watch</span
+                  >
+                </td>
+              </tr>
+              <tr style="border-bottom: 1px solid #e0e0e0; background: #f9f9f9">
+                <td style="padding: 12px">Force Motors</td>
+                <td
+                  style="padding: 12px; text-align: center; font-weight: bold"
+                >
+                  ₹134
+                </td>
+                <td style="padding: 12px; text-align: center">INR</td>
+                <td style="padding: 12px; text-align: center">₹50</td>
+                <td style="padding: 12px; text-align: center">₹40</td>
+                <td style="padding: 12px; text-align: center">₹24</td>
+                <td style="padding: 12px; text-align: center">₹20</td>
+                <td style="padding: 12px; text-align: center">
+                  <span
+                    style="
+                      background: #f44336;
+                      color: white;
+                      padding: 5px 10px;
+                      border-radius: 15px;
+                      font-size: 11px;
+                    "
+                    >Critical</span
+                  >
+                </td>
+              </tr>
+              <tr style="background: #f9f9f9">
+                <td style="padding: 12px">Ashok Leyland</td>
+                <td
+                  style="padding: 12px; text-align: center; font-weight: bold"
+                >
+                  ₹98
+                </td>
+                <td style="padding: 12px; text-align: center">INR</td>
+                <td style="padding: 12px; text-align: center">₹60</td>
+                <td style="padding: 12px; text-align: center">₹25</td>
+                <td style="padding: 12px; text-align: center">₹10</td>
+                <td style="padding: 12px; text-align: center">₹3</td>
+                <td style="padding: 12px; text-align: center">
+                  <span
+                    style="
+                      background: #4caf50;
+                      color: white;
+                      padding: 5px 10px;
+                      border-radius: 15px;
+                      font-size: 11px;
+                    "
+                    >Good</span
+                  >
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Additional Insights -->
+        <div
+          style="
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+          "
+        >
+          <div
+            style="
+              background: #e3f2fd;
+              padding: 20px;
+              border-radius: 10px;
+              border-left: 4px solid #2196f3;
+            "
+          >
+            <h5 style="color: #1565c0; margin-bottom: 10px">
+              Collection Priority
+            </h5>
+            <ul style="list-style: none; padding: 0; color: #666">
+              <li style="padding: 5px 0">
+                • Force Motors: ₹20L overdue 90+ days
+              </li>
+              <li style="padding: 5px 0">
+                • Bajaj Auto: ₹30L in 61-90 days bucket
+              </li>
+              <li style="padding: 5px 0">
+                • Tata Motors: ₹10L overdue 90+ days
+              </li>
+            </ul>
+          </div>
+          <div
+            style="
+              background: #e8f5e9;
+              padding: 20px;
+              border-radius: 10px;
+              border-left: 4px solid #4caf50;
+            "
+          >
+            <h5 style="color: #2e7d32; margin-bottom: 10px">Positive Trends</h5>
+            <ul style="list-style: none; padding: 0; color: #666">
+              <li style="padding: 5px 0">
+                • 45% outstanding in current bucket
+              </li>
+              <li style="padding: 5px 0">
+                • Tata Motors improved collection by 15%
+              </li>
+              <li style="padding: 5px 0">• 65% in domestic currency (INR)</li>
+            </ul>
+          </div>
+          <div
+            style="
+              background: #fff3e0;
+              padding: 20px;
+              border-radius: 10px;
+              border-left: 4px solid #ff9800;
+            "
+          >
+            <h5 style="color: #e65100; margin-bottom: 10px">Action Items</h5>
+            <ul style="list-style: none; padding: 0; color: #666">
+              <li style="padding: 5px 0">
+                • Escalate Force Motors to senior mgmt
+              </li>
+              <li style="padding: 5px 0">
+                • Schedule collection calls for 60+ days
+              </li>
+              <li style="padding: 5px 0">
+                • Review credit terms for new orders
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EDI Modal -->
+    <div id="ediModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              width: 100%;
+            "
+          >
+            <div style="display: flex; align-items: baseline; gap: 10px">
+              <h2 class="modal-title" style="margin: 0">
+                EDI Performance Dashboard
+              </h2>
+              <span
+                id="ediPeriodDisplay"
+                style="color: #666; font-size: 16px; font-style: italic"
+                >(Q3 2025)</span
+              >
+            </div>
+            <div style="display: flex; align-items: center; gap: 15px">
+              <div style="display: flex; gap: 8px; align-items: center">
+                <span style="color: #666; font-size: 14px; font-weight: 500"
+                  >Time Frame:</span
+                >
+                <button
+                  class="time-filter-btn-compact edi-filter"
+                  data-period="current-month"
+                  onclick="filterEdiData('current-month')"
+                >
+                  Current Month
+                </button>
+                <button
+                  class="time-filter-btn-compact edi-filter active"
+                  data-period="last-quarter"
+                  onclick="filterEdiData('last-quarter')"
+                >
+                  Last Quarter
+                </button>
+                <button
+                  class="time-filter-btn-compact edi-filter"
+                  data-period="last-6-months"
+                  onclick="filterEdiData('last-6-months')"
+                >
+                  Last 6 Months
+                </button>
+                <button
+                  class="time-filter-btn-compact edi-filter"
+                  data-period="ytd"
+                  onclick="filterEdiData('ytd')"
+                >
+                  YTD
+                </button>
+                <button
+                  class="time-filter-btn-compact edi-filter"
+                  data-period="last-year"
+                  onclick="filterEdiData('last-year')"
+                >
+                  Last Year
+                </button>
+                <button
+                  class="time-filter-btn-compact edi-filter"
+                  data-period="last-2-years"
+                  onclick="filterEdiData('last-2-years')"
+                >
+                  Last 2 Years
+                </button>
+              </div>
+              <button class="close-btn" onclick="closeModal('ediModal')">
+                ×
+              </button>
+            </div>
+          </div>
+        </div>
+        <h3 style="color: #1565c0; margin-bottom: 20px">
+          Key Performance Indicators
+        </h3>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-value">98.5%</div>
+            <div class="stat-label">Transaction Accuracy</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">1.2s</div>
+            <div class="stat-label">Average Response Time</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">15,234</div>
+            <div class="stat-label">Monthly Transactions</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">99.8%</div>
+            <div class="stat-label">System Uptime</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">42</div>
+            <div class="stat-label">Active Partners</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">0.02%</div>
+            <div class="stat-label">Error Rate</div>
+          </div>
+        </div>
+
+        <h3 style="color: #1565c0; margin: 30px 0 20px">
+          Transaction Volume Trend
+        </h3>
+        <canvas id="ediTrendChart" height="100"></canvas>
+      </div>
+    </div>
+
+    <!-- Continent Sales Popup Modal -->
+    <div id="continentSalesModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="continentModalTitle">
+            Continent Sales Details
+          </h2>
+          <button class="close-btn" onclick="closeModal('continentSalesModal')">
+            ×
+          </button>
+        </div>
+        <div id="continentModalContent"></div>
+      </div>
+    </div>
+
+    <!-- Capacity Utilization Modal -->
+    <div id="capacityModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              width: 100%;
+            "
+          >
+            <div style="display: flex; align-items: baseline; gap: 10px">
+              <h2 class="modal-title" style="margin: 0">
+                Forging Plants - Capacity Utilization Analysis
+              </h2>
+              <span
+                id="capacityPeriodDisplay"
+                style="color: #666; font-size: 16px; font-style: italic"
+                >(Q3 2025)</span
+              >
+            </div>
+            <div style="display: flex; align-items: center; gap: 15px">
+              <div style="display: flex; gap: 8px; align-items: center">
+                <span style="color: #666; font-size: 14px; font-weight: 500"
+                  >Time Frame:</span
+                >
+                <button
+                  class="time-filter-btn-compact capacity-filter"
+                  data-period="current-month"
+                  onclick="filterCapacityData('current-month')"
+                >
+                  Current Month
+                </button>
+                <button
+                  class="time-filter-btn-compact capacity-filter active"
+                  data-period="last-quarter"
+                  onclick="filterCapacityData('last-quarter')"
+                >
+                  Last Quarter
+                </button>
+                <button
+                  class="time-filter-btn-compact capacity-filter"
+                  data-period="last-6-months"
+                  onclick="filterCapacityData('last-6-months')"
+                >
+                  Last 6 Months
+                </button>
+                <button
+                  class="time-filter-btn-compact capacity-filter"
+                  data-period="ytd"
+                  onclick="filterCapacityData('ytd')"
+                >
+                  YTD
+                </button>
+                <button
+                  class="time-filter-btn-compact capacity-filter"
+                  data-period="last-year"
+                  onclick="filterCapacityData('last-year')"
+                >
+                  Last Year
+                </button>
+                <button
+                  class="time-filter-btn-compact capacity-filter"
+                  data-period="last-2-years"
+                  onclick="filterCapacityData('last-2-years')"
+                >
+                  Last 2 Years
+                </button>
+              </div>
+              <button class="close-btn" onclick="closeModal('capacityModal')">
+                ×
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Plant Table Container -->
+        <div id="capacityTableContainer">
+          <h3 style="color: #1565c0; margin-bottom: 20px">
+            Plant-wise Capacity Metrics (Click on plant name for line details)
+          </h3>
+          <table
+            style="
+              width: 100%;
+              border-collapse: collapse;
+              background: white;
+              border-radius: 10px;
+              overflow: hidden;
+              box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            "
+          >
+            <thead>
+              <tr
+                style="
+                  background: linear-gradient(135deg, #2196f3, #1976d2);
+                  color: white;
+                "
+              >
+                <th style="padding: 15px; text-align: left">Plant Name</th>
+                <th style="padding: 15px; text-align: center">
+                  Total Capacity (Nos./Month)
+                </th>
+                <th style="padding: 15px; text-align: center">
+                  Current Utilization (Nos.)
+                </th>
+                <th style="padding: 15px; text-align: center">Utilization %</th>
+                <th style="padding: 15px; text-align: center">
+                  Available Capacity (Nos.)
+                </th>
+                <th style="padding: 15px; text-align: center">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                style="border-bottom: 1px solid #e0e0e0; cursor: pointer"
+                onclick="showLineBreakdown('KTFL R1')"
+              >
+                <td
+                  style="
+                    padding: 15px;
+                    font-weight: 500;
+                    color: #1565c0;
+                    text-decoration: underline;
+                  "
+                >
+                  KTFL R1 ▶
+                </td>
+                <td style="padding: 15px; text-align: center">50,000</td>
+                <td style="padding: 15px; text-align: center">42,500</td>
+                <td
+                  style="
+                    padding: 15px;
+                    text-align: center;
+                    font-weight: bold;
+                    color: #ff9800;
+                  "
+                >
+                  85%
+                </td>
+                <td style="padding: 15px; text-align: center">7,500</td>
+                <td style="padding: 15px; text-align: center">
+                  <span
+                    style="
+                      background: #ff9800;
+                      color: white;
+                      padding: 5px 10px;
+                      border-radius: 15px;
+                      font-size: 12px;
+                    "
+                    >High</span
+                  >
+                </td>
+              </tr>
+              <tr
+                style="
+                  border-bottom: 1px solid #e0e0e0;
+                  background: #f9f9f9;
+                  cursor: pointer;
+                "
+                onclick="showLineBreakdown('KTTPL R2')"
+              >
+                <td
+                  style="
+                    padding: 15px;
+                    font-weight: 500;
+                    color: #1565c0;
+                    text-decoration: underline;
+                  "
+                >
+                  KTTPL R2 ▶
+                </td>
+                <td style="padding: 15px; text-align: center">45,000</td>
+                <td style="padding: 15px; text-align: center">33,750</td>
+                <td
+                  style="
+                    padding: 15px;
+                    text-align: center;
+                    font-weight: bold;
+                    color: #4caf50;
+                  "
+                >
+                  75%
+                </td>
+                <td style="padding: 15px; text-align: center">11,250</td>
+                <td style="padding: 15px; text-align: center">
+                  <span
+                    style="
+                      background: #4caf50;
+                      color: white;
+                      padding: 5px 10px;
+                      border-radius: 15px;
+                      font-size: 12px;
+                    "
+                    >Optimal</span
+                  >
+                </td>
+              </tr>
+              <tr
+                style="border-bottom: 1px solid #e0e0e0; cursor: pointer"
+                onclick="showLineBreakdown('KTFL Mundhwa')"
+              >
+                <td
+                  style="
+                    padding: 15px;
+                    font-weight: 500;
+                    color: #1565c0;
+                    text-decoration: underline;
+                  "
+                >
+                  KTFL Mundhwa ▶
+                </td>
+                <td style="padding: 15px; text-align: center">38,000</td>
+                <td style="padding: 15px; text-align: center">34,200</td>
+                <td
+                  style="
+                    padding: 15px;
+                    text-align: center;
+                    font-weight: bold;
+                    color: #f44336;
+                  "
+                >
+                  90%
+                </td>
+                <td style="padding: 15px; text-align: center">3,800</td>
+                <td style="padding: 15px; text-align: center">
+                  <span
+                    style="
+                      background: #f44336;
+                      color: white;
+                      padding: 5px 10px;
+                      border-radius: 15px;
+                      font-size: 12px;
+                    "
+                    >Critical</span
+                  >
+                </td>
+              </tr>
+              <tr
+                style="background: #f9f9f9; cursor: pointer"
+                onclick="showLineBreakdown('KTFL Baramati')"
+              >
+                <td
+                  style="
+                    padding: 15px;
+                    font-weight: 500;
+                    color: #1565c0;
+                    text-decoration: underline;
+                  "
+                >
+                  KTFL Baramati ▶
+                </td>
+                <td style="padding: 15px; text-align: center">42,000</td>
+                <td style="padding: 15px; text-align: center">29,400</td>
+                <td
+                  style="
+                    padding: 15px;
+                    text-align: center;
+                    font-weight: bold;
+                    color: #4caf50;
+                  "
+                >
+                  70%
+                </td>
+                <td style="padding: 15px; text-align: center">12,600</td>
+                <td style="padding: 15px; text-align: center">
+                  <span
+                    style="
+                      background: #4caf50;
+                      color: white;
+                      padding: 5px 10px;
+                      border-radius: 15px;
+                      font-size: 12px;
+                    "
+                    >Optimal</span
+                  >
+                </td>
+              </tr>
+              <tr
+                style="
+                  border-top: 2px solid #2196f3;
+                  background: #e3f2fd;
+                  font-weight: bold;
+                "
+              >
+                <td style="padding: 15px">Total</td>
+                <td style="padding: 15px; text-align: center">175,000</td>
+                <td style="padding: 15px; text-align: center">139,850</td>
+                <td style="padding: 15px; text-align: center; color: #1565c0">
+                  79.9%
+                </td>
+                <td style="padding: 15px; text-align: center">35,150</td>
+                <td style="padding: 15px; text-align: center">
+                  <span
+                    style="
+                      background: #2196f3;
+                      color: white;
+                      padding: 5px 10px;
+                      border-radius: 15px;
+                      font-size: 12px;
+                    "
+                    >Good</span
+                  >
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Line-wise Breakdown Container -->
+        <div id="lineBreakdownContainer" style="display: none">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 20px;
+            "
+          >
+            <h3 style="color: #1565c0; margin: 0">
+              Line-wise Capacity Breakdown -
+              <span id="selectedPlantName"></span>
+            </h3>
+            <button
+              onclick="hideLineBreakdown()"
+              style="
+                background: #1565c0;
+                color: white;
+                border: none;
+                padding: 8px 15px;
+                border-radius: 5px;
+                cursor: pointer;
+              "
+            >
+              ← Back to Plants
+            </button>
+          </div>
+          <div id="lineBreakdownTable"></div>
+        </div>
+
+        <div class="stats-grid" style="margin-top: 30px">
+          <div class="stat-item">
+            <div class="stat-value">79.9%</div>
+            <div class="stat-label">Overall Utilization</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">139,850</div>
+            <div class="stat-label">Total Production (Nos.)</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">35,150</div>
+            <div class="stat-label">Available Capacity (Nos.)</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">1 Plant</div>
+            <div class="stat-label">Critical Status</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Chatbot -->
+    <div class="ai-chatbot">
+      <div class="ai-chat-window" id="aiChatWindow">
+        <div class="ai-chat-header">KTL Intelligence Assistant</div>
+        <div class="ai-chat-body" id="chatBody">
+          <div class="message ai-message">
+            Hello! I'm your KTL Intelligence Assistant. How can I help you
+            analyze your business data today?
+          </div>
+        </div>
+        <div class="ai-chat-input">
+          <input
+            type="text"
+            id="chatInput"
+            placeholder="Ask me anything..."
+            onkeypress="if(event.key==='Enter')sendMessage()"
+          />
+          <button onclick="sendMessage()">Send</button>
+        </div>
+      </div>
+      <button class="ai-toggle" onclick="toggleAI()">🤖</button>
+    </div>
+
+    <script>
+      // Update date and time
+      function updateDateTime() {
+        const now = new Date();
+        const options = {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        };
+        document.getElementById("dateTime").textContent =
+          now.toLocaleDateString("en-US", options);
+      }
+      updateDateTime();
+      setInterval(updateDateTime, 60000);
+
+      // Initialize Charts
+      // Sales Chart
+      const salesCtx = document.getElementById("salesChart").getContext("2d");
+      new Chart(salesCtx, {
+        type: "line",
+        data: {
+          labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+          datasets: [
+            {
+              label: "Sales (₹ Cr)",
+              data: [18.5, 21.2, 19.8, 23.4, 22.1, 25.3],
+              borderColor: "#2196f3",
+              backgroundColor: "rgba(33, 150, 243, 0.1)",
+              borderWidth: 2,
+              fill: true,
+              tension: 0.4,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function (value) {
+                  return "₹" + value + "Cr";
+                },
+              },
+            },
+          },
+        },
+      });
+
+      // Pipeline Chart
+      const pipelineCtx = document
+        .getElementById("pipelineChart")
+        .getContext("2d");
+      new Chart(pipelineCtx, {
+        type: "bar",
+        data: {
+          labels: [
+            "Prospect",
+            "Qualified",
+            "Proposal",
+            "Negotiation",
+            "Closed",
+          ],
+          datasets: [
+            {
+              label: "Auto",
+              data: [45, 38, 28, 18, 12],
+              backgroundColor: "#2196f3",
+            },
+            {
+              label: "Gear",
+              data: [32, 26, 20, 14, 8],
+              backgroundColor: "#64b5f6",
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: "bottom" },
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function (value) {
+                  return "₹" + value + "Cr";
+                },
+              },
+            },
+          },
+        },
+      });
+
+      // RFQ Chart
+      const rfqCtx = document.getElementById("rfqChart").getContext("2d");
+      new Chart(rfqCtx, {
+        type: "line",
+        data: {
+          labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
+          datasets: [
+            {
+              label: "RFQs Received",
+              data: [12, 18, 15, 22],
+              borderColor: "#4caf50",
+              backgroundColor: "rgba(76, 175, 80, 0.1)",
+              borderWidth: 2,
+              fill: true,
+              tension: 0.4,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+          },
+          scales: {
+            y: { beginAtZero: true },
+          },
+        },
+      });
+
+      // Quality Chart
+      const qualityCtx = document
+        .getElementById("qualityChart")
+        .getContext("2d");
+      new Chart(qualityCtx, {
+        type: "doughnut",
+        data: {
+          labels: ["Open", "Closed", "On-going"],
+          datasets: [
+            {
+              data: [19, 98, 15],
+              backgroundColor: ["#f44336", "#4caf50", "#ff9800"],
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: "bottom" },
+          },
+        },
+      });
+
+      // Outstanding Chart
+      const outstandingCtx = document
+        .getElementById("outstandingChart")
+        .getContext("2d");
+      new Chart(outstandingCtx, {
+        type: "bar",
+        data: {
+          labels: [
+            "Tata Motors",
+            "Mahindra",
+            "Bajaj Auto",
+            "Force Motors",
+            "Ashok Leyland",
+          ],
+          datasets: [
+            {
+              label: "Outstanding (₹ Lakhs)",
+              data: [245, 189, 156, 134, 98],
+              backgroundColor: "#ff9800",
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function (value) {
+                  return "₹" + value + "L";
+                },
+              },
+            },
+          },
+        },
+      });
+
+      // Capacity Utilization Chart with percentage labels
+      const capacityCtx = document
+        .getElementById("capacityChart")
+        .getContext("2d");
+      const capacityChart = new Chart(capacityCtx, {
+        type: "bar",
+        data: {
+          labels: ["KTFL R1", "KTTPL R2", "KTFL Mundhwa", "KTFL Baramati"],
+          datasets: [
+            {
+              label: "Capacity Utilization (%)",
+              data: [85, 75, 90, 70],
+              backgroundColor: function (context) {
+                const value = context.parsed.y;
+                if (value >= 90) return "#f44336";
+                if (value >= 80) return "#ff9800";
+                if (value >= 70) return "#4caf50";
+                return "#2196f3";
+              },
+              borderWidth: 1,
+              borderColor: "#fff",
+            },
+          ],
+        },
+        plugins: [
+          {
+            afterDatasetsDraw: function (chart) {
+              const ctx = chart.ctx;
+              ctx.font = "bold 16px Arial";
+              ctx.fillStyle = "white";
+              ctx.textAlign = "center";
+              ctx.textBaseline = "middle";
+
+              const meta = chart.getDatasetMeta(0);
+              meta.data.forEach((bar, index) => {
+                const data = chart.data.datasets[0].data[index];
+                const x = bar.x;
+                const y = bar.y + 20;
+                ctx.fillText(data + "%", x, y);
+              });
+            },
+          },
+        ],
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function (context) {
+                  return context.parsed.y + "% Utilization";
+                },
+              },
+            },
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 100,
+              ticks: {
+                callback: function (value) {
+                  return value + "%";
+                },
+              },
+            },
+          },
+        },
+      });
+
+      // Sales Time Filter Data
+      const salesTimeData = {
+        "current-month": {
+          totalRevenue: "₹10.5Cr",
+          yoyGrowth: "+22%",
+          activeClients: 87,
+          monthlyAverage: "₹10.5Cr",
+          period: "November 2025",
+          displayPeriod: "Nov 2025",
+          continentData: [8.2, 1.5, 0.6, 0.2],
+          plantData: [
+            0.95, 0.82, 0.78, 0.68, 0.89, 0.86, 0.76, 1.22, 1.18, 0.92, 0.9,
+          ],
+          sectorData: [58, 23, 13, 6],
+          productData: [19, 24, 14, 11, 9, 7, 10, 6],
+        },
+        "last-quarter": {
+          totalRevenue: "₹125.3Cr",
+          yoyGrowth: "+18.5%",
+          activeClients: 87,
+          monthlyAverage: "₹14.2Cr",
+          period: "Q3 2025 (Jul-Sep)",
+          displayPeriod: "Q3 2025",
+          continentData: [65.2, 35.8, 18.5, 5.8],
+          plantData: [
+            12.5, 10.2, 9.8, 8.5, 11.2, 10.8, 9.5, 15.2, 14.8, 11.5, 11.3,
+          ],
+          sectorData: [55, 25, 15, 5],
+          productData: [18, 22, 15, 12, 10, 8, 9, 6],
+        },
+        "last-6-months": {
+          totalRevenue: "₹78.8Cr",
+          yoyGrowth: "+19.2%",
+          activeClients: 92,
+          monthlyAverage: "₹13.1Cr",
+          period: "May-Oct 2025",
+          displayPeriod: "May-Oct 2025",
+          continentData: [41.2, 22.5, 11.6, 3.5],
+          plantData: [7.8, 6.4, 6.1, 5.3, 7.0, 6.8, 5.9, 9.5, 9.3, 7.2, 7.1],
+          sectorData: [57, 24, 14, 5],
+          productData: [17, 23, 16, 11, 10, 8, 9, 6],
+        },
+        ytd: {
+          totalRevenue: "₹142.6Cr",
+          yoyGrowth: "+17.8%",
+          activeClients: 95,
+          monthlyAverage: "₹14.3Cr",
+          period: "Jan-Nov 2025",
+          displayPeriod: "YTD 2025",
+          continentData: [74.2, 40.8, 21.1, 6.5],
+          plantData: [
+            14.2, 11.6, 11.2, 9.7, 12.7, 12.3, 10.8, 17.3, 16.9, 13.1, 12.8,
+          ],
+          sectorData: [56, 25, 14, 5],
+          productData: [18, 22, 15, 12, 10, 8, 9, 6],
+        },
+        "last-year": {
+          totalRevenue: "₹156.4Cr",
+          yoyGrowth: "+15.2%",
+          activeClients: 89,
+          monthlyAverage: "₹13.0Cr",
+          period: "FY 2024",
+          displayPeriod: "FY 2024",
+          continentData: [81.4, 44.7, 23.1, 7.2],
+          plantData: [
+            15.6, 12.8, 12.3, 10.6, 14.0, 13.5, 11.9, 19.0, 18.5, 14.4, 14.1,
+          ],
+          sectorData: [54, 26, 15, 5],
+          productData: [17, 21, 16, 13, 10, 8, 9, 6],
+        },
+        "last-2-years": {
+          totalRevenue: "₹292.8Cr",
+          yoyGrowth: "+12.8%",
+          activeClients: 103,
+          monthlyAverage: "₹12.2Cr",
+          period: "FY 2023-2024",
+          displayPeriod: "FY 2023-24",
+          continentData: [152.3, 83.5, 43.2, 13.8],
+          plantData: [
+            29.2, 24.0, 23.0, 19.8, 26.2, 25.3, 22.3, 35.6, 34.6, 26.9, 26.4,
+          ],
+          sectorData: [53, 26, 16, 5],
+          productData: [17, 21, 16, 12, 11, 8, 9, 6],
+        },
+      };
+
+      // Store chart instances
+      let salesChartInstances = {
+        continent: null,
+        plant: null,
+        sector: null,
+        product: null,
+      };
+
+      // Filter Sales Data Function
+      function filterSalesData(period) {
+        // Update active button - use the compact class
+        document.querySelectorAll(".time-filter-btn-compact").forEach((btn) => {
+          btn.classList.remove("active");
+        });
+        event.target.classList.add("active");
+
+        // Get data for selected period
+        const data = salesTimeData[period];
+
+        // Update the period display in the title
+        const periodDisplay = document.getElementById("salesPeriodDisplay");
+        if (periodDisplay) {
+          periodDisplay.textContent = "(" + data.displayPeriod + ")";
+        }
+
+        // Update only the stat values, not the entire structure
+        const mainView = document.getElementById("salesMainView");
+        const statItems = mainView.querySelectorAll(".stat-item");
+
+        if (statItems.length >= 4) {
+          statItems[0].querySelector(".stat-value").textContent =
+            data.totalRevenue;
+
+          const yoyElement = statItems[1].querySelector(".stat-value");
+          yoyElement.textContent = data.yoyGrowth;
+          yoyElement.style.color = data.yoyGrowth.startsWith("+")
+            ? "#4caf50"
+            : "#f44336";
+
+          statItems[2].querySelector(".stat-value").textContent =
+            data.activeClients;
+          statItems[3].querySelector(".stat-value").textContent =
+            data.monthlyAverage;
+        }
+
+        // Update or add the period indicator
+        let periodIndicator = mainView.querySelector(".period-indicator");
+        if (!periodIndicator) {
+          periodIndicator = document.createElement("div");
+          periodIndicator.className = "period-indicator";
+          periodIndicator.style.cssText =
+            "text-align: center; color: #666; margin-top: 10px; font-style: italic;";
+          mainView
+            .querySelector(".stats-grid")
+            .parentElement.appendChild(periodIndicator);
+        }
+        periodIndicator.textContent = "Showing data for: " + data.period;
+
+        // Update Continent Chart
+        if (salesChartInstances.continent) {
+          salesChartInstances.continent.data.datasets[0].data =
+            data.continentData;
+          salesChartInstances.continent.update();
+        }
+
+        // Update Plant Chart
+        if (salesChartInstances.plant) {
+          salesChartInstances.plant.data.datasets[0].data = data.plantData;
+          salesChartInstances.plant.update();
+        }
+
+        // Update Sector Chart
+        if (salesChartInstances.sector) {
+          salesChartInstances.sector.data.datasets[0].data = data.sectorData;
+          salesChartInstances.sector.update();
+        }
+
+        // Update Product Chart
+        if (salesChartInstances.product) {
+          salesChartInstances.product.data.datasets[0].data = data.productData;
+          salesChartInstances.product.update();
+        }
+      }
+
+      // Modal Functions
+      function openModal(type) {
+        const modal = document.getElementById(type + "Modal");
+        if (modal) {
+          modal.style.display = "block";
+          initializeModalCharts(type);
+        }
+      }
+
+      function openVisitReportModal() {
+        document.getElementById("visitReportModal").style.display = "block";
+      }
+
+      function closeModal(modalId) {
+        document.getElementById(modalId).style.display = "none";
+      }
+
+      // Continent Popup Function
+      function showContinentPopup(continent) {
+        const continentData = {
+          Asia: {
+            total: 65.2,
+            yoy: "+22%",
+            customers: [
+              {
+                name: "Tata Motors",
+                sales: 18.5,
+                yoy: "+25%",
+                products: "Crankshafts, Gears",
+              },
+              {
+                name: "Mahindra & Mahindra",
+                sales: 15.2,
+                yoy: "+20%",
+                products: "Axles, Differentials",
+              },
+              {
+                name: "Bajaj Auto",
+                sales: 12.8,
+                yoy: "+22%",
+                products: "Engine Components",
+              },
+              {
+                name: "Honda India",
+                sales: 10.3,
+                yoy: "+18%",
+                products: "Transmission Parts",
+              },
+              {
+                name: "Toyota Kirloskar",
+                sales: 8.4,
+                yoy: "+24%",
+                products: "Chassis Components",
+              },
+            ],
+          },
+          Europe: {
+            total: 35.8,
+            yoy: "+15%",
+            customers: [
+              {
+                name: "BMW Group",
+                sales: 12.5,
+                yoy: "+18%",
+                products: "Precision Gears",
+              },
+              {
+                name: "Volkswagen",
+                sales: 9.8,
+                yoy: "+14%",
+                products: "Engine Parts",
+              },
+              {
+                name: "Daimler AG",
+                sales: 7.2,
+                yoy: "+12%",
+                products: "Transmission Components",
+              },
+              {
+                name: "Renault",
+                sales: 4.3,
+                yoy: "+16%",
+                products: "Chassis Parts",
+              },
+              {
+                name: "PSA Group",
+                sales: 2.0,
+                yoy: "+10%",
+                products: "Suspension Components",
+              },
+            ],
+          },
+          Americas: {
+            total: 18.5,
+            yoy: "+12%",
+            customers: [
+              {
+                name: "General Motors",
+                sales: 7.5,
+                yoy: "+15%",
+                products: "Heavy Vehicle Parts",
+              },
+              {
+                name: "Ford Motor",
+                sales: 5.8,
+                yoy: "+12%",
+                products: "Engine Components",
+              },
+              {
+                name: "Caterpillar",
+                sales: 3.2,
+                yoy: "+10%",
+                products: "Industrial Equipment",
+              },
+              {
+                name: "John Deere",
+                sales: 1.5,
+                yoy: "+8%",
+                products: "Agricultural Parts",
+              },
+              {
+                name: "Cummins",
+                sales: 0.5,
+                yoy: "+11%",
+                products: "Engine Components",
+              },
+            ],
+          },
+          Africa: {
+            total: 5.8,
+            yoy: "+18%",
+            customers: [
+              {
+                name: "Toyota South Africa",
+                sales: 2.5,
+                yoy: "+20%",
+                products: "Automotive Parts",
+              },
+              {
+                name: "Nissan Africa",
+                sales: 1.8,
+                yoy: "+18%",
+                products: "Commercial Vehicle Parts",
+              },
+              {
+                name: "Mercedes-Benz SA",
+                sales: 1.0,
+                yoy: "+15%",
+                products: "Premium Components",
+              },
+              {
+                name: "Volkswagen SA",
+                sales: 0.5,
+                yoy: "+16%",
+                products: "Passenger Car Parts",
+              },
+            ],
+          },
+        };
+
+        const data = continentData[continent];
+        document.getElementById(
+          "continentModalTitle"
+        ).textContent = `${continent} - Customer-wise Sales`;
+
+        const modalContent = document.getElementById("continentModalContent");
+        modalContent.innerHTML = `
+                <div class="stats-grid" style="margin-bottom: 30px;">
+                    <div class="stat-item">
+                        <div class="stat-value">₹${data.total}Cr</div>
+                        <div class="stat-label">Total Sales</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" style="color: ${
+                          data.yoy.startsWith("+") ? "#4caf50" : "#f44336"
+                        };">${data.yoy}</div>
+                        <div class="stat-label">YoY Growth</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${data.customers.length}</div>
+                        <div class="stat-label">Active Customers</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${(
+                          (data.total / 125.3) *
+                          100
+                        ).toFixed(1)}%</div>
+                        <div class="stat-label">% of Total Sales</div>
+                    </div>
+                </div>
+
+                <h4 style="color: #1565c0; margin-bottom: 15px;">Customer-wise Sales Distribution</h4>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; margin-bottom: 30px;">
+                    <div style="height: 350px;">
+                        <canvas id="continentCustomerDoughnut"></canvas>
+                    </div>
+                    <div style="height: 350px;">
+                        <canvas id="continentCustomerBar"></canvas>
+                    </div>
+                </div>
+
+                <h4 style="color: #1565c0; margin-bottom: 15px;">Customer Details</h4>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; min-width: 800px;">
+                        <thead>
+                            <tr style="background: #e3f2fd;">
+                                <th style="padding: 12px; text-align: left;">Customer Name</th>
+                                <th style="padding: 12px; text-align: center;">Sales (₹ Cr)</th>
+                                <th style="padding: 12px; text-align: center;">% of ${continent}</th>
+                                <th style="padding: 12px; text-align: center;">YoY Growth</th>
+                                <th style="padding: 12px; text-align: center;">Primary Products</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.customers
+                              .map(
+                                (customer, index) => `
+                                <tr style="border-bottom: 1px solid #e0e0e0; ${
+                                  index % 2 === 1 ? "background: #f9f9f9;" : ""
+                                }">
+                                    <td style="padding: 12px; font-weight: 500;">${
+                                      customer.name
+                                    }</td>
+                                    <td style="padding: 12px; text-align: center; font-weight: bold;">₹${
+                                      customer.sales
+                                    }</td>
+                                    <td style="padding: 12px; text-align: center;">${(
+                                      (customer.sales / data.total) *
+                                      100
+                                    ).toFixed(1)}%</td>
+                                    <td style="padding: 12px; text-align: center; color: ${
+                                      customer.yoy.startsWith("+")
+                                        ? "#4caf50"
+                                        : "#f44336"
+                                    }; font-weight: bold;">${customer.yoy}</td>
+                                    <td style="padding: 12px; text-align: center;">${
+                                      customer.products
+                                    }</td>
+                                </tr>
+                            `
+                              )
+                              .join("")}
+                        </tbody>
+                    </table>
+                </div>
+
+                <h4 style="color: #1565c0; margin-bottom: 15px;">Key Insights for ${continent}</h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                    <div style="background: #e3f2fd; padding: 20px; border-radius: 10px; border-left: 4px solid #2196f3;">
+                        <h5 style="color: #1565c0; margin-bottom: 10px;">Top Performer</h5>
+                        <p style="color: #666; margin: 0;">${
+                          data.customers[0].name
+                        } leads with ₹${
+          data.customers[0].sales
+        }Cr, contributing ${(
+          (data.customers[0].sales / data.total) *
+          100
+        ).toFixed(1)}% of total ${continent} sales.</p>
+                    </div>
+                    <div style="background: #e8f5e9; padding: 20px; border-radius: 10px; border-left: 4px solid #4caf50;">
+                        <h5 style="color: #2e7d32; margin-bottom: 10px;">Growth Leader</h5>
+                        <p style="color: #666; margin: 0;">Best YoY growth: ${
+                          data.customers[0].name
+                        } with ${data.customers[0].yoy} growth rate.</p>
+                    </div>
+                    <div style="background: #fff3e0; padding: 20px; border-radius: 10px; border-left: 4px solid #ff9800;">
+                        <h5 style="color: #e65100; margin-bottom: 10px;">Market Concentration</h5>
+                        <p style="color: #666; margin: 0;">Top 3 customers account for ${(
+                          ((data.customers[0].sales +
+                            data.customers[1].sales +
+                            data.customers[2].sales) /
+                            data.total) *
+                          100
+                        ).toFixed(1)}% of ${continent} revenue.</p>
+                    </div>
+                </div>
+            `;
+
+        document.getElementById("continentSalesModal").style.display = "block";
+
+        setTimeout(() => {
+          // Doughnut Chart
+          const doughnutCtx = document.getElementById(
+            "continentCustomerDoughnut"
+          );
+          if (doughnutCtx) {
+            new Chart(doughnutCtx.getContext("2d"), {
+              type: "doughnut",
+              data: {
+                labels: data.customers.map((c) => c.name),
+                datasets: [
+                  {
+                    data: data.customers.map((c) => c.sales),
+                    backgroundColor: [
+                      "#2196f3",
+                      "#4caf50",
+                      "#ff9800",
+                      "#f44336",
+                      "#9c27b0",
+                    ],
+                  },
+                ],
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: { position: "bottom" },
+                  title: {
+                    display: true,
+                    text: "Customer Distribution",
+                    font: { size: 16, weight: "bold" },
+                    color: "#1565c0",
+                  },
+                },
+              },
+              plugins: [
+                {
+                  afterDatasetsDraw: function (chart) {
+                    const ctx = chart.ctx;
+                    ctx.font = "bold 14px Arial";
+                    ctx.fillStyle = "white";
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
+
+                    const meta = chart.getDatasetMeta(0);
+                    meta.data.forEach((arc, index) => {
+                      const data = chart.data.datasets[0].data[index];
+                      const midAngle = (arc.startAngle + arc.endAngle) / 2;
+                      const x =
+                        arc.x + Math.cos(midAngle) * (arc.outerRadius * 0.7);
+                      const y =
+                        arc.y + Math.sin(midAngle) * (arc.outerRadius * 0.7);
+                      ctx.fillText("₹" + data, x, y);
+                    });
+                  },
+                },
+              ],
+            });
+          }
+
+          // Bar Chart
+          const barCtx = document.getElementById("continentCustomerBar");
+          if (barCtx) {
+            new Chart(barCtx.getContext("2d"), {
+              type: "bar",
+              data: {
+                labels: data.customers.map((c) => c.name),
+                datasets: [
+                  {
+                    label: "Sales (₹ Cr)",
+                    data: data.customers.map((c) => c.sales),
+                    backgroundColor: [
+                      "#2196f3",
+                      "#4caf50",
+                      "#ff9800",
+                      "#f44336",
+                      "#9c27b0",
+                    ],
+                  },
+                ],
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: { display: false },
+                  title: {
+                    display: true,
+                    text: "Customer Sales Comparison",
+                    font: { size: 16, weight: "bold" },
+                    color: "#1565c0",
+                  },
+                },
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                    ticks: {
+                      callback: function (value) {
+                        return "₹" + value + "Cr";
+                      },
+                    },
+                  },
+                },
+              },
+              plugins: [
+                {
+                  afterDatasetsDraw: function (chart) {
+                    const ctx = chart.ctx;
+                    ctx.font = "bold 12px Arial";
+                    ctx.fillStyle = "#1565c0";
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "bottom";
+
+                    const meta = chart.getDatasetMeta(0);
+                    meta.data.forEach((bar, index) => {
+                      const data = chart.data.datasets[0].data[index];
+                      const x = bar.x;
+                      const y = bar.y - 5;
+                      ctx.fillText("₹" + data, x, y);
+                    });
+                  },
+                },
+              ],
+            });
+          }
+        }, 100);
+      }
+
+      // Initialize Modal Charts
+      function initializeModalCharts(type) {
+        setTimeout(() => {
+          if (type === "sales") {
+            // Continent Chart
+            const continentCtx = document.getElementById("continentChart");
+            if (continentCtx && !continentCtx.chart) {
+              salesChartInstances.continent = new Chart(
+                continentCtx.getContext("2d"),
+                {
+                  type: "bar",
+                  data: {
+                    labels: ["Asia", "Europe", "Americas", "Africa"],
+                    datasets: [
+                      {
+                        label: "Sales (₹ Cr)",
+                        data: [65.2, 35.8, 18.5, 5.8],
+                        backgroundColor: "#2196f3",
+                      },
+                    ],
+                  },
+                  options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    onClick: (event, elements) => {
+                      if (elements.length > 0) {
+                        const index = elements[0].index;
+                        const continents = [
+                          "Asia",
+                          "Europe",
+                          "Americas",
+                          "Africa",
+                        ];
+                        showContinentPopup(continents[index]);
+                      }
+                    },
+                    plugins: {
+                      legend: { display: false },
+                      datalabels: {
+                        anchor: "end",
+                        align: "top",
+                        formatter: (value) => "₹" + value + "Cr",
+                        font: {
+                          weight: "bold",
+                          size: 12,
+                        },
+                        color: "#1565c0",
+                      },
+                    },
+                    scales: {
+                      y: {
+                        beginAtZero: true,
+                        ticks: {
+                          callback: function (value) {
+                            return "₹" + value + "Cr";
+                          },
+                        },
+                      },
+                    },
+                  },
+                  plugins: [
+                    {
+                      afterDatasetsDraw: function (chart) {
+                        const ctx = chart.ctx;
+                        ctx.font = "bold 14px Arial";
+                        ctx.fillStyle = "#1565c0";
+                        ctx.textAlign = "center";
+                        ctx.textBaseline = "bottom";
+
+                        const meta = chart.getDatasetMeta(0);
+                        meta.data.forEach((bar, index) => {
+                          const data = chart.data.datasets[0].data[index];
+                          const x = bar.x;
+                          const y = bar.y - 5;
+                          ctx.fillText("₹" + data + "Cr", x, y);
+                        });
+                      },
+                    },
+                  ],
+                }
+              );
+            }
+
+            // Plant Chart
+            const plantCtx = document.getElementById("plantChart");
+            if (plantCtx && !plantCtx.chart) {
+              salesChartInstances.plant = new Chart(plantCtx.getContext("2d"), {
+                type: "bar",
+                data: {
+                  labels: [
+                    "Khed",
+                    "Amb 1",
+                    "Amb 2",
+                    "Amb 3",
+                    "Chakan",
+                    "Bhiwadi",
+                    "Gujarat",
+                    "R1",
+                    "R2",
+                    "Mundh",
+                    "Baram",
+                  ],
+                  datasets: [
+                    {
+                      label: "Production (₹ Cr)",
+                      data: [
+                        12.5, 10.2, 9.8, 8.5, 11.2, 10.8, 9.5, 15.2, 14.8, 11.5,
+                        11.3,
+                      ],
+                      backgroundColor: "#4caf50",
+                    },
+                  ],
+                },
+                options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  onClick: (event, elements) => {
+                    if (elements.length > 0) {
+                      const index = elements[0].index;
+                      const plants = [
+                        "Khed",
+                        "Ambethan 1",
+                        "Ambethan 2",
+                        "Ambethan 3",
+                        "Chakan",
+                        "Bhiwadi",
+                        "Gujarat",
+                        "KTFL R1",
+                        "KTTPL R2",
+                        "KTFL Mundhwa",
+                        "KTFL Baramati",
+                      ];
+                      showPlantBreakdown(plants[index]);
+                    }
+                  },
+                  plugins: {
+                    legend: { display: false },
+                  },
+                  scales: {
+                    y: {
+                      beginAtZero: true,
+                      ticks: {
+                        callback: function (value) {
+                          return "₹" + value + "Cr";
+                        },
+                      },
+                    },
+                  },
+                },
+                plugins: [
+                  {
+                    afterDatasetsDraw: function (chart) {
+                      const ctx = chart.ctx;
+                      ctx.font = "bold 11px Arial";
+                      ctx.fillStyle = "#1565c0";
+                      ctx.textAlign = "center";
+                      ctx.textBaseline = "bottom";
+
+                      const meta = chart.getDatasetMeta(0);
+                      meta.data.forEach((bar, index) => {
+                        const data = chart.data.datasets[0].data[index];
+                        const x = bar.x;
+                        const y = bar.y - 3;
+                        ctx.fillText("₹" + data, x, y);
+                      });
+                    },
+                  },
+                ],
+              });
+            }
+
+            // Sector Chart
+            const sectorCtx = document.getElementById("sectorChart");
+            if (sectorCtx && !sectorCtx.chart) {
+              salesChartInstances.sector = new Chart(
+                sectorCtx.getContext("2d"),
+                {
+                  type: "pie",
+                  data: {
+                    labels: ["Automotive", "Agriculture", "Aerospace", "Naval"],
+                    datasets: [
+                      {
+                        data: [55, 25, 15, 5],
+                        backgroundColor: [
+                          "#2196f3",
+                          "#4caf50",
+                          "#ff9800",
+                          "#f44336",
+                        ],
+                      },
+                    ],
+                  },
+                  options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                      legend: { position: "bottom" },
+                      datalabels: {
+                        color: "#fff",
+                        font: {
+                          weight: "bold",
+                          size: 14,
+                        },
+                        formatter: (value) => value + "%",
+                      },
+                    },
+                  },
+                  plugins: [
+                    {
+                      afterDatasetsDraw: function (chart) {
+                        const ctx = chart.ctx;
+                        ctx.font = "bold 14px Arial";
+                        ctx.fillStyle = "white";
+                        ctx.textAlign = "center";
+                        ctx.textBaseline = "middle";
+
+                        const meta = chart.getDatasetMeta(0);
+                        meta.data.forEach((arc, index) => {
+                          const data = chart.data.datasets[0].data[index];
+                          const midAngle = (arc.startAngle + arc.endAngle) / 2;
+                          const x =
+                            arc.x +
+                            Math.cos(midAngle) * (arc.outerRadius * 0.6);
+                          const y =
+                            arc.y +
+                            Math.sin(midAngle) * (arc.outerRadius * 0.6);
+                          ctx.fillText(data + "%", x, y);
+                        });
+                      },
+                    },
+                  ],
+                }
+              );
+            }
+
+            // Product Chart
+            const productCtx = document.getElementById("productChart");
+            if (productCtx && !productCtx.chart) {
+              salesChartInstances.product = new Chart(
+                productCtx.getContext("2d"),
+                {
+                  type: "radar",
+                  data: {
+                    labels: [
+                      "Shaft",
+                      "Gear",
+                      "Assembly",
+                      "Finish",
+                      "Product Business",
+                      "As Forged",
+                      "Semi Finish",
+                      "Sub Assembly",
+                    ],
+                    datasets: [
+                      {
+                        label: "Product Mix",
+                        data: [18, 22, 15, 12, 10, 8, 9, 6],
+                        borderColor: "#2196f3",
+                        backgroundColor: "rgba(33, 150, 243, 0.2)",
+                      },
+                    ],
+                  },
+                  options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                      legend: { display: false },
+                    },
+                    scales: {
+                      r: {
+                        beginAtZero: true,
+                        ticks: {
+                          stepSize: 5,
+                        },
+                      },
+                    },
+                  },
+                }
+              );
+            }
+          }
+
+          if (type === "pipeline") {
+            const segmentCtx = document.getElementById("segmentDetailChart");
+            if (segmentCtx && !segmentCtx.chart) {
+              segmentCtx.chart = new Chart(segmentCtx.getContext("2d"), {
+                type: "bar",
+                data: {
+                  labels: ["Q1", "Q2", "Q3", "Q4"],
+                  datasets: [
+                    {
+                      label: "Auto Segment",
+                      data: [12.5, 15.8, 18.2, 22.3],
+                      backgroundColor: "#2196f3",
+                    },
+                    {
+                      label: "Gear Segment",
+                      data: [8.5, 10.2, 12.8, 14.5],
+                      backgroundColor: "#64b5f6",
+                    },
+                  ],
+                },
+                options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                },
+              });
+            }
+          }
+
+          if (type === "rfq") {
+            const rfqStatusCtx = document.getElementById("rfqStatusChart");
+            if (rfqStatusCtx && !rfqStatusCtx.chart) {
+              rfqStatusCtx.chart = new Chart(rfqStatusCtx.getContext("2d"), {
+                type: "doughnut",
+                data: {
+                  labels: [
+                    "Business Awarded",
+                    "Serious Discussion",
+                    "RFQ Stage",
+                    "Lost",
+                  ],
+                  datasets: [
+                    {
+                      data: [42, 67, 35, 12],
+                      backgroundColor: [
+                        "#4caf50",
+                        "#2196f3",
+                        "#ff9800",
+                        "#f44336",
+                      ],
+                    },
+                  ],
+                },
+                options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                },
+              });
+            }
+          }
+
+          if (type === "quality") {
+            const qualityGroupCtx =
+              document.getElementById("qualityGroupChart");
+            if (qualityGroupCtx && !qualityGroupCtx.chart) {
+              qualityGroupCtx.chart = new Chart(
+                qualityGroupCtx.getContext("2d"),
+                {
+                  type: "bar",
+                  data: {
+                    labels: ["Machining Group", "Forging Group"],
+                    datasets: [
+                      {
+                        label: "Open",
+                        data: [11, 8],
+                        backgroundColor: "#f44336",
+                      },
+                      {
+                        label: "Closed",
+                        data: [54, 44],
+                        backgroundColor: "#4caf50",
+                      },
+                    ],
+                  },
+                  options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                  },
+                }
+              );
+            }
+          }
+
+          if (type === "outstanding") {
+            const customerCtx = document.getElementById(
+              "customerOutstandingChart"
+            );
+            if (customerCtx && !customerCtx.chart) {
+              customerCtx.chart = new Chart(customerCtx.getContext("2d"), {
+                type: "bar",
+                data: {
+                  labels: [
+                    "Tata Motors",
+                    "Mahindra",
+                    "Bajaj Auto",
+                    "Force Motors",
+                    "Ashok Leyland",
+                  ],
+                  datasets: [
+                    {
+                      label: "Outstanding (₹ Lakhs)",
+                      data: [245, 189, 156, 134, 98],
+                      backgroundColor: [
+                        "#2196f3",
+                        "#4caf50",
+                        "#ff9800",
+                        "#f44336",
+                        "#9c27b0",
+                      ],
+                    },
+                  ],
+                },
+                options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: { display: false },
+                  },
+                  scales: {
+                    y: {
+                      beginAtZero: true,
+                      ticks: {
+                        callback: function (value) {
+                          return "₹" + value + "L";
+                        },
+                      },
+                    },
+                  },
+                },
+                plugins: [
+                  {
+                    afterDatasetsDraw: function (chart) {
+                      const ctx = chart.ctx;
+                      ctx.font = "bold 12px Arial";
+                      ctx.fillStyle = "#1565c0";
+                      ctx.textAlign = "center";
+                      ctx.textBaseline = "bottom";
+
+                      const meta = chart.getDatasetMeta(0);
+                      meta.data.forEach((bar, index) => {
+                        const data = chart.data.datasets[0].data[index];
+                        const x = bar.x;
+                        const y = bar.y - 5;
+                        ctx.fillText("₹" + data + "L", x, y);
+                      });
+                    },
+                  },
+                ],
+              });
+            }
+
+            const currencyCtx = document.getElementById("currencyChart");
+            if (currencyCtx && !currencyCtx.chart) {
+              currencyCtx.chart = new Chart(currencyCtx.getContext("2d"), {
+                type: "pie",
+                data: {
+                  labels: ["INR", "USD", "EUR", "GBP"],
+                  datasets: [
+                    {
+                      data: [65, 20, 10, 5],
+                      backgroundColor: [
+                        "#2196f3",
+                        "#4caf50",
+                        "#ff9800",
+                        "#f44336",
+                      ],
+                    },
+                  ],
+                },
+                options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: { position: "bottom" },
+                  },
+                },
+                plugins: [
+                  {
+                    afterDatasetsDraw: function (chart) {
+                      const ctx = chart.ctx;
+                      ctx.font = "bold 14px Arial";
+                      ctx.fillStyle = "white";
+                      ctx.textAlign = "center";
+                      ctx.textBaseline = "middle";
+
+                      const meta = chart.getDatasetMeta(0);
+                      meta.data.forEach((arc, index) => {
+                        const data = chart.data.datasets[0].data[index];
+                        const midAngle = (arc.startAngle + arc.endAngle) / 2;
+                        const x =
+                          arc.x + Math.cos(midAngle) * (arc.outerRadius * 0.6);
+                        const y =
+                          arc.y + Math.sin(midAngle) * (arc.outerRadius * 0.6);
+                        ctx.fillText(data + "%", x, y);
+                      });
+                    },
+                  },
+                ],
+              });
+            }
+
+            const overdueCtx = document.getElementById("overdueChart");
+            if (overdueCtx && !overdueCtx.chart) {
+              overdueCtx.chart = new Chart(overdueCtx.getContext("2d"), {
+                type: "doughnut",
+                data: {
+                  labels: [
+                    "Current (0-30)",
+                    "31-60 Days",
+                    "61-90 Days",
+                    "90+ Days",
+                  ],
+                  datasets: [
+                    {
+                      data: [45, 25, 20, 10],
+                      backgroundColor: [
+                        "#4caf50",
+                        "#ffeb3b",
+                        "#ff9800",
+                        "#f44336",
+                      ],
+                    },
+                  ],
+                },
+                options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: { position: "bottom" },
+                  },
+                },
+                plugins: [
+                  {
+                    afterDatasetsDraw: function (chart) {
+                      const ctx = chart.ctx;
+                      ctx.font = "bold 14px Arial";
+                      ctx.fillStyle = "white";
+                      ctx.textAlign = "center";
+                      ctx.textBaseline = "middle";
+
+                      const meta = chart.getDatasetMeta(0);
+                      meta.data.forEach((arc, index) => {
+                        const data = chart.data.datasets[0].data[index];
+                        const midAngle = (arc.startAngle + arc.endAngle) / 2;
+                        const x =
+                          arc.x + Math.cos(midAngle) * (arc.outerRadius * 0.6);
+                        const y =
+                          arc.y + Math.sin(midAngle) * (arc.outerRadius * 0.6);
+                        ctx.fillText(data + "%", x, y);
+                      });
+                    },
+                  },
+                ],
+              });
+            }
+          }
+
+          if (type === "edi") {
+            const ediTrendCtx = document.getElementById("ediTrendChart");
+            if (ediTrendCtx && !ediTrendCtx.chart) {
+              ediTrendCtx.chart = new Chart(ediTrendCtx.getContext("2d"), {
+                type: "line",
+                data: {
+                  labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+                  datasets: [
+                    {
+                      label: "Transactions",
+                      data: [12500, 13200, 14800, 15234, 16500, 17200],
+                      borderColor: "#2196f3",
+                      backgroundColor: "rgba(33, 150, 243, 0.1)",
+                      borderWidth: 2,
+                      fill: true,
+                      tension: 0.4,
+                    },
+                  ],
+                },
+                options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                },
+              });
+            }
+          }
+        }, 100);
+      }
+
+      // Line Breakdown Functions for Capacity
+      function showLineBreakdown(plantName) {
+        const lineData = {
+          "KTFL R1": {
+            lines: [
+              {
+                name: "630TP",
+                totalCapacity: 12500,
+                currentUtilization: 11250,
+                percentage: 90,
+                linePercentage: 25,
+              },
+              {
+                name: "1000T Screw",
+                totalCapacity: 12500,
+                currentUtilization: 10000,
+                percentage: 80,
+                linePercentage: 25,
+              },
+              {
+                name: "1001TP",
+                totalCapacity: 12500,
+                currentUtilization: 11250,
+                percentage: 90,
+                linePercentage: 25,
+              },
+              {
+                name: "1002TP",
+                totalCapacity: 12500,
+                currentUtilization: 11250,
+                percentage: 90,
+                linePercentage: 25,
+              },
+            ],
+          },
+          "KTTPL R2": {
+            lines: [
+              {
+                name: "4003TP",
+                totalCapacity: 15000,
+                currentUtilization: 12000,
+                percentage: 80,
+                linePercentage: 33.3,
+              },
+              {
+                name: "4004TP",
+                totalCapacity: 15000,
+                currentUtilization: 10500,
+                percentage: 70,
+                linePercentage: 33.3,
+              },
+              {
+                name: "2504TP",
+                totalCapacity: 15000,
+                currentUtilization: 11250,
+                percentage: 75,
+                linePercentage: 33.4,
+              },
+            ],
+          },
+          "KTFL Mundhwa": {
+            lines: [
+              {
+                name: "630TP",
+                totalCapacity: 9500,
+                currentUtilization: 9025,
+                percentage: 95,
+                linePercentage: 25,
+              },
+              {
+                name: "1001TP",
+                totalCapacity: 9500,
+                currentUtilization: 8550,
+                percentage: 90,
+                linePercentage: 25,
+              },
+              {
+                name: "1002TP",
+                totalCapacity: 9500,
+                currentUtilization: 8075,
+                percentage: 85,
+                linePercentage: 25,
+              },
+              {
+                name: "1601TP",
+                totalCapacity: 9500,
+                currentUtilization: 8550,
+                percentage: 90,
+                linePercentage: 25,
+              },
+            ],
+          },
+          "KTFL Baramati": {
+            lines: [
+              {
+                name: "500TP",
+                totalCapacity: 10500,
+                currentUtilization: 7350,
+                percentage: 70,
+                linePercentage: 25,
+              },
+              {
+                name: "1350TP B",
+                totalCapacity: 10500,
+                currentUtilization: 6825,
+                percentage: 65,
+                linePercentage: 25,
+              },
+              {
+                name: "1600TP",
+                totalCapacity: 10500,
+                currentUtilization: 7875,
+                percentage: 75,
+                linePercentage: 25,
+              },
+              {
+                name: "2506TP",
+                totalCapacity: 10500,
+                currentUtilization: 7350,
+                percentage: 70,
+                linePercentage: 25,
+              },
+            ],
+          },
+        };
+
+        const data = lineData[plantName];
+        if (!data) return;
+
+        document.getElementById("selectedPlantName").textContent = plantName;
+        document.getElementById("capacityTableContainer").style.display =
+          "none";
+        document.getElementById("lineBreakdownContainer").style.display =
+          "block";
+
+        let tableHTML = `
+                <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    <thead>
+                        <tr style="background: linear-gradient(135deg, #2196f3, #1976d2); color: white;">
+                            <th style="padding: 15px; text-align: left;">Line Name</th>
+                            <th style="padding: 15px; text-align: center;">Total Capacity (Nos./Month)</th>
+                            <th style="padding: 15px; text-align: center;">Current Utilization (Nos.)</th>
+                            <th style="padding: 15px; text-align: center;">Utilization %</th>
+                            <th style="padding: 15px; text-align: center;">Available Capacity (Nos.)</th>
+                            <th style="padding: 15px; text-align: center;">% of Plant Capacity</th>
+                            <th style="padding: 15px; text-align: center;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+
+        let totalCapacity = 0;
+        let totalUtilization = 0;
+
+        data.lines.forEach((line, index) => {
+          const available = line.totalCapacity - line.currentUtilization;
+          totalCapacity += line.totalCapacity;
+          totalUtilization += line.currentUtilization;
+
+          let statusColor = "#2196f3";
+          let statusText = "Normal";
+          if (line.percentage >= 90) {
+            statusColor = "#f44336";
+            statusText = "Critical";
+          } else if (line.percentage >= 80) {
+            statusColor = "#ff9800";
+            statusText = "High";
+          } else if (line.percentage >= 70) {
+            statusColor = "#4caf50";
+            statusText = "Optimal";
+          }
+
+          tableHTML += `
+                    <tr style="border-bottom: 1px solid #e0e0e0; ${
+                      index % 2 === 1 ? "background: #f9f9f9;" : ""
+                    }">
+                        <td style="padding: 15px; font-weight: 500;">${
+                          line.name
+                        }</td>
+                        <td style="padding: 15px; text-align: center;">${line.totalCapacity.toLocaleString()}</td>
+                        <td style="padding: 15px; text-align: center;">${line.currentUtilization.toLocaleString()}</td>
+                        <td style="padding: 15px; text-align: center; font-weight: bold; color: ${statusColor};">${
+            line.percentage
+          }%</td>
+                        <td style="padding: 15px; text-align: center;">${available.toLocaleString()}</td>
+                        <td style="padding: 15px; text-align: center; font-weight: bold; color: #1565c0;">${
+                          line.linePercentage
+                        }%</td>
+                        <td style="padding: 15px; text-align: center;">
+                            <span style="background: ${statusColor}; color: white; padding: 5px 10px; border-radius: 15px; font-size: 12px;">${statusText}</span>
+                        </td>
+                    </tr>`;
+        });
+
+        const totalPercentage = (
+          (totalUtilization / totalCapacity) *
+          100
+        ).toFixed(1);
+        const totalAvailable = totalCapacity - totalUtilization;
+
+        tableHTML += `
+                    <tr style="border-top: 2px solid #2196f3; background: #e3f2fd; font-weight: bold;">
+                        <td style="padding: 15px;">Total</td>
+                        <td style="padding: 15px; text-align: center;">${totalCapacity.toLocaleString()}</td>
+                        <td style="padding: 15px; text-align: center;">${totalUtilization.toLocaleString()}</td>
+                        <td style="padding: 15px; text-align: center; color: #1565c0;">${totalPercentage}%</td>
+                        <td style="padding: 15px; text-align: center;">${totalAvailable.toLocaleString()}</td>
+                        <td style="padding: 15px; text-align: center; color: #1565c0;">100%</td>
+                        <td style="padding: 15px; text-align: center;">
+                            <span style="background: #2196f3; color: white; padding: 5px 10px; border-radius: 15px; font-size: 12px;">Overall</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>`;
+
+        document.getElementById("lineBreakdownTable").innerHTML = tableHTML;
+      }
+
+      function hideLineBreakdown() {
+        document.getElementById("capacityTableContainer").style.display =
+          "block";
+        document.getElementById("lineBreakdownContainer").style.display =
+          "none";
+      }
+
+      // Visit Reports
+      let visitReports = [
+        {
+          company: "Tata Motors Ltd.",
+          attendee: "Mr. Rajesh Kumar",
+          date: "2024-01-15",
+          mom: "Discussed new forging requirements for upcoming EV platform. Need to increase production capacity by 30% in Q2.",
+        },
+        {
+          company: "Mahindra & Mahindra",
+          attendee: "Ms. Priya Sharma",
+          date: "2024-01-10",
+          mom: "Quality audit completed successfully. Agreed on new pricing structure for gear components.",
+        },
+      ];
+
+      function addVisitReport() {
+        const company = document.getElementById("companyName").value;
+        const attendee = document.getElementById("attendee").value;
+        const date = document.getElementById("visitDate").value;
+        const mom = document.getElementById("mom").value;
+
+        if (company && attendee && date && mom) {
+          visitReports.unshift({
+            company: company,
+            attendee: attendee,
+            date: date,
+            mom: mom,
+          });
+          displayVisitReports();
+          // Clear form
+          document.getElementById("companyName").value = "";
+          document.getElementById("attendee").value = "";
+          document.getElementById("visitDate").value = "";
+          document.getElementById("mom").value = "";
+          // Close modal
+          closeModal("visitReportModal");
+        } else {
+          alert("Please fill in all fields");
+        }
+      }
+
+      function displayVisitReports() {
+        const visitList = document.getElementById("visitList");
+        visitList.innerHTML = "";
+
+        visitReports.forEach((report) => {
+          const reportDiv = document.createElement("div");
+          reportDiv.className = "visit-item";
+          reportDiv.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <strong style="color: #1565c0;">${report.company}</strong>
+                        <span style="color: #666; font-size: 14px;">${report.date}</span>
+                    </div>
+                    <div style="color: #666; margin-bottom: 5px;">Attendee: ${report.attendee}</div>
+                    <div style="color: #333;">${report.mom}</div>
+                `;
+          visitList.appendChild(reportDiv);
+        });
+      }
+
+      displayVisitReports();
+
+      // AI Chatbot Functions
+      function toggleAI() {
+        const chatWindow = document.getElementById("aiChatWindow");
+        chatWindow.style.display =
+          chatWindow.style.display === "block" ? "none" : "block";
+      }
+
+      function sendMessage() {
+        const input = document.getElementById("chatInput");
+        const chatBody = document.getElementById("chatBody");
+
+        if (input.value.trim() !== "") {
+          // Add user message
+          const userMsg = document.createElement("div");
+          userMsg.className = "message user-message";
+          userMsg.textContent = input.value;
+          chatBody.appendChild(userMsg);
+
+          // Generate AI response
+          setTimeout(() => {
+            const aiMsg = document.createElement("div");
+            aiMsg.className = "message ai-message";
+            aiMsg.textContent = getAIResponse(input.value);
+            chatBody.appendChild(aiMsg);
+            chatBody.scrollTop = chatBody.scrollHeight;
+          }, 500);
+
+          input.value = "";
+          chatBody.scrollTop = chatBody.scrollHeight;
+        }
+      }
+
+      function getAIResponse(query) {
+        const responses = {
+          sales:
+            "Current sales are at ₹125.3 Cr with an 18.5% YoY growth. The automotive sector contributes 55% of total revenue.",
+          quality:
+            "We have 19 open quality complaints across all plants. The resolution rate has improved by 23% this quarter.",
+          outstanding:
+            "Total outstanding receivables stand at ₹8.22 Cr. Top 5 customers account for 65% of pending amount.",
+          pipeline:
+            "The business pipeline shows ₹78.2 Cr potential value with a 68% conversion probability.",
+          rfq: "We have 156 active RFQs with 42 already converted to business awards this quarter.",
+          edi: "EDI system is performing at 98.5% accuracy with 99.8% uptime. Processing over 15,000 transactions monthly.",
+          capacity:
+            "Forging plants are operating at 79.9% overall capacity with 139,850 units produced. KTFL Mundhwa is at critical 90% utilization, while Baramati has 30% available capacity. Click on any plant name in the modal for line-wise breakdown.",
+          plants:
+            "We operate 12 plants - 8 for machining and 4 for forging operations across India.",
+          default:
+            "I can help you analyze sales trends, quality metrics, outstanding receivables, business pipeline, RFQs, EDI performance, and capacity utilization. What would you like to know more about?",
+        };
+
+        const lowerQuery = query.toLowerCase();
+        for (let key in responses) {
+          if (lowerQuery.includes(key)) {
+            return responses[key];
+          }
+        }
+        return responses.default;
+      }
+
+      // Close modals when clicking outside
+      window.onclick = function (event) {
+        if (event.target.classList.contains("modal")) {
+          event.target.style.display = "none";
+        }
+      };
+
+      // Sales Detail Functions
+      function showSalesDetail(type) {
+        document.getElementById("salesMainView").style.display = "none";
+        document.getElementById("salesDetailView").style.display = "block";
+
+        const detailContent = document.getElementById("salesDetailContent");
+
+        if (type === "continent") {
+          detailContent.innerHTML = `
+                    <h3 style="color: #1565c0; margin-bottom: 20px;">Continent-wise Sales - Detailed Analysis</h3>
+                    <div style="height: 400px; margin-bottom: 30px;">
+                        <canvas id="continentDetailChart"></canvas>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value">₹65.2Cr</div>
+                            <div class="stat-label">Asia Sales</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">₹35.8Cr</div>
+                            <div class="stat-label">Europe Sales</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">₹18.5Cr</div>
+                            <div class="stat-label">Americas Sales</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">₹5.8Cr</div>
+                            <div class="stat-label">Africa Sales</div>
+                        </div>
+                    </div>
+                    <h4 style="color: #1565c0; margin-top: 30px; margin-bottom: 15px;">Regional Breakdown</h4>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: #e3f2fd;">
+                                <th style="padding: 12px; text-align: left;">Continent</th>
+                                <th style="padding: 12px; text-align: center;">Sales (₹ Cr)</th>
+                                <th style="padding: 12px; text-align: center;">% of Total</th>
+                                <th style="padding: 12px; text-align: center;">YoY Growth</th>
+                                <th style="padding: 12px; text-align: center;">Key Markets</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid #e0e0e0;">
+                                <td style="padding: 12px;">Asia</td>
+                                <td style="padding: 12px; text-align: center; font-weight: bold;">₹65.2</td>
+                                <td style="padding: 12px; text-align: center;">52%</td>
+                                <td style="padding: 12px; text-align: center; color: #4caf50;">+22%</td>
+                                <td style="padding: 12px; text-align: center;">India, China, Japan</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e0e0e0; background: #f9f9f9;">
+                                <td style="padding: 12px;">Europe</td>
+                                <td style="padding: 12px; text-align: center; font-weight: bold;">₹35.8</td>
+                                <td style="padding: 12px; text-align: center;">28.5%</td>
+                                <td style="padding: 12px; text-align: center; color: #4caf50;">+15%</td>
+                                <td style="padding: 12px; text-align: center;">Germany, UK, France</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e0e0e0;">
+                                <td style="padding: 12px;">Americas</td>
+                                <td style="padding: 12px; text-align: center; font-weight: bold;">₹18.5</td>
+                                <td style="padding: 12px; text-align: center;">14.8%</td>
+                                <td style="padding: 12px; text-align: center; color: #4caf50;">+12%</td>
+                                <td style="padding: 12px; text-align: center;">USA, Brazil, Mexico</td>
+                            </tr>
+                            <tr style="background: #f9f9f9;">
+                                <td style="padding: 12px;">Africa</td>
+                                <td style="padding: 12px; text-align: center; font-weight: bold;">₹5.8</td>
+                                <td style="padding: 12px; text-align: center;">4.7%</td>
+                                <td style="padding: 12px; text-align: center; color: #4caf50;">+18%</td>
+                                <td style="padding: 12px; text-align: center;">South Africa, Egypt</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                `;
+          setTimeout(() => {
+            const ctx = document.getElementById("continentDetailChart");
+            if (ctx) {
+              new Chart(ctx.getContext("2d"), {
+                type: "bar",
+                data: {
+                  labels: ["Asia", "Europe", "Americas", "Africa"],
+                  datasets: [
+                    {
+                      label: "Sales (₹ Cr)",
+                      data: [65.2, 35.8, 18.5, 5.8],
+                      backgroundColor: [
+                        "#2196f3",
+                        "#4caf50",
+                        "#ff9800",
+                        "#f44336",
+                      ],
+                    },
+                  ],
+                },
+                options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: { display: false },
+                  },
+                  scales: {
+                    y: {
+                      beginAtZero: true,
+                      ticks: {
+                        callback: function (value) {
+                          return "₹" + value + "Cr";
+                        },
+                      },
+                    },
+                  },
+                },
+              });
+            }
+          }, 100);
+        } else if (type === "plant") {
+          detailContent.innerHTML = `
+                    <h3 style="color: #1565c0; margin-bottom: 20px;">Plant-wise Performance - Detailed Analysis</h3>
+                    <div style="height: 400px; margin-bottom: 30px;">
+                        <canvas id="plantDetailChart"></canvas>
+                    </div>
+                    <h4 style="color: #1565c0; margin-top: 30px; margin-bottom: 15px;">Machining Plants Performance</h4>
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+                        <thead>
+                            <tr style="background: #e3f2fd;">
+                                <th style="padding: 12px; text-align: left;">Plant Name</th>
+                                <th style="padding: 12px; text-align: center;">Production (₹ Cr)</th>
+                                <th style="padding: 12px; text-align: center;">% of Total</th>
+                                <th style="padding: 12px; text-align: center;">Capacity Utilization</th>
+                                <th style="padding: 12px; text-align: center;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid #e0e0e0;">
+                                <td style="padding: 12px;">Khed</td>
+                                <td style="padding: 12px; text-align: center; font-weight: bold;">₹12.5</td>
+                                <td style="padding: 12px; text-align: center;">10%</td>
+                                <td style="padding: 12px; text-align: center;">82%</td>
+                                <td style="padding: 12px; text-align: center;"><span style="background: #4caf50; color: white; padding: 5px 10px; border-radius: 15px; font-size: 11px;">Good</span></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e0e0e0; background: #f9f9f9;">
+                                <td style="padding: 12px;">Ambethan 1</td>
+                                <td style="padding: 12px; text-align: center; font-weight: bold;">₹10.2</td>
+                                <td style="padding: 12px; text-align: center;">8.1%</td>
+                                <td style="padding: 12px; text-align: center;">78%</td>
+                                <td style="padding: 12px; text-align: center;"><span style="background: #4caf50; color: white; padding: 5px 10px; border-radius: 15px; font-size: 11px;">Good</span></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e0e0e0;">
+                                <td style="padding: 12px;">Ambethan 2</td>
+                                <td style="padding: 12px; text-align: center; font-weight: bold;">₹9.8</td>
+                                <td style="padding: 12px; text-align: center;">7.8%</td>
+                                <td style="padding: 12px; text-align: center;">75%</td>
+                                <td style="padding: 12px; text-align: center;"><span style="background: #4caf50; color: white; padding: 5px 10px; border-radius: 15px; font-size: 11px;">Good</span></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e0e0e0; background: #f9f9f9;">
+                                <td style="padding: 12px;">Ambethan 3</td>
+                                <td style="padding: 12px; text-align: center; font-weight: bold;">₹8.5</td>
+                                <td style="padding: 12px; text-align: center;">6.8%</td>
+                                <td style="padding: 12px; text-align: center;">72%</td>
+                                <td style="padding: 12px; text-align: center;"><span style="background: #4caf50; color: white; padding: 5px 10px; border-radius: 15px; font-size: 11px;">Good</span></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e0e0e0;">
+                                <td style="padding: 12px;">Chakan</td>
+                                <td style="padding: 12px; text-align: center; font-weight: bold;">₹11.2</td>
+                                <td style="padding: 12px; text-align: center;">8.9%</td>
+                                <td style="padding: 12px; text-align: center;">85%</td>
+                                <td style="padding: 12px; text-align: center;"><span style="background: #ff9800; color: white; padding: 5px 10px; border-radius: 15px; font-size: 11px;">High</span></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e0e0e0; background: #f9f9f9;">
+                                <td style="padding: 12px;">Bhiwadi</td>
+                                <td style="padding: 12px; text-align: center; font-weight: bold;">₹10.8</td>
+                                <td style="padding: 12px; text-align: center;">8.6%</td>
+                                <td style="padding: 12px; text-align: center;">80%</td>
+                                <td style="padding: 12px; text-align: center;"><span style="background: #4caf50; color: white; padding: 5px 10px; border-radius: 15px; font-size: 11px;">Good</span></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e0e0e0;">
+                                <td style="padding: 12px;">Gujarat</td>
+                                <td style="padding: 12px; text-align: center; font-weight: bold;">₹9.5</td>
+                                <td style="padding: 12px; text-align: center;">7.6%</td>
+                                <td style="padding: 12px; text-align: center;">76%</td>
+                                <td style="padding: 12px; text-align: center;"><span style="background: #4caf50; color: white; padding: 5px 10px; border-radius: 15px; font-size: 11px;">Good</span></td>
+                            </tr>
+                            <tr style="background: #f9f9f9;">
+                                <td style="padding: 12px;">KTFL Medicomp</td>
+                                <td style="padding: 12px; text-align: center; font-weight: bold;">₹7.8</td>
+                                <td style="padding: 12px; text-align: center;">6.2%</td>
+                                <td style="padding: 12px; text-align: center;">68%</td>
+                                <td style="padding: 12px; text-align: center;"><span style="background: #2196f3; color: white; padding: 5px 10px; border-radius: 15px; font-size: 11px;">Normal</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h4 style="color: #1565c0; margin-bottom: 15px;">Forging Plants Performance</h4>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: #e3f2fd;">
+                                <th style="padding: 12px; text-align: left;">Plant Name</th>
+                                <th style="padding: 12px; text-align: center;">Production (₹ Cr)</th>
+                                <th style="padding: 12px; text-align: center;">% of Total</th>
+                                <th style="padding: 12px; text-align: center;">Capacity Utilization</th>
+                                <th style="padding: 12px; text-align: center;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid #e0e0e0;">
+                                <td style="padding: 12px;">KTFL R1</td>
+                                <td style="padding: 12px; text-align: center; font-weight: bold;">₹15.2</td>
+                                <td style="padding: 12px; text-align: center;">12.1%</td>
+                                <td style="padding: 12px; text-align: center;">85%</td>
+                                <td style="padding: 12px; text-align: center;"><span style="background: #ff9800; color: white; padding: 5px 10px; border-radius: 15px; font-size: 11px;">High</span></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e0e0e0; background: #f9f9f9;">
+                                <td style="padding: 12px;">KTTPL R2</td>
+                                <td style="padding: 12px; text-align: center; font-weight: bold;">₹14.8</td>
+                                <td style="padding: 12px; text-align: center;">11.8%</td>
+                                <td style="padding: 12px; text-align: center;">75%</td>
+                                <td style="padding: 12px; text-align: center;"><span style="background: #4caf50; color: white; padding: 5px 10px; border-radius: 15px; font-size: 11px;">Good</span></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e0e0e0;">
+                                <td style="padding: 12px;">KTFL Mundhwa</td>
+                                <td style="padding: 12px; text-align: center; font-weight: bold;">₹11.5</td>
+                                <td style="padding: 12px; text-align: center;">9.2%</td>
+                                <td style="padding: 12px; text-align: center;">90%</td>
+                                <td style="padding: 12px; text-align: center;"><span style="background: #f44336; color: white; padding: 5px 10px; border-radius: 15px; font-size: 11px;">Critical</span></td>
+                            </tr>
+                            <tr style="background: #f9f9f9;">
+                                <td style="padding: 12px;">KTFL Baramati</td>
+                                <td style="padding: 12px; text-align: center; font-weight: bold;">₹11.3</td>
+                                <td style="padding: 12px; text-align: center;">9.0%</td>
+                                <td style="padding: 12px; text-align: center;">70%</td>
+                                <td style="padding: 12px; text-align: center;"><span style="background: #4caf50; color: white; padding: 5px 10px; border-radius: 15px; font-size: 11px;">Good</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                `;
+          setTimeout(() => {
+            const ctx = document.getElementById("plantDetailChart");
+            if (ctx) {
+              new Chart(ctx.getContext("2d"), {
+                type: "bar",
+                data: {
+                  labels: [
+                    "Khed",
+                    "Ambethan 1",
+                    "Ambethan 2",
+                    "Ambethan 3",
+                    "Chakan",
+                    "Bhiwadi",
+                    "Gujarat",
+                    "KTFL R1",
+                    "KTTPL R2",
+                    "Mundhwa",
+                    "Baramati",
+                  ],
+                  datasets: [
+                    {
+                      label: "Production (₹ Cr)",
+                      data: [
+                        12.5, 10.2, 9.8, 8.5, 11.2, 10.8, 9.5, 15.2, 14.8, 11.5,
+                        11.3,
+                      ],
+                      backgroundColor: "#4caf50",
+                    },
+                  ],
+                },
+                options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: { display: false },
+                  },
+                  scales: {
+                    y: {
+                      beginAtZero: true,
+                      ticks: {
+                        callback: function (value) {
+                          return "₹" + value + "Cr";
+                        },
+                      },
+                    },
+                  },
+                },
+              });
+            }
+          }, 100);
+        } else if (type === "sector") {
+          detailContent.innerHTML = `
+                    <h3 style="color: #1565c0; margin-bottom: 20px;">Sector Analysis - Detailed Breakdown</h3>
+                    <div style="height: 400px; margin-bottom: 30px;">
+                        <canvas id="sectorDetailChart"></canvas>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value">55%</div>
+                            <div class="stat-label">Automotive</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">25%</div>
+                            <div class="stat-label">Agriculture</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">15%</div>
+                            <div class="stat-label">Aerospace</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">5%</div>
+                            <div class="stat-label">Naval</div>
+                        </div>
+                    </div>
+                    <h4 style="color: #1565c0; margin-top: 30px; margin-bottom: 15px;">Sector Performance Details</h4>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: #e3f2fd;">
+                                <th style="padding: 12px; text-align: left;">Sector</th>
+                                <th style="padding: 12px; text-align: center;">Revenue (₹ Cr)</th>
+                                <th style="padding: 12px; text-align: center;">% Share</th>
+                                <th style="padding: 12px; text-align: center;">YoY Growth</th>
+                                <th style="padding: 12px; text-align: center;">Key Customers</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid #e0e0e0;">
+                                <td style="padding: 12px;">Automotive</td>
+                                <td style="padding: 12px; text-align: center; font-weight: bold;">₹68.9</td>
+                                <td style="padding: 12px; text-align: center;">55%</td>
+                                <td style="padding: 12px; text-align: center; color: #4caf50;">+20%</td>
+                                <td style="padding: 12px; text-align: center;">Tata, Mahindra, Bajaj</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e0e0e0; background: #f9f9f9;">
+                                <td style="padding: 12px;">Agriculture</td>
+                                <td style="padding: 12px; text-align: center; font-weight: bold;">₹31.3</td>
+                                <td style="padding: 12px; text-align: center;">25%</td>
+                                <td style="padding: 12px; text-align: center; color: #4caf50;">+18%</td>
+                                <td style="padding: 12px; text-align: center;">John Deere, Mahindra</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e0e0e0;">
+                                <td style="padding: 12px;">Aerospace</td>
+                                <td style="padding: 12px; text-align: center; font-weight: bold;">₹18.8</td>
+                                <td style="padding: 12px; text-align: center;">15%</td>
+                                <td style="padding: 12px; text-align: center; color: #4caf50;">+15%</td>
+                                <td style="padding: 12px; text-align: center;">HAL, DRDO</td>
+                            </tr>
+                            <tr style="background: #f9f9f9;">
+                                <td style="padding: 12px;">Naval</td>
+                                <td style="padding: 12px; text-align: center; font-weight: bold;">₹6.3</td>
+                                <td style="padding: 12px; text-align: center;">5%</td>
+                                <td style="padding: 12px; text-align: center; color: #4caf50;">+25%</td>
+                                <td style="padding: 12px; text-align: center;">Indian Navy, MDL</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                `;
+          setTimeout(() => {
+            const ctx = document.getElementById("sectorDetailChart");
+            if (ctx) {
+              new Chart(ctx.getContext("2d"), {
+                type: "doughnut",
+                data: {
+                  labels: ["Automotive", "Agriculture", "Aerospace", "Naval"],
+                  datasets: [
+                    {
+                      data: [55, 25, 15, 5],
+                      backgroundColor: [
+                        "#2196f3",
+                        "#4caf50",
+                        "#ff9800",
+                        "#f44336",
+                      ],
+                    },
+                  ],
+                },
+                options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: { position: "bottom" },
+                  },
+                },
+              });
+            }
+          }, 100);
+        } else if (type === "product") {
+          detailContent.innerHTML = `
+                    <h3 style="color: #1565c0; margin-bottom: 20px;">Product Category Distribution - Detailed View</h3>
+                    <div style="height: 400px; margin-bottom: 30px;">
+                        <canvas id="productDetailChart"></canvas>
+                    </div>
+                    <h4 style="color: #1565c0; margin-bottom: 15px;">Product Category Performance</h4>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: #e3f2fd;">
+                                <th style="padding: 12px; text-align: left;">Product Category</th>
+                                <th style="padding: 12px; text-align: center;">Volume</th>
+                                <th style="padding: 12px; text-align: center;">Revenue (₹ Cr)</th>
+                                <th style="padding: 12px; text-align: center;">% Share</th>
+                                <th style="padding: 12px; text-align: center;">Growth</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid #e0e0e0;">
+                                <td style="padding: 12px;">Gear</td>
+                                <td style="padding: 12px; text-align: center;">22</td>
+                                <td style="padding: 12px; text-align: center; font-weight: bold;">₹27.6</td>
+                                <td style="padding: 12px; text-align: center;">22%</td>
+                                <td style="padding: 12px; text-align: center; color: #4caf50;">+19%</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e0e0e0; background: #f9f9f9;">
+                                <td style="padding: 12px;">Shaft</td>
+                                <td style="padding: 12px; text-align: center;">18</td>
+                                <td style="padding: 12px; text-align: center; font-weight: bold;">₹22.6</td>
+                                <td style="padding: 12px; text-align: center;">18%</td>
+                                <td style="padding: 12px; text-align: center; color: #4caf50;">+17%</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e0e0e0;">
+                                <td style="padding: 12px;">Assembly</td>
+                                <td style="padding: 12px; text-align: center;">15</td>
+                                <td style="padding: 12px; text-align: center; font-weight: bold;">₹18.8</td>
+                                <td style="padding: 12px; text-align: center;">15%</td>
+                                <td style="padding: 12px; text-align: center; color: #4caf50;">+15%</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e0e0e0; background: #f9f9f9;">
+                                <td style="padding: 12px;">Finish</td>
+                                <td style="padding: 12px; text-align: center;">12</td>
+                                <td style="padding: 12px; text-align: center; font-weight: bold;">₹15.0</td>
+                                <td style="padding: 12px; text-align: center;">12%</td>
+                                <td style="padding: 12px; text-align: center; color: #4caf50;">+14%</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e0e0e0;">
+                                <td style="padding: 12px;">Product Business</td>
+                                <td style="padding: 12px; text-align: center;">10</td>
+                                <td style="padding: 12px; text-align: center; font-weight: bold;">₹12.5</td>
+                                <td style="padding: 12px; text-align: center;">10%</td>
+                                <td style="padding: 12px; text-align: center; color: #4caf50;">+20%</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e0e0e0; background: #f9f9f9;">
+                                <td style="padding: 12px;">Semi Finish</td>
+                                <td style="padding: 12px; text-align: center;">9</td>
+                                <td style="padding: 12px; text-align: center; font-weight: bold;">₹11.3</td>
+                                <td style="padding: 12px; text-align: center;">9%</td>
+                                <td style="padding: 12px; text-align: center; color: #4caf50;">+16%</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e0e0e0;">
+                                <td style="padding: 12px;">As Forged</td>
+                                <td style="padding: 12px; text-align: center;">8</td>
+                                <td style="padding: 12px; text-align: center; font-weight: bold;">₹10.0</td>
+                                <td style="padding: 12px; text-align: center;">8%</td>
+                                <td style="padding: 12px; text-align: center; color: #4caf50;">+12%</td>
+                            </tr>
+                            <tr style="background: #f9f9f9;">
+                                <td style="padding: 12px;">Sub Assembly</td>
+                                <td style="padding: 12px; text-align: center;">6</td>
+                                <td style="padding: 12px; text-align: center; font-weight: bold;">₹7.5</td>
+                                <td style="padding: 12px; text-align: center;">6%</td>
+                                <td style="padding: 12px; text-align: center; color: #4caf50;">+18%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                `;
+          setTimeout(() => {
+            const ctx = document.getElementById("productDetailChart");
+            if (ctx) {
+              new Chart(ctx.getContext("2d"), {
+                type: "polarArea",
+                data: {
+                  labels: [
+                    "Shaft",
+                    "Gear",
+                    "Assembly",
+                    "Finish",
+                    "Product Business",
+                    "As Forged",
+                    "Semi Finish",
+                    "Sub Assembly",
+                  ],
+                  datasets: [
+                    {
+                      label: "Product Mix",
+                      data: [18, 22, 15, 12, 10, 8, 9, 6],
+                      backgroundColor: [
+                        "rgba(33, 150, 243, 0.7)",
+                        "rgba(76, 175, 80, 0.7)",
+                        "rgba(255, 152, 0, 0.7)",
+                        "rgba(244, 67, 54, 0.7)",
+                        "rgba(156, 39, 176, 0.7)",
+                        "rgba(255, 193, 7, 0.7)",
+                        "rgba(0, 150, 136, 0.7)",
+                        "rgba(96, 125, 139, 0.7)",
+                      ],
+                    },
+                  ],
+                },
+                options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: { position: "bottom" },
+                  },
+                },
+              });
+            }
+          }, 100);
+        }
+      }
+
+      function backToSalesMain() {
+        document.getElementById("salesMainView").style.display = "block";
+        document.getElementById("salesDetailView").style.display = "none";
+      }
+
+      // Continent Breakdown Function
+      function showContinentBreakdown(continent) {
+        const continentData = {
+          Asia: {
+            total: 65.2,
+            yoy: "+22%",
+            customers: [
+              { name: "Tata Motors", sales: 18.5, yoy: "+25%" },
+              { name: "Mahindra & Mahindra", sales: 15.2, yoy: "+20%" },
+              { name: "Bajaj Auto", sales: 12.8, yoy: "+22%" },
+              { name: "Honda India", sales: 10.3, yoy: "+18%" },
+              { name: "Toyota Kirloskar", sales: 8.4, yoy: "+24%" },
+            ],
+            dies: [
+              { name: "Crankshaft Dies", sales: 22.5, yoy: "+20%" },
+              { name: "Gear Dies", sales: 18.3, yoy: "+24%" },
+              { name: "Connecting Rod Dies", sales: 12.7, yoy: "+19%" },
+              { name: "Axle Dies", sales: 8.2, yoy: "+23%" },
+              { name: "Camshaft Dies", sales: 3.5, yoy: "+18%" },
+            ],
+          },
+          Europe: {
+            total: 35.8,
+            yoy: "+15%",
+            customers: [
+              { name: "BMW Group", sales: 12.5, yoy: "+18%" },
+              { name: "Volkswagen", sales: 9.8, yoy: "+14%" },
+              { name: "Daimler AG", sales: 7.2, yoy: "+12%" },
+              { name: "Renault", sales: 4.3, yoy: "+16%" },
+              { name: "PSA Group", sales: 2.0, yoy: "+10%" },
+            ],
+            dies: [
+              { name: "Transmission Dies", sales: 14.2, yoy: "+17%" },
+              { name: "Engine Component Dies", sales: 11.5, yoy: "+15%" },
+              { name: "Chassis Dies", sales: 6.8, yoy: "+13%" },
+              { name: "Suspension Dies", sales: 2.5, yoy: "+12%" },
+              { name: "Steering Dies", sales: 0.8, yoy: "+14%" },
+            ],
+          },
+          Americas: {
+            total: 18.5,
+            yoy: "+12%",
+            customers: [
+              { name: "General Motors", sales: 7.5, yoy: "+15%" },
+              { name: "Ford Motor", sales: 5.8, yoy: "+12%" },
+              { name: "Caterpillar", sales: 3.2, yoy: "+10%" },
+              { name: "John Deere", sales: 1.5, yoy: "+8%" },
+              { name: "Cummins", sales: 0.5, yoy: "+11%" },
+            ],
+            dies: [
+              { name: "Heavy Vehicle Dies", sales: 8.5, yoy: "+14%" },
+              { name: "Agricultural Dies", sales: 5.2, yoy: "+11%" },
+              { name: "Industrial Dies", sales: 3.3, yoy: "+10%" },
+              { name: "Engine Dies", sales: 1.5, yoy: "+12%" },
+            ],
+          },
+          Africa: {
+            total: 5.8,
+            yoy: "+18%",
+            customers: [
+              { name: "Toyota South Africa", sales: 2.5, yoy: "+20%" },
+              { name: "Nissan Africa", sales: 1.8, yoy: "+18%" },
+              { name: "Mercedes-Benz SA", sales: 1.0, yoy: "+15%" },
+              { name: "Volkswagen SA", sales: 0.5, yoy: "+16%" },
+            ],
+            dies: [
+              { name: "Automotive Dies", sales: 3.5, yoy: "+19%" },
+              { name: "Commercial Vehicle Dies", sales: 1.5, yoy: "+17%" },
+              { name: "Mining Equipment Dies", sales: 0.8, yoy: "+18%" },
+            ],
+          },
+        };
+
+        const data = continentData[continent];
+        const detailContent = document.getElementById("salesDetailContent");
+
+        detailContent.innerHTML = `
+                <h3 style="color: #1565c0; margin-bottom: 20px;">${continent} - Customer & Die Breakdown</h3>
+                <div class="stats-grid" style="margin-bottom: 30px;">
+                    <div class="stat-item">
+                        <div class="stat-value">₹${data.total}Cr</div>
+                        <div class="stat-label">Total Sales</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" style="color: ${
+                          data.yoy.startsWith("+") ? "#4caf50" : "#f44336"
+                        };">${data.yoy}</div>
+                        <div class="stat-label">YoY Growth</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${data.customers.length}</div>
+                        <div class="stat-label">Active Customers</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${data.dies.length}</div>
+                        <div class="stat-label">Die Categories</div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; margin-bottom: 30px;">
+                    <div>
+                        <h4 style="color: #1565c0; margin-bottom: 15px;">Customer-wise Sales</h4>
+                        <canvas id="customerBreakdownChart" style="height: 300px;"></canvas>
+                    </div>
+                    <div>
+                        <h4 style="color: #1565c0; margin-bottom: 15px;">Die-wise Sales</h4>
+                        <canvas id="dieBreakdownChart" style="height: 300px;"></canvas>
+                    </div>
+                </div>
+
+                <h4 style="color: #1565c0; margin-bottom: 15px;">Customer Details</h4>
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+                    <thead>
+                        <tr style="background: #e3f2fd;">
+                            <th style="padding: 12px; text-align: left;">Customer Name</th>
+                            <th style="padding: 12px; text-align: center;">Sales (₹ Cr)</th>
+                            <th style="padding: 12px; text-align: center;">% of ${continent}</th>
+                            <th style="padding: 12px; text-align: center;">YoY Growth</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${data.customers
+                          .map(
+                            (customer, index) => `
+                            <tr style="border-bottom: 1px solid #e0e0e0; ${
+                              index % 2 === 1 ? "background: #f9f9f9;" : ""
+                            }">
+                                <td style="padding: 12px;">${customer.name}</td>
+                                <td style="padding: 12px; text-align: center; font-weight: bold;">₹${
+                                  customer.sales
+                                }</td>
+                                <td style="padding: 12px; text-align: center;">${(
+                                  (customer.sales / data.total) *
+                                  100
+                                ).toFixed(1)}%</td>
+                                <td style="padding: 12px; text-align: center; color: ${
+                                  customer.yoy.startsWith("+")
+                                    ? "#4caf50"
+                                    : "#f44336"
+                                }; font-weight: bold;">${customer.yoy}</td>
+                            </tr>
+                        `
+                          )
+                          .join("")}
+                    </tbody>
+                </table>
+
+                <h4 style="color: #1565c0; margin-bottom: 15px;">Die-wise Breakdown</h4>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: #e3f2fd;">
+                            <th style="padding: 12px; text-align: left;">Die Type</th>
+                            <th style="padding: 12px; text-align: center;">Sales (₹ Cr)</th>
+                            <th style="padding: 12px; text-align: center;">% of ${continent}</th>
+                            <th style="padding: 12px; text-align: center;">YoY Growth</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${data.dies
+                          .map(
+                            (die, index) => `
+                            <tr style="border-bottom: 1px solid #e0e0e0; ${
+                              index % 2 === 1 ? "background: #f9f9f9;" : ""
+                            }">
+                                <td style="padding: 12px;">${die.name}</td>
+                                <td style="padding: 12px; text-align: center; font-weight: bold;">₹${
+                                  die.sales
+                                }</td>
+                                <td style="padding: 12px; text-align: center;">${(
+                                  (die.sales / data.total) *
+                                  100
+                                ).toFixed(1)}%</td>
+                                <td style="padding: 12px; text-align: center; color: ${
+                                  die.yoy.startsWith("+")
+                                    ? "#4caf50"
+                                    : "#f44336"
+                                }; font-weight: bold;">${die.yoy}</td>
+                            </tr>
+                        `
+                          )
+                          .join("")}
+                    </tbody>
+                </table>
+            `;
+
+        document.getElementById("salesMainView").style.display = "none";
+        document.getElementById("salesDetailView").style.display = "block";
+
+        setTimeout(() => {
+          // Customer Chart
+          const customerCtx = document.getElementById("customerBreakdownChart");
+          if (customerCtx) {
+            new Chart(customerCtx.getContext("2d"), {
+              type: "doughnut",
+              data: {
+                labels: data.customers.map((c) => c.name),
+                datasets: [
+                  {
+                    data: data.customers.map((c) => c.sales),
+                    backgroundColor: [
+                      "#2196f3",
+                      "#4caf50",
+                      "#ff9800",
+                      "#f44336",
+                      "#9c27b0",
+                    ],
+                  },
+                ],
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: { position: "bottom" },
+                },
+              },
+            });
+          }
+
+          // Die Chart
+          const dieCtx = document.getElementById("dieBreakdownChart");
+          if (dieCtx) {
+            new Chart(dieCtx.getContext("2d"), {
+              type: "bar",
+              data: {
+                labels: data.dies.map((d) => d.name),
+                datasets: [
+                  {
+                    label: "Sales (₹ Cr)",
+                    data: data.dies.map((d) => d.sales),
+                    backgroundColor: "#2196f3",
+                  },
+                ],
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: { display: false },
+                },
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                    ticks: {
+                      callback: function (value) {
+                        return "₹" + value + "Cr";
+                      },
+                    },
+                  },
+                },
+              },
+            });
+          }
+        }, 100);
+      }
+
+      // Plant Breakdown Function
+      function showPlantBreakdown(plant) {
+        const plantData = {
+          Khed: {
+            total: 12.5,
+            yoy: "+17%",
+            customers: [
+              { name: "Tata Motors", sales: 4.2, yoy: "+20%" },
+              { name: "Mahindra & Mahindra", sales: 3.5, yoy: "+15%" },
+              { name: "Bajaj Auto", sales: 2.8, yoy: "+18%" },
+              { name: "Force Motors", sales: 1.5, yoy: "+12%" },
+              { name: "Ashok Leyland", sales: 0.5, yoy: "+16%" },
+            ],
+            dies: [
+              { name: "Crankshaft Dies", sales: 5.5, yoy: "+19%" },
+              { name: "Camshaft Dies", sales: 3.8, yoy: "+16%" },
+              { name: "Connecting Rod Dies", sales: 2.2, yoy: "+15%" },
+              { name: "Gear Dies", sales: 1.0, yoy: "+14%" },
+            ],
+          },
+          "Ambethan 1": {
+            total: 10.2,
+            yoy: "+14%",
+            customers: [
+              { name: "Tata Motors", sales: 3.5, yoy: "+16%" },
+              { name: "Mahindra & Mahindra", sales: 2.8, yoy: "+13%" },
+              { name: "John Deere", sales: 2.1, yoy: "+12%" },
+              { name: "Eicher Motors", sales: 1.3, yoy: "+15%" },
+              { name: "Hero MotoCorp", sales: 0.5, yoy: "+10%" },
+            ],
+            dies: [
+              { name: "Transmission Gear Dies", sales: 4.2, yoy: "+15%" },
+              { name: "Axle Dies", sales: 3.0, yoy: "+14%" },
+              { name: "Differential Dies", sales: 2.0, yoy: "+12%" },
+              { name: "Pinion Dies", sales: 1.0, yoy: "+13%" },
+            ],
+          },
+          "Ambethan 2": {
+            total: 9.8,
+            yoy: "+16%",
+            customers: [
+              { name: "Bajaj Auto", sales: 3.2, yoy: "+18%" },
+              { name: "TVS Motor", sales: 2.5, yoy: "+15%" },
+              { name: "Honda India", sales: 2.1, yoy: "+17%" },
+              { name: "Hero MotoCorp", sales: 1.5, yoy: "+14%" },
+              { name: "Royal Enfield", sales: 0.5, yoy: "+16%" },
+            ],
+            dies: [
+              { name: "Two-wheeler Dies", sales: 5.0, yoy: "+17%" },
+              { name: "Engine Component Dies", sales: 2.8, yoy: "+16%" },
+              { name: "Chassis Dies", sales: 1.5, yoy: "+14%" },
+              { name: "Suspension Dies", sales: 0.5, yoy: "+15%" },
+            ],
+          },
+          "Ambethan 3": {
+            total: 8.5,
+            yoy: "+13%",
+            customers: [
+              { name: "Mahindra & Mahindra", sales: 2.8, yoy: "+15%" },
+              { name: "John Deere", sales: 2.3, yoy: "+12%" },
+              { name: "TAFE", sales: 1.8, yoy: "+11%" },
+              { name: "Escorts", sales: 1.2, yoy: "+14%" },
+              { name: "Sonalika", sales: 0.4, yoy: "+10%" },
+            ],
+            dies: [
+              { name: "Tractor Component Dies", sales: 4.5, yoy: "+14%" },
+              { name: "Agricultural Dies", sales: 2.5, yoy: "+12%" },
+              { name: "Harvester Dies", sales: 1.0, yoy: "+11%" },
+              { name: "Tillage Dies", sales: 0.5, yoy: "+13%" },
+            ],
+          },
+          Chakan: {
+            total: 11.2,
+            yoy: "+19%",
+            customers: [
+              { name: "Volkswagen", sales: 3.8, yoy: "+21%" },
+              { name: "Mercedes-Benz", sales: 2.9, yoy: "+18%" },
+              { name: "General Motors", sales: 2.2, yoy: "+20%" },
+              { name: "Skoda", sales: 1.5, yoy: "+17%" },
+              { name: "Mahindra & Mahindra", sales: 0.8, yoy: "+19%" },
+            ],
+            dies: [
+              { name: "Passenger Car Dies", sales: 5.5, yoy: "+20%" },
+              { name: "Engine Block Dies", sales: 3.2, yoy: "+19%" },
+              { name: "Transmission Dies", sales: 1.8, yoy: "+17%" },
+              { name: "Suspension Dies", sales: 0.7, yoy: "+18%" },
+            ],
+          },
+          Bhiwadi: {
+            total: 10.8,
+            yoy: "+15%",
+            customers: [
+              { name: "Maruti Suzuki", sales: 3.5, yoy: "+17%" },
+              { name: "Honda India", sales: 2.8, yoy: "+14%" },
+              { name: "Hyundai", sales: 2.3, yoy: "+16%" },
+              { name: "Toyota", sales: 1.5, yoy: "+13%" },
+              { name: "Renault-Nissan", sales: 0.7, yoy: "+15%" },
+            ],
+            dies: [
+              { name: "Small Car Dies", sales: 5.2, yoy: "+16%" },
+              { name: "Engine Dies", sales: 3.0, yoy: "+15%" },
+              { name: "Gearbox Dies", sales: 1.8, yoy: "+14%" },
+              { name: "Chassis Dies", sales: 0.8, yoy: "+13%" },
+            ],
+          },
+          Gujarat: {
+            total: 9.5,
+            yoy: "+14%",
+            customers: [
+              { name: "Tata Motors", sales: 3.2, yoy: "+16%" },
+              { name: "Ford India", sales: 2.5, yoy: "+13%" },
+              { name: "Maruti Suzuki", sales: 2.0, yoy: "+14%" },
+              { name: "Honda India", sales: 1.3, yoy: "+12%" },
+              { name: "Isuzu Motors", sales: 0.5, yoy: "+15%" },
+            ],
+            dies: [
+              { name: "Commercial Vehicle Dies", sales: 4.5, yoy: "+15%" },
+              { name: "SUV Component Dies", sales: 2.8, yoy: "+14%" },
+              { name: "Truck Dies", sales: 1.5, yoy: "+12%" },
+              { name: "Bus Dies", sales: 0.7, yoy: "+13%" },
+            ],
+          },
+          "KTFL R1": {
+            total: 15.2,
+            yoy: "+21%",
+            customers: [
+              { name: "Tata Motors", sales: 5.5, yoy: "+24%" },
+              { name: "Mahindra & Mahindra", sales: 4.2, yoy: "+20%" },
+              { name: "Ashok Leyland", sales: 2.8, yoy: "+19%" },
+              { name: "Volvo-Eicher", sales: 1.8, yoy: "+22%" },
+              { name: "Force Motors", sales: 0.9, yoy: "+18%" },
+            ],
+            dies: [
+              { name: "Heavy Forging Dies", sales: 6.5, yoy: "+22%" },
+              { name: "Axle Forging Dies", sales: 4.2, yoy: "+21%" },
+              { name: "Chassis Forging Dies", sales: 2.8, yoy: "+19%" },
+              { name: "Suspension Forging Dies", sales: 1.7, yoy: "+20%" },
+            ],
+          },
+          "KTTPL R2": {
+            total: 14.8,
+            yoy: "+18%",
+            customers: [
+              { name: "Bajaj Auto", sales: 5.0, yoy: "+20%" },
+              { name: "Hero MotoCorp", sales: 3.8, yoy: "+17%" },
+              { name: "TVS Motor", sales: 3.2, yoy: "+19%" },
+              { name: "Royal Enfield", sales: 1.8, yoy: "+16%" },
+              { name: "Honda India", sales: 1.0, yoy: "+18%" },
+            ],
+            dies: [
+              { name: "Two-wheeler Forging Dies", sales: 7.2, yoy: "+19%" },
+              { name: "Crankshaft Forging Dies", sales: 4.0, yoy: "+18%" },
+              { name: "Connecting Rod Dies", sales: 2.5, yoy: "+17%" },
+              { name: "Gear Forging Dies", sales: 1.1, yoy: "+16%" },
+            ],
+          },
+          "KTFL Mundhwa": {
+            total: 11.5,
+            yoy: "+16%",
+            customers: [
+              { name: "John Deere", sales: 3.8, yoy: "+18%" },
+              { name: "Mahindra & Mahindra", sales: 3.2, yoy: "+16%" },
+              { name: "TAFE", sales: 2.3, yoy: "+15%" },
+              { name: "Escorts", sales: 1.5, yoy: "+14%" },
+              { name: "Sonalika", sales: 0.7, yoy: "+17%" },
+            ],
+            dies: [
+              { name: "Tractor Forging Dies", sales: 5.5, yoy: "+17%" },
+              { name: "Agricultural Equipment Dies", sales: 3.5, yoy: "+16%" },
+              { name: "Implement Dies", sales: 1.8, yoy: "+14%" },
+              { name: "Harvester Dies", sales: 0.7, yoy: "+15%" },
+            ],
+          },
+          "KTFL Baramati": {
+            total: 11.3,
+            yoy: "+15%",
+            customers: [
+              { name: "Tata Motors", sales: 4.0, yoy: "+17%" },
+              { name: "Mahindra & Mahindra", sales: 3.2, yoy: "+15%" },
+              { name: "Force Motors", sales: 2.1, yoy: "+14%" },
+              { name: "Ashok Leyland", sales: 1.5, yoy: "+13%" },
+              { name: "Eicher Motors", sales: 0.5, yoy: "+16%" },
+            ],
+            dies: [
+              { name: "Medium Forging Dies", sales: 5.0, yoy: "+16%" },
+              { name: "Differential Forging Dies", sales: 3.3, yoy: "+15%" },
+              { name: "Steering Forging Dies", sales: 2.0, yoy: "+14%" },
+              { name: "Suspension Forging Dies", sales: 1.0, yoy: "+13%" },
+            ],
+          },
+        };
+
+        const data = plantData[plant];
+        const detailContent = document.getElementById("salesDetailContent");
+
+        detailContent.innerHTML = `
+                <h3 style="color: #1565c0; margin-bottom: 20px;">${plant} - Customer & Die Breakdown</h3>
+                <div class="stats-grid" style="margin-bottom: 30px;">
+                    <div class="stat-item">
+                        <div class="stat-value">₹${data.total}Cr</div>
+                        <div class="stat-label">Total Production</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" style="color: ${
+                          data.yoy.startsWith("+") ? "#4caf50" : "#f44336"
+                        };">${data.yoy}</div>
+                        <div class="stat-label">YoY Growth</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${data.customers.length}</div>
+                        <div class="stat-label">Active Customers</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${data.dies.length}</div>
+                        <div class="stat-label">Die Categories</div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; margin-bottom: 30px;">
+                    <div>
+                        <h4 style="color: #1565c0; margin-bottom: 15px;">Customer-wise Sales</h4>
+                        <canvas id="plantCustomerChart" style="height: 300px;"></canvas>
+                    </div>
+                    <div>
+                        <h4 style="color: #1565c0; margin-bottom: 15px;">Die-wise Sales</h4>
+                        <canvas id="plantDieChart" style="height: 300px;"></canvas>
+                    </div>
+                </div>
+
+                <h4 style="color: #1565c0; margin-bottom: 15px;">Customer Details</h4>
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+                    <thead>
+                        <tr style="background: #e3f2fd;">
+                            <th style="padding: 12px; text-align: left;">Customer Name</th>
+                            <th style="padding: 12px; text-align: center;">Sales (₹ Cr)</th>
+                            <th style="padding: 12px; text-align: center;">% of Plant</th>
+                            <th style="padding: 12px; text-align: center;">YoY Growth</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${data.customers
+                          .map(
+                            (customer, index) => `
+                            <tr style="border-bottom: 1px solid #e0e0e0; ${
+                              index % 2 === 1 ? "background: #f9f9f9;" : ""
+                            }">
+                                <td style="padding: 12px;">${customer.name}</td>
+                                <td style="padding: 12px; text-align: center; font-weight: bold;">₹${
+                                  customer.sales
+                                }</td>
+                                <td style="padding: 12px; text-align: center;">${(
+                                  (customer.sales / data.total) *
+                                  100
+                                ).toFixed(1)}%</td>
+                                <td style="padding: 12px; text-align: center; color: ${
+                                  customer.yoy.startsWith("+")
+                                    ? "#4caf50"
+                                    : "#f44336"
+                                }; font-weight: bold;">${customer.yoy}</td>
+                            </tr>
+                        `
+                          )
+                          .join("")}
+                    </tbody>
+                </table>
+
+                <h4 style="color: #1565c0; margin-bottom: 15px;">Die-wise Breakdown</h4>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: #e3f2fd;">
+                            <th style="padding: 12px; text-align: left;">Die Type</th>
+                            <th style="padding: 12px; text-align: center;">Sales (₹ Cr)</th>
+                            <th style="padding: 12px; text-align: center;">% of Plant</th>
+                            <th style="padding: 12px; text-align: center;">YoY Growth</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${data.dies
+                          .map(
+                            (die, index) => `
+                            <tr style="border-bottom: 1px solid #e0e0e0; ${
+                              index % 2 === 1 ? "background: #f9f9f9;" : ""
+                            }">
+                                <td style="padding: 12px;">${die.name}</td>
+                                <td style="padding: 12px; text-align: center; font-weight: bold;">₹${
+                                  die.sales
+                                }</td>
+                                <td style="padding: 12px; text-align: center;">${(
+                                  (die.sales / data.total) *
+                                  100
+                                ).toFixed(1)}%</td>
+                                <td style="padding: 12px; text-align: center; color: ${
+                                  die.yoy.startsWith("+")
+                                    ? "#4caf50"
+                                    : "#f44336"
+                                }; font-weight: bold;">${die.yoy}</td>
+                            </tr>
+                        `
+                          )
+                          .join("")}
+                    </tbody>
+                </table>
+            `;
+
+        document.getElementById("salesMainView").style.display = "none";
+        document.getElementById("salesDetailView").style.display = "block";
+
+        setTimeout(() => {
+          // Customer Chart
+          const customerCtx = document.getElementById("plantCustomerChart");
+          if (customerCtx) {
+            new Chart(customerCtx.getContext("2d"), {
+              type: "doughnut",
+              data: {
+                labels: data.customers.map((c) => c.name),
+                datasets: [
+                  {
+                    data: data.customers.map((c) => c.sales),
+                    backgroundColor: [
+                      "#2196f3",
+                      "#4caf50",
+                      "#ff9800",
+                      "#f44336",
+                      "#9c27b0",
+                    ],
+                  },
+                ],
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: { position: "bottom" },
+                },
+              },
+            });
+          }
+
+          // Die Chart
+          const dieCtx = document.getElementById("plantDieChart");
+          if (dieCtx) {
+            new Chart(dieCtx.getContext("2d"), {
+              type: "bar",
+              data: {
+                labels: data.dies.map((d) => d.name),
+                datasets: [
+                  {
+                    label: "Sales (₹ Cr)",
+                    data: data.dies.map((d) => d.sales),
+                    backgroundColor: "#4caf50",
+                  },
+                ],
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: { display: false },
+                },
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                    ticks: {
+                      callback: function (value) {
+                        return "₹" + value + "Cr";
+                      },
+                    },
+                  },
+                },
+              },
+            });
+          }
+        }, 100);
+      }
+    </script>
+  </body>
+</html>
